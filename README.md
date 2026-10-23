@@ -1,88 +1,263 @@
 # OnMyWay AI
 
-**Your errands, one smart drive.** A native Pleos Connect app that plans errands around opening windows, service time and an arrival deadline.
+**Your errands, one smart drive.**
 
-Signed demo/live release APKs build and run on Pleos Connect 2.1.0. The fixture flow and actual driving restriction gate are verified. Live AI/place/road calls and actual navigation acceptance/arrival remain unverified. See [readiness](docs/readiness.md) and [delivery evidence](docs/progress.md) before presenting any claim.
+A native **Pleos Connect** app that turns an errand list into a reviewed driving
+plan, accounting for road travel, opening waits, time at each stop and the
+deadline for getting home.
 
-## Repository
+[Try the demo](#try-the-demo) · [Run locally](#run-locally) ·
+[Architecture](#architecture) · [Verification](#verification) ·
+[Submission readiness](docs/readiness.md)
+
+> **Current status:** The native app, deterministic planner and explicitly
+> labelled demo flow have been verified on the official Pleos emulator.
+> Live OpenAI/Kakao calls and actual navigation acceptance/arrival still require
+> separate verification. Screens below use **example data and simulated guidance**.
+
+![Actual Pleos next-stop screen with destination, arrival time and home deadline](docs/screenshots/automotive-ux/route.png)
+
+*Actual signed-demo capture on Pleos Connect 2.1.0, API 34. Pharmacy dwell was
+explicitly edited from 10 to 15 minutes. Places, opening windows and road times
+in this capture are fixtures.*
+
+## The problem
+
+An errand route has more constraints than a list of destinations. A pharmacy may
+close before a laundry pickup; each stop takes time; getting to the shop is only
+part of finishing the task. The final drive home must fit too.
+
+OnMyWay lets the user review those constraints before approving a destination.
+AI produces an editable draft. A deterministic planner evaluates the supplied
+times and evidence, and the native app guides one step at a time.
+
+Example request:
+
+> “약국 들르고, 세탁물 찾고, 우유도 사서 7시 전에 집에 가야 해.”
+
+Natural-language parsing uses the configured server-side provider. The key-free
+demo is requested separately and does not claim to parse this example live.
+
+## The vehicle experience
+
+| Step | What the user does | What the app preserves |
+| --- | --- | --- |
+| Enter | Type errands, or explicitly select the example | Example data and simulated guidance stay labelled |
+| Review | Check required tasks, dwell times and home deadline | Edits invalidate the previous plan and approval |
+| Plan | Inspect the next stop and expected home arrival | Road travel, opening wait, dwell and final home leg count |
+| Approve | Confirm the current next destination | Approval belongs to the fresh current plan |
+| Complete | Confirm that the errand is actually finished | Arrival alone never completes a task |
+| Continue | Recalculate remaining errands, then approve home separately | Required errands are never silently removed |
+
+The UI uses native Android Views, large text and 80dp primary controls. It follows
+system day/night mode and keeps one main action visible. Server configuration,
+coordinates and evidence details sit behind secondary actions. Actual vehicle
+restrictions lock editing and destination approval; unavailable vehicle state
+fails closed in the live variant.
+
+<details>
+<summary>More actual Pleos screens: input, review, night mode and driving lock</summary>
+
+| Input | Review |
+| --- | --- |
+| ![Native errand input with explicit example action](docs/screenshots/automotive-ux/input.png) | ![Required tasks and dwell times before the pharmacy edit](docs/screenshots/automotive-ux/review.png) |
+
+| Night mode | Actual driving restriction |
+| --- | --- |
+| ![System night-mode review screen](docs/screenshots/automotive-ux/night.png) | ![Controls locked by actual Pleos driving restrictions](docs/screenshots/automotive-ux/driving-lock.png) |
+
+The driving-lock capture used the official Virtual Console at Drive / 30 km/h.
+The isolated emulator was restored to Park / 0 afterward.
+[Capture provenance and the previous UI](docs/screenshots/automotive-ux/README.md).
+
+</details>
+
+## Architecture
+
+```mermaid
+flowchart LR
+    App["Native Android app"] -->|"Reviewed input"| API["FastAPI"]
+    API <-->|"Structured draft"| AI["OpenAI"]
+    API <-->|"Places and road times"| Kakao["Kakao APIs"]
+    API --> Planner["Deterministic planner"]
+    Planner -->|"Plan and evidence"| API
+    API -->|"Reviewable result"| App
+    App -->|"Explicit destination approval"| Pleos["Pleos NaviHelper"]
+```
+
+The API never starts navigation. The Android app owns vehicle restrictions,
+destination approval, arrival handling and explicit completion. The planner
+makes no network calls and never delegates route arithmetic to the language model.
+
+| Area | Implementation |
+| --- | --- |
+| Vehicle app | Kotlin, Android Views, separate `demo` / `live` variants |
+| Vehicle integration | Pleos NaviHelper 3.0.5 and native CarUxRestrictions |
+| Backend | Python 3.11+, FastAPI, Pydantic 2, HTTPX |
+| Planning | Exhaustive search across supplied candidate choices, stop orders and optional subsets |
+| Contracts | Checked-in OpenAPI schema and example request/response payloads |
+| Storage | Stateless API; local Android drafts and completed task IDs; no database |
+
+The planner accepts up to five errands and three supplied candidates per errand.
+The current live discovery adapter supplies **one nearby candidate per errand**.
+Unknown opening hours, service availability or required road data cannot establish
+feasibility. Results distinguish `feasible`, `needs_verification` and
+`infeasible`; optional omissions and mandatory failures have explicit reasons.
+A deadline-extension suggestion never changes the user's input automatically.
+
+### Repository layout
 
 | Path | Purpose |
 | --- | --- |
-| `apps/automotive` | Native Kotlin Android app, explicit demo/live variants, Pleos navigation |
-| `services/api` | FastAPI, structured intent extraction, place/routing adapters, deterministic planner |
-| `contracts` | OpenAPI and example payloads shared with the app |
-| `docs/submission` | Korean application draft, pitch, recording script and checklist |
-| `artifacts/submission` | Local submission documents |
-| `scripts` | Reproducible local setup and verification |
+| [apps/automotive](apps/automotive/README.md) | Native UI, journey state, vehicle restrictions and navigation |
+| [services/api](services/api/README.md) | Intent extraction, provider adapters, planning and API tests |
+| [contracts](contracts/README.md) | Shared API schema and representative payloads |
+| [scripts](scripts) | Local setup, builds, actual-emulator checks and packaging |
+| [docs/screenshots](docs/screenshots/automotive-ux/README.md) | Authorized actual UI captures and provenance |
+| [docs/submission](docs/submission/README.md) | Korean application draft, pitch and submission checklist |
 
-## Start the API
+## Run locally
 
-Python 3.11 or later is required. From the repository root on Windows:
+Commands below run from the repository root in **Windows PowerShell**.
 
-```powershell
-.\scripts\setup-api.ps1
-Copy-Item .env.example .env  # only the first time; preserve existing settings
-.\scripts\start-api.ps1
-```
+Prerequisites: Python 3.11+; JDK 17; Android SDK Platform 35 and Build Tools
+35.0.0. Gradle 8.9 is included through the wrapper. Pleos runtime checks require
+the official Pleos Connect 2.1.0 x86_64 API 34 emulator, with a cold boot.
+Install the SDKs under their respective licenses before building.
 
-Add credentials later to the ignored root `.env` file and restart the API. Keep `OPENAI_API_KEY`, `OPENAI_MODEL` and provider keys on the server. Never place them in the Android project or send them in chat. Empty credentials cause an explicit configuration error on the relevant live endpoint; the demo endpoint remains independently available.
-
-API documentation: `http://127.0.0.1:8000/docs`. The default server binds only to localhost. A standard Android emulator reaches the host through `10.0.2.2`; alternatively use `adb reverse tcp:8000 tcp:8000` and set the app server to `http://127.0.0.1:8000`. Configure an authenticated HTTPS server before any public use.
+### Start the API
 
 ```powershell
-.\.venv\Scripts\python.exe -m pytest services/api/tests
+./scripts/setup-api.ps1
+./scripts/start-api.ps1
 ```
 
-## Android
+The launcher creates an ignored root `.env` from `.env.example` if absent,
+preserves existing configuration, and binds to `127.0.0.1:8000`.
+Open [API documentation](http://127.0.0.1:8000/docs) or check
+[health](http://127.0.0.1:8000/health). The demo and planner work without provider
+keys. Health reports configuration booleans, never secret values.
 
-Use JDK 17, Android SDK platform 35, build tools 35.0.0 and Gradle 8.9 (wrapper included). SDK/tool licenses require the developer's own acceptance. Pleos testing requires the official API 34 Pleos Connect 2.1.0 emulator and cold boot.
+### Build and launch Android
+
+Set the paths to your installed tools:
 
 ```powershell
-cd apps/automotive
-.\gradlew.bat testDemoDebugUnitTest assembleDemoDebug assembleLiveDebug
+$env:JAVA_HOME = 'C:/path/to/jdk17'
+$env:ANDROID_HOME = 'C:/path/to/android-sdk'
+./apps/automotive/gradlew.bat -p apps/automotive testDemoDebugUnitTest assembleDemoDebug assembleLiveDebug
 ```
 
-The `demo` application is visibly labelled and permits explicit simulation. The `live` application requires real vehicle restrictions and SDK readiness. A fixture plan is never a live-data guarantee. Local signed release builds are in `apk/OnMyWay_AI_demo_release.apk` and `apk/OnMyWay_AI_live_release.apk`; APKs are excluded from Git and are not included in a fresh clone.
-
-The native journey presents one stage at a time: errands → review → next stop.
-It follows Pleos day/night mode, uses large controls and keeps coordinates,
-server configuration and evidence details behind secondary actions. Review the
-[actual Pleos screenshots](docs/screenshots/automotive-ux/README.md), including
-the previous UI and the actual driving restriction overlay. The example button
-explicitly requests fixtures and simulated guidance; it never substitutes for a
-failed live request.
-
-To reproduce local signed builds after SDK setup:
+Install the demo on an isolated Pleos emulator. Replace the device serial below
+with yours, as listed by `adb devices`:
 
 ```powershell
-.\scripts\build-android.ps1 -Release -GenerateSigningKey
+$device = 'emulator-5556'
+$adb = Join-Path $env:ANDROID_HOME 'platform-tools/adb.exe'
+& $adb -s $device install -r apps/automotive/app/build/outputs/apk/demo/debug/app-demo-debug.apk
+& $adb -s $device shell am start --user current -n ai.onmyway.car.demo/ai.onmyway.car.MainActivity
 ```
 
-The first invocation generates a local development signing identity in ignored `.tools/signing`; subsequent builds reuse it. Keep that folder private and backed up for compatible app updates. The script does not publish the app.
+The default app server is `http://10.0.2.2:8000`, the emulator's host address.
+Alternatively, run `adb -s <serial> reverse tcp:8000 tcp:8000` and set the app
+server to `http://127.0.0.1:8000` through **설정 → 연결 · 위치 고급 설정**.
 
-On Windows hosts where Java NIO fails with `Unable to establish loopback connection`, the local JDK 17 workaround verified for Gradle setup is:
+The demo package is `ai.onmyway.car.demo`; the live package is `ai.onmyway.car`.
+Only demo exposes fixture requests and simulated guidance. A live provider
+failure produces an explicit error and never silently switches to examples.
+
+See the [Android guide](apps/automotive/README.md) for additional checks.
+The optional [release build script](scripts/build-android.ps1) expects the local
+SDK under `.tools/android-sdk` and can create an ignored development signing key
+with `-Release -GenerateSigningKey`. Preserve that private key for compatible
+updates. APKs are generated locally and are absent from a fresh clone.
+
+### Try the demo
+
+With the API running and the demo app open while parked:
+
+1. Tap **예시로 체험 · 모의 안내** to request the labelled sample.
+2. Review the three errands. Change the pharmacy dwell from 10 to 15 minutes
+   using **수정 → + 5분 → 저장**.
+3. Tap **동선 확인하기**. The sample predicts home arrival at **18:45** against
+   its **19:00** deadline.
+4. Tap **이곳으로 안내 → 목적지 승인**, then send **도착 체험 · 모의 이벤트**.
+   Arrival leaves the errand unfinished.
+5. Use **할 일 완료 → 완료했어요**, then recalculate the remaining errands.
+6. Finish the remaining stops and approve **집으로 안내** separately.
+
+The repeatable fixture uses **2026-10-23**. Its dates, places and timings are
+demonstration inputs, not a current driving recommendation.
+
+### Configure live providers later
+
+Edit only the ignored server-side `.env`, then restart the API:
+
+| Variable | Used by |
+| --- | --- |
+| `OPENAI_API_KEY` | Natural-language interpretation |
+| `OPENAI_MODEL` | Explicit model selection; no model is chosen silently |
+| `KAKAO_REST_API_KEY` | Nearby place discovery |
+| `KAKAO_MOBILITY_REST_API_KEY` | Directed road travel times |
+
+Keys never belong in Android source, APKs, screenshots or checked-in files.
+Empty configuration produces explicit errors on the relevant live endpoint.
+The development API has no user authentication and binds only to localhost.
+
+[API behavior, endpoints and provider limits](services/api/README.md) ·
+[Environment template](.env.example)
+
+## Verification
+
+The following are **recorded results from 2026-10-24**, not claims of live service
+validation. Exact commands, revisions and caveats are in the
+[delivery ledger](docs/progress.md).
+
+| Check | Recorded evidence |
+| --- | --- |
+| Backend | 25 Python tests passed; provider HTTP tested through mocks |
+| Android | 21 unit tests passed, including journey transitions, deadline/dwell edits, fixture isolation and approval boundaries |
+| Builds | Demo/live debug and signed release builds passed; release v3 signatures verified |
+| Actual Pleos demo | HTTP fixture → edit → plan → three explicitly completed simulated stops → separately approved simulated home |
+| Actual vehicle restrictions | Drive / 30 km/h locked actions and dismissed an open editor; Park / 0 restored |
+| UI | Actual day/night captures and native date/reset checks |
+| CI | [Verify run 39996479748](https://github.com/wookingwoo/onmyway-ai/actions/runs/39996479748) passed on the documentation/subtitle head; [workflow](.github/workflows/verify.yml) |
+
+Reproduce application checks after toolchain setup:
 
 ```powershell
-$env:JAVA_TOOL_OPTIONS='-Djava.nio.channels.spi.SelectorProvider=sun.nio.ch.WindowsSelectorProvider'
-# Use an existing writable, short Windows temporary directory for TEMP and TMP.
+./.venv/Scripts/python.exe -m pytest services/api/tests -q
+./apps/automotive/gradlew.bat -p apps/automotive testDemoDebugUnitTest assembleDemoDebug assembleLiveDebug
 ```
 
-## Product boundaries
+### Remaining validation
 
-- AI extracts editable requirements; deterministic code validates route arithmetic.
-- Travel, opening wait and errand duration all count toward deadlines.
-- Required errands remain required unless the user explicitly changes them.
-- Missing business/service evidence is shown as needing verification.
-- Navigation requires approval for the current plan and next destination.
-- Arrival does not mark an errand complete. The user confirms completion before replanning.
-- Editing is disabled when driving restrictions are active or unavailable in the live app.
+Live OpenAI/Kakao authentication, real place/road results, actual Pleos route
+acceptance and arrival, and physical-vehicle usability remain unverified.
+Current Kakao keyword results do not establish opening hours or service
+availability; current-traffic durations are snapshots rather than forecasts.
+Voice input, TTS and automatic location acquisition are not implemented.
 
-## Submission
+No measured time savings, current users or retention results are claimed.
+[Current readiness and next verification steps](docs/readiness.md).
 
-Use the official application form and keep identity details in its operational section only. Keep personal names, company, contact information and secrets out of project materials and shared assets. Final legal signatures, access grants, public publishing and contest email submission remain user actions. Repository publication is not automatic.
+## Evidence and contest materials
 
-Local actual recording: `artifacts/evidence/OnMyWay_AI_Pleos_fixture_demo.mp4` (previous UI). Local written materials: `artifacts/submission/OnMyWay_AI_application_WORKING_DRAFT.docx` and `artifacts/pitch/output/OnMyWay-AI-pitch-ko.pptx`. Generated APKs, videos, office documents, archives and raw screenshots stay local. The owner explicitly permits selected actual PR screenshots under `docs/screenshots/` in Git. CI builds and tests the app without uploading APK artifacts. Text sources, generation scripts and verification notes remain versioned. The final package remains a working draft until live integrations and the human submission steps are complete; regenerate the local package after source or APK changes.
+The current local recording is a **135.7-second, FHD, silent** capture of the
+new UI with 18 Korean subtitle cues. Videos, raw captures, APKs, office documents
+and archives stay local; authorized screenshots and the small
+[Korean SRT](artifacts/evidence/OnMyWay_AI_Pleos_new_ui_demo.srt) are versioned.
+[Recording provenance and local file names](artifacts/evidence/README.md).
 
-A local review ZIP is available at `artifacts/package/OnMyWay_AI_review_package.zip` after running `scripts/package-submission.py` with the private `OMW_ENTRANT_ACCOUNT` environment value. It includes an anonymous source archive, both signed APKs, the recording, form, pitch, readiness notes and checksums. Generated packages are excluded from Git.
+| Material | Location |
+| --- | --- |
+| Product and engineering specification | [docs/spec.md](docs/spec.md) |
+| Korean application draft | [docs/submission/application-ko.md](docs/submission/application-ko.md) |
+| Pitch and demo script | [docs/submission/pitch-and-demo-ko.md](docs/submission/pitch-and-demo-ko.md) |
+| Submission checklist | [docs/submission/checklist-ko.md](docs/submission/checklist-ko.md) |
 
-Primary references: [contest](https://appdevchallenge.auto-hmg.io/), [submission guide](https://appdevchallenge.auto-hmg.io/guide/submission), [Pleos SDK](https://document.pleos.ai/docs/pleos-only/connect-sdk-pleos/NaviHelper/intro), [OpenAI structured outputs](https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=responses).
+Contest materials remain working drafts. The older office/pitch files and local
+review ZIP predate the new UI and need regeneration before sharing. Keep project
+materials anonymous; identity and signatures belong in the operational form.
+Repository access grants, public publication and final email submission require
+the owner's authorization.

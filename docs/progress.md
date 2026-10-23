@@ -182,3 +182,26 @@ Plan: docs/superpowers/plans/2026-10-23-onmyway.md
   previously verified local SRT: 2,027 bytes, SHA-256
   `1b319f6cb70c6047db5a7421d77992cf4ad547d3d50bcd47b15cb59cf38f892e`.
   Document/caption-only change; Android and Python application checks are not rerun.
+
+## Repository README refresh — 2026-10-24
+
+- Owner requested a stronger repository README. Reorganized it around the errand
+  problem, actual native experience, architecture, reproducible local setup,
+  explicit demo flow, recorded validation and remaining live verification.
+  Engineering prose remains English; Korean UI labels and submission links are
+  preserved. Reused five authorized tracked screenshots; added no binary assets.
+- Updated readiness to reference the current 135.7-second recording, versioned
+  SRT and successful CI run 39996479748 on subtitle head fb3707b. The owner
+  declined GIF upload; all three conversion previews remain ignored and local.
+- Verified 26 relative file links, 13 heading anchors and five tracked images.
+  Four PowerShell code blocks parse without errors. Local GFM rendering in an
+  isolated headless Edge session loaded all images without horizontal overflow;
+  the opening layout and expanded screenshot tables were visually inspected.
+  Mermaid is retained as source in that local renderer, not claimed as a GitHub
+  diagram-rendering check. Local HTML, captures and validation report stay ignored
+  under `.tools/readme-preview/`.
+- Fresh localhost checks: health `ok`; explicit demo -> pure planner returned
+  `feasible`, `is_fixture: true`. No live provider endpoint was called. Sandboxed
+  loopback/browser attempts were blocked; both checks passed in normal local
+  execution. Application source is unchanged; Python/Android suites and builds
+  were not rerun for this documentation-only update.
