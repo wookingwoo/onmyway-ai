@@ -1,5 +1,31 @@
 # Verification evidence
 
+## Current automotive UI recording — 2026-10-24
+
+Local files under `artifacts/evidence/automotive-ux/`:
+
+- `OnMyWay_AI_Pleos_new_ui_demo.mp4`: clean, silent 135.7-second, 1920 × 1080,
+  30 fps edit for later voiceover work.
+- `OnMyWay_AI_Pleos_new_ui_demo.srt`: matching UTF-8 Korean subtitles, 18 cues.
+- `OnMyWay_AI_Pleos_new_ui_demo_subtitled.mp4`: silent preview with the same
+  captions rendered and persistent fixture/simulation/editing disclosure.
+
+Actual signed release on the official Pleos emulator: input → explicit fixture
+request → dwell 10→15 minutes → plan → approval → simulated arrival → explicit
+completion/replan → remaining errands → separately approved simulated home.
+Two real takes are joined after an accessibility-query timeout; no app screen is
+synthesized. Repeated actions and capture-tool waits are abridged. Both raw takes
+are preserved. This is not evidence of live providers or actual SDK navigation.
+
+Both final MP4s passed full FFmpeg decoding and contain zero audio streams. The
+SRT passed format, ordering, overlap, duration and UTF-8 parsing checks. After
+correcting the first edit's source-clock alignment, representative frames for all
+11 stages were visually checked for matching UI, Korean glyphs, caption placement
+and unobstructed primary controls. Exact files, hashes and edit ranges are in
+local `new-ui-video-verification.json`; raw timelines and frames stay local.
+
+## Historical recording
+
 The original screenshots and recording below show the previous UI, captured from the actual signed release app
 running on the official Pleos Connect 2.1.0 x86_64 API 34 emulator.
 

@@ -140,3 +140,32 @@ Plan: docs/superpowers/plans/2026-10-23-onmyway.md
   `f0e35d6d1bb6bd2c4b3f4f488fabcf62b74dbf95`; PR #2 is open and unmerged.
   A documentation-only follow-up records this publication/CI evidence without
   changing the verified implementation or APKs.
+
+## New UI recording and Korean subtitles — 2026-10-24
+
+- Owner requested an actual new-UI recording with separate SRT, excluding voice
+  for now and preserving a clean video for later TTS. No app/API source changed;
+  no credentials or voice-generation service was used.
+- Recorded actual signed-demo operation on the official isolated Pleos emulator
+  through all three errands and a separately approved simulated home arrival.
+  A full-screen input keyboard was dismissed before capture. An accessibility
+  query later timed out at the second completion dialog; the raw take was kept
+  and the remaining same-session flow was captured with fresh screenshots and
+  visually verified touches. The final video joins the two actual takes and
+  abridges repeated steps/tool waits. No synthetic UI frames were used.
+- First edit passed decoding but visual QA found a source-timing mismatch.
+  Preserved that edit locally, aligned each take against actual UI transitions,
+  regenerated the video/subtitles, and visually checked all 11 stage samples.
+- Final deliverables in ignored `artifacts/evidence/automotive-ux/`: clean
+  `OnMyWay_AI_Pleos_new_ui_demo.mp4`, matching `.srt`, and `_subtitled.mp4` preview.
+  Actual duration **135.7 seconds**, **1920 × 1080 / 30 fps**, **18 Korean cues**.
+  Both MP4s have one video stream and **zero audio streams**, and pass complete
+  FFmpeg decoding. SRT numbering, timestamps, ordering, non-overlap, two-line
+  limit and end-within-video bounds pass; FFprobe parses it as SubRip.
+- Final SHA-256: clean MP4
+  `6dd7b07e4d0942c372089caf47cde160ad98bca5fc9e3571ee11af8b12132210`;
+  SRT `1b319f6cb70c6047db5a7421d77992cf4ad547d3d50bcd47b15cb59cf38f892e`;
+  subtitled preview
+  `fed03af59e009534faafb6329bb2ecf1b2b0eaf235a7d362891757087e5d2f57`.
+  Original recordings and verification JSON are local. Nothing was uploaded or
+  force-added to Git; the earlier 47-second old-UI recording remains unchanged.
