@@ -46,6 +46,8 @@ class MainActivity : Activity() {
     private var errands = JSONArray()
     private var restored = false
     private var requiresParse = false
+    private var voiceExample = false
+    private var voiceDialog: VoiceInputDialog? = null
     private var status = "정차 상태를 확인한 뒤 계획을 시작하세요."
     private var navStatus = "Pleos 내비 연결 확인 중"
     private var computedElapsedMillis: Long? = null
@@ -79,7 +81,7 @@ class MainActivity : Activity() {
         navigation.connect()
     }
     override fun onStart() { super.onStart(); if (::restrictions.isInitialized) restrictions.start() }
-    override fun onStop() { if (::restrictions.isInitialized) restrictions.stop(); vehicle = VehicleState.UNKNOWN; applyLock(); super.onStop() }
+    override fun onStop() { voiceDialog?.dismiss(); if (::restrictions.isInitialized) restrictions.stop(); vehicle = VehicleState.UNKNOWN; applyLock(); super.onStop() }
     override fun onDestroy() { navigation.close(); worker.shutdownNow(); super.onDestroy() }
 
     private fun dp(value: Int) = (value * resources.displayMetrics.density).toInt()
@@ -156,6 +158,7 @@ class MainActivity : Activity() {
     }
     private fun allowed() = state.canInteract(vehicle, BuildConfig.DEMO, simulate)
     private fun edited() {
+        voiceDialog?.dismiss()
         val wasRoute = flow.screen == JourneyScreen.ROUTE
         state.edited(); plan = null; flow.edited(); errorMessage = null
         persist()
@@ -165,6 +168,7 @@ class MainActivity : Activity() {
     override fun onBackPressed() { if (allowed() && !busy) { flow.back(); render() } }
 
     private fun render() {
+        voiceDialog?.dismiss()
         controls.clear(); demoRescue = null
         root = column().apply { setBackgroundColor(bg); setPadding(dp(40), dp(20), dp(40), dp(20)) }
         root.setOnApplyWindowInsetsListener { view, insets ->
@@ -194,7 +198,8 @@ class MainActivity : Activity() {
         // stage attaches the relevant controls to the visible hierarchy.
         val storage = column()
         input = field(storage, "할 일", prefs.getString("input", "").orEmpty(), true) {
-            prefs.edit().putString("input", it).apply(); requiresParse = true; edited()
+            voiceExample = false
+            prefs.edit().putString("input", it).putBoolean("voice-example", false).apply(); requiresParse = true; edited()
         }.apply { hint = "약국 들르고, 세탁물 찾고, 장도 보고 싶어요" }
         server = field(storage, "서버 주소", prefs.getString("server", BuildConfig.DEFAULT_SERVER_URL).orEmpty()) {
             prefs.edit().putString("server", it).apply(); edited()
@@ -234,11 +239,52 @@ class MainActivity : Activity() {
         setContentView(root); root.requestApplyInsets(); applyLock()
     }
     private fun renderInput(body: LinearLayout) {
-        heading(body, "가는 길에, 무엇을 할까요?", "할 일을 적으면 방문 순서와 시간을 맞춰드려요.")
+        heading(body, "가는 길에, 무엇을 할까요?", "말하거나 적으면 방문 순서와 시간을 맞춰드려요.")
+        val voiceCard = card(body, "말로 간편하게", "할 일과 집에 도착할 시간을 함께 말해 주세요.")
+        val voiceActions = row()
+        val realVoice = column()
+        button(realVoice, "음성으로 말하기", enabled = { vehicle == VehicleState.PARKED }) { openVoice(VoiceSource.PLEOS) }
+        voiceActions.addView(realVoice, LinearLayout.LayoutParams(0, -2, 1f))
+        if (BuildConfig.DEMO) {
+            val exampleVoice = column()
+            button(exampleVoice, "예시 음성 흐름 체험") { openVoice(VoiceSource.EXAMPLE) }
+            voiceActions.addView(exampleVoice, LinearLayout.LayoutParams(0, -2, 1f).apply { leftMargin = dp(16) })
+        }
+        voiceCard.add(voiceActions, 0)
         showEditor(body, "오늘 할 일", input)
-        body.add(text("복잡한 입력과 수정은 정차 중에만 해 주세요.", 22f, muted), 26)
+        val inputNote = text(if (voiceExample) "예시 문장 · 실제 음성 인식·AI 해석 아님" else "음성 입력과 수정은 정차 중에만 해 주세요.", 22f, if (voiceExample) amber else muted)
+        body.add(inputNote, 20)
         if (BuildConfig.DEMO) button(body, "예시로 체험 · 모의 안내") { simulate = true; loadFixture() }
-        button(footer, "할 일 확인하기", true, { input.text.isNotBlank() }) { parse() }
+        val next = button(footer, if (voiceExample) "예시 할 일 확인하기" else "할 일 확인하기", true, { input.text.isNotBlank() }) {
+            if (voiceExample && BuildConfig.DEMO && input.text.toString() == VoiceInputSession.EXAMPLE_TEXT) {
+                simulate = true; loadFixture()
+            } else parse()
+        }
+        // TextWatcher can invalidate an example without rebuilding the active editor.
+        input.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                next.text = "할 일 확인하기"
+                inputNote.text = "음성 입력과 수정은 정차 중에만 해 주세요."
+                inputNote.setTextColor(muted)
+            }
+            override fun afterTextChanged(s: Editable?) = Unit
+        })
+    }
+    private fun openVoice(source: VoiceSource) {
+        if (source == VoiceSource.PLEOS && vehicle != VehicleState.PARKED) return
+        voiceDialog?.dismiss()
+        val dialog = VoiceInputDialog(this, source, { vehicle }) { draft ->
+            if (!allowed() || busy) return@VoiceInputDialog
+            input.setText(draft.text)
+            voiceExample = draft.source == VoiceSource.EXAMPLE && BuildConfig.DEMO
+            prefs.edit().putBoolean("voice-example", voiceExample).apply()
+            status = "인식 내용을 적용했습니다. 문장을 확인하고 필요하면 수정해 주세요."
+            render()
+        }
+        voiceDialog = dialog
+        dialog.setOnDismissListener { if (voiceDialog === dialog) voiceDialog = null }
+        dialog.show()
     }
     private fun renderReview(body: LinearLayout) {
         val remaining = (0 until errands.length()).map { errands.getJSONObject(it) }.filter { it.optString("id") !in state.completed }
@@ -448,9 +494,11 @@ class MainActivity : Activity() {
             else -> ""
         }
         if (!can) {
+            voiceDialog?.dismiss()
             openDialogs.toList().forEach { it.dismiss() }
             (getSystemService(INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager).hideSoftInputFromWindow(root.windowToken, 0)
         }
+        if (vehicle != VehicleState.PARKED) voiceDialog?.dismiss()
         lockLabel.visibility = if (lockLabel.text.isBlank()) View.GONE else View.VISIBLE
         bodyScroll.visibility = if (can) View.VISIBLE else View.GONE
         lockedPanel.visibility = if (can) View.GONE else View.VISIBLE
@@ -617,6 +665,7 @@ class MainActivity : Activity() {
     }
     private fun restore() {
         runCatching {
+            voiceExample = BuildConfig.DEMO && prefs.getBoolean("voice-example", false) && prefs.getString("input", "") == VoiceInputSession.EXAMPLE_TEXT
             fixture = prefs.getBoolean("fixture", false)
             requiresParse = prefs.getBoolean("requiresParse", false)
             reviewNotes = prefs.getString("review-notes", null)
