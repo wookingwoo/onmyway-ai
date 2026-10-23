@@ -37,3 +37,18 @@ Plan: docs/superpowers/plans/2026-10-23-onmyway.md
 - Removed the CI APK upload step. Build and unit-test checks remain enabled.
 - Existing commits are preserved; removing current tracking does not purge
   binaries already present in earlier Git history. No history rewrite was performed.
+
+## Authorized history cleanup — 2026-10-24
+
+- The owner subsequently authorized rewriting history and force-updating the
+  affected branch. The preceding no-rewrite policy is superseded.
+- Filtered all 15 generated binary paths from the local feature branch's entire
+  ancestry with git-filter-repo. The current source tree stayed identical and
+  SHA-256 checks confirmed that all 15 local deliverables remained unchanged.
+- Prepared equivalent clean remote commits with the GitHub plugin. The main
+  branch is clean and unchanged. The feature ref must be updated with a lease
+  against its inspected head; remote branch and PR refs are then audited.
+- Old commit IDs above are historical execution records, not the current source
+  revision. Do not merge or push a clone containing the old history into this
+  repository. GitHub may retain unreachable objects or cached old-SHA views;
+  rewriting branch history does not establish immediate server-side deletion.

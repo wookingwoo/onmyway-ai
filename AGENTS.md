@@ -4,6 +4,8 @@ Keep this a small native Android + FastAPI monorepo. Prefer completing and
 verifying the end-to-end errand flow over adding infrastructure or features.
 
 - Korean UI and contest prose; English source, engineering docs and commits.
+- Keep generated APKs, recordings, screenshots, office documents and archives local.
+  Do not force-add ignored deliverables or reintroduce pre-cleanup Git history.
 - User supplies API keys later. Only the server reads ignored environment files.
   Never embed keys in APKs, prompts in screenshots, source or test reports.
 - Fixtures are explicitly labelled, independently requested and never a silent
