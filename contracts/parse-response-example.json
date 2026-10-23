@@ -1,0 +1,33 @@
+{
+  "errands": [
+    {
+      "id": "medicine",
+      "label": "약 구매",
+      "query": "약국",
+      "mandatory": true,
+      "dwell_seconds": 600,
+      "latest_finish": null
+    },
+    {
+      "id": "laundry",
+      "label": "세탁물 찾기",
+      "query": "세탁소",
+      "mandatory": true,
+      "dwell_seconds": 300,
+      "latest_finish": null
+    },
+    {
+      "id": "groceries",
+      "label": "우유 구매",
+      "query": "마트",
+      "mandatory": false,
+      "dwell_seconds": 300,
+      "latest_finish": null
+    }
+  ],
+  "deadline": "2026-10-23T19:00:00+09:00",
+  "clarification_questions": [],
+  "warnings": [
+    "ILLUSTRATIVE EXAMPLE, not a live OpenAI response. Dwell durations are editable estimates."
+  ]
+}

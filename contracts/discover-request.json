@@ -1,0 +1,42 @@
+{
+  "origin": {
+    "id": "origin",
+    "name": "데모 출발지",
+    "latitude": 37.5,
+    "longitude": 127.0
+  },
+  "home": {
+    "id": "home",
+    "name": "데모 집",
+    "latitude": 37.51,
+    "longitude": 127.02
+  },
+  "departure_time": "2026-10-23T18:00:00+09:00",
+  "deadline": "2026-10-23T19:00:00+09:00",
+  "errands": [
+    {
+      "id": "medicine",
+      "label": "약 구매",
+      "query": "약국",
+      "mandatory": true,
+      "dwell_seconds": 600,
+      "latest_finish": null
+    },
+    {
+      "id": "laundry",
+      "label": "세탁물 찾기",
+      "query": "세탁소",
+      "mandatory": true,
+      "dwell_seconds": 300,
+      "latest_finish": null
+    },
+    {
+      "id": "groceries",
+      "label": "우유 구매",
+      "query": "마트",
+      "mandatory": false,
+      "dwell_seconds": 300,
+      "latest_finish": null
+    }
+  ]
+}

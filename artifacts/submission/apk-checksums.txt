@@ -1,0 +1,3 @@
+SHA-256 verified against local release APK files
+9646e908cfc9d1c007b158554489312ff56a8f8013ef01e0c6dc14124cdf9147  apk/OnMyWay_AI_demo_release.apk
+098617c8570ee216080e6761d8b694627fddc74a9c1e4e2bb93dd5bc345ec539  apk/OnMyWay_AI_live_release.apk

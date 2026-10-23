@@ -1,0 +1,852 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "OnMyWay AI",
+    "description": "Stateless errand planning. Fixtures are explicitly labelled; draft output requires user review.",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/demo": {
+      "get": {
+        "summary": "Demo",
+        "operationId": "demo_v1_demo_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanRequest"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/plan": {
+      "post": {
+        "summary": "Make Plan",
+        "operationId": "make_plan_v1_plan_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/parse": {
+      "post": {
+        "summary": "Parse",
+        "operationId": "parse_v1_parse_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParseRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ParseResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/discover": {
+      "post": {
+        "summary": "Discover Places",
+        "operationId": "discover_places_v1_discover_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DiscoverRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanRequest"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DeadlineRelaxation": {
+        "properties": {
+          "required_deadline": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Required Deadline"
+          },
+          "extension_seconds": {
+            "type": "integer",
+            "title": "Extension Seconds"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "required_deadline",
+          "extension_seconds",
+          "description"
+        ],
+        "title": "DeadlineRelaxation"
+      },
+      "DiscoverRequest": {
+        "properties": {
+          "origin": {
+            "$ref": "#/components/schemas/Location"
+          },
+          "home": {
+            "$ref": "#/components/schemas/Location"
+          },
+          "departure_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Departure Time"
+          },
+          "deadline": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Deadline"
+          },
+          "errands": {
+            "items": {
+              "$ref": "#/components/schemas/ErrandInput"
+            },
+            "type": "array",
+            "maxItems": 5,
+            "title": "Errands"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "origin",
+          "home",
+          "departure_time",
+          "deadline",
+          "errands"
+        ],
+        "title": "DiscoverRequest"
+      },
+      "Errand": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Id"
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Label"
+          },
+          "query": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Query"
+          },
+          "mandatory": {
+            "type": "boolean",
+            "title": "Mandatory",
+            "default": true
+          },
+          "dwell_seconds": {
+            "type": "integer",
+            "maximum": 86400.0,
+            "minimum": 0.0,
+            "title": "Dwell Seconds",
+            "default": 600
+          },
+          "latest_finish": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Finish"
+          },
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/Place"
+            },
+            "type": "array",
+            "maxItems": 3,
+            "title": "Candidates"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "query"
+        ],
+        "title": "Errand"
+      },
+      "ErrandInput": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Id"
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Label"
+          },
+          "query": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Query"
+          },
+          "mandatory": {
+            "type": "boolean",
+            "title": "Mandatory",
+            "default": true
+          },
+          "dwell_seconds": {
+            "type": "integer",
+            "maximum": 86400.0,
+            "minimum": 0.0,
+            "title": "Dwell Seconds",
+            "default": 600
+          },
+          "latest_finish": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Finish"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "query"
+        ],
+        "title": "ErrandInput"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "Location": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "latitude": {
+            "type": "number",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Longitude"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "latitude",
+          "longitude"
+        ],
+        "title": "Location"
+      },
+      "OpeningInterval": {
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "start",
+          "end"
+        ],
+        "title": "OpeningInterval"
+      },
+      "ParseRequest": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Text"
+          },
+          "reference_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Reference Time"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "text",
+          "reference_time"
+        ],
+        "title": "ParseRequest"
+      },
+      "ParseResponse": {
+        "properties": {
+          "errands": {
+            "items": {
+              "$ref": "#/components/schemas/ErrandInput"
+            },
+            "type": "array",
+            "maxItems": 5,
+            "title": "Errands"
+          },
+          "deadline": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Deadline"
+          },
+          "clarification_questions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Clarification Questions"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "errands",
+          "deadline",
+          "clarification_questions",
+          "warnings"
+        ],
+        "title": "ParseResponse"
+      },
+      "Place": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "latitude": {
+            "type": "number",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Longitude"
+          },
+          "opening_intervals": {
+            "items": {
+              "$ref": "#/components/schemas/OpeningInterval"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Opening Intervals"
+          },
+          "hours_status": {
+            "type": "string",
+            "enum": [
+              "verified",
+              "unknown",
+              "closed"
+            ],
+            "title": "Hours Status",
+            "default": "unknown"
+          },
+          "service_status": {
+            "type": "string",
+            "enum": [
+              "verified",
+              "unknown",
+              "unavailable"
+            ],
+            "title": "Service Status",
+            "default": "unknown"
+          },
+          "source": {
+            "$ref": "#/components/schemas/Source"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "latitude",
+          "longitude",
+          "source"
+        ],
+        "title": "Place"
+      },
+      "PlanRequest": {
+        "properties": {
+          "origin": {
+            "$ref": "#/components/schemas/Location"
+          },
+          "home": {
+            "$ref": "#/components/schemas/Location"
+          },
+          "departure_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Departure Time"
+          },
+          "deadline": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Deadline"
+          },
+          "errands": {
+            "items": {
+              "$ref": "#/components/schemas/Errand"
+            },
+            "type": "array",
+            "maxItems": 5,
+            "title": "Errands"
+          },
+          "travel_edges": {
+            "items": {
+              "$ref": "#/components/schemas/TravelEdge"
+            },
+            "type": "array",
+            "maxItems": 300,
+            "title": "Travel Edges"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "origin",
+          "home",
+          "departure_time",
+          "deadline",
+          "errands",
+          "travel_edges"
+        ],
+        "title": "PlanRequest"
+      },
+      "PlanResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "feasible",
+              "needs_verification",
+              "infeasible"
+            ],
+            "title": "Status"
+          },
+          "is_fixture": {
+            "type": "boolean",
+            "title": "Is Fixture"
+          },
+          "stops": {
+            "items": {
+              "$ref": "#/components/schemas/Stop"
+            },
+            "type": "array",
+            "title": "Stops"
+          },
+          "home_arrival_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Home Arrival Time"
+          },
+          "skipped_errands": {
+            "items": {
+              "$ref": "#/components/schemas/SkippedErrand"
+            },
+            "type": "array",
+            "title": "Skipped Errands"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reasons"
+          },
+          "total_travel_seconds": {
+            "type": "integer",
+            "title": "Total Travel Seconds"
+          },
+          "relaxation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DeadlineRelaxation"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "status",
+          "is_fixture",
+          "stops",
+          "home_arrival_time",
+          "skipped_errands",
+          "warnings",
+          "reasons",
+          "total_travel_seconds"
+        ],
+        "title": "PlanResponse"
+      },
+      "SkippedErrand": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "reason"
+        ],
+        "title": "SkippedErrand"
+      },
+      "Source": {
+        "properties": {
+          "provider": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Provider"
+          },
+          "retrieved_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Retrieved At"
+          },
+          "is_fixture": {
+            "type": "boolean",
+            "title": "Is Fixture",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "provider",
+          "retrieved_at"
+        ],
+        "title": "Source"
+      },
+      "Stop": {
+        "properties": {
+          "errand_id": {
+            "type": "string",
+            "title": "Errand Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "place": {
+            "$ref": "#/components/schemas/Place"
+          },
+          "arrival_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Arrival Time"
+          },
+          "start_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start Time"
+          },
+          "end_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End Time"
+          },
+          "travel_seconds": {
+            "type": "integer",
+            "title": "Travel Seconds"
+          },
+          "wait_seconds": {
+            "type": "integer",
+            "title": "Wait Seconds"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "errand_id",
+          "label",
+          "place",
+          "arrival_time",
+          "start_time",
+          "end_time",
+          "travel_seconds",
+          "wait_seconds"
+        ],
+        "title": "Stop"
+      },
+      "TravelEdge": {
+        "properties": {
+          "from_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "From Id"
+          },
+          "to_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "To Id"
+          },
+          "seconds": {
+            "type": "integer",
+            "maximum": 86400.0,
+            "minimum": 0.0,
+            "title": "Seconds"
+          },
+          "source": {
+            "$ref": "#/components/schemas/Source"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "from_id",
+          "to_id",
+          "seconds",
+          "source"
+        ],
+        "title": "TravelEdge"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
