@@ -41,7 +41,8 @@ MainActivity.kt, day/night styles, smoke scripts and selected PR screenshots.
   demo/live debug and signed release builds succeed, v3 signatures verified.
 - [x] Install signed releases and inspect actual Pleos UI at each stage. Exercise
   edit/invalidation, settings return, simulated completion and real driving lock.
-- [ ] Record current evidence, commit, push a new branch through the plugin and
+- [x] Record current evidence, commit, push a new branch through the plugin and
   create a review PR. Keep main unchanged pending the owner's visual review.
+  Actual: PR #2 open/unmerged, screenshots rendered and both CI jobs passed.
 
 Verification details: docs/progress.md, Automotive UX branch — 2026-10-24.

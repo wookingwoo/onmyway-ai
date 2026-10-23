@@ -130,3 +130,13 @@ Plan: docs/superpowers/plans/2026-10-23-onmyway.md
   them before sharing as current materials. Live providers, actual SDK route
   acceptance/arrival, physical vehicle usability and measured UX outcomes remain
   unverified. This branch does not establish contest submission readiness.
+- Published review PR #2: https://github.com/wookingwoo/onmyway-ai/pull/2.
+  Implementation commit `df674a49f38bb6b7a1c52430d14e2f0b0c048fe5` has the exact
+  local source/screenshot tree `c5abfd19c35a6be1b8136b0e7b1c25c402099340`.
+  GitHub Verify run **39988320825** completed successfully for both `api` and
+  `android`. In the authenticated PR page all seven embedded image instances
+  (six unique captures) loaded at their original 2560 × 1440 size; the actual
+  before/after table was visually checked. Main remains at
+  `f0e35d6d1bb6bd2c4b3f4f488fabcf62b74dbf95`; PR #2 is open and unmerged.
+  A documentation-only follow-up records this publication/CI evidence without
+  changing the verified implementation or APKs.

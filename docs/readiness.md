@@ -16,8 +16,8 @@ submitted contest entry.
 | Recording | Historical 47.206-second Pleos screen recording of the previous UI, with persistent fixture/simulation disclosure |
 | Application | Official form section 02 filled, identity/consent/signature unchanged, all five pages visually checked |
 | Pitch | Six editable Korean slides with actual evidence and explicit unverified scope; visual/file checks passed |
-| GitHub | Existing private repository updated through the plugin; PR #1 merged into main after source-only history cleanup; uploaded source matches local files |
-| CI | GitHub Actions Verify run 39975910593: both api and android jobs passed on the cleaned source tree |
+| GitHub | Private repository; PR #1 merged after history cleanup; automotive UX PR #2 open for review with six authorized actual screenshots, all images rendered successfully |
+| CI | GitHub Actions Verify run 39988320825: api and android passed on UX implementation df674a4; subsequent ledger/readiness update changes documentation only |
 
 ## Remaining work
 
