@@ -1,0 +1,11 @@
+{
+  "gear": "Drive",
+  "speed_kph": 30,
+  "restriction_labels": [
+    "● 주행 / 차량 UX 제한 중 · 편집과 목적지 요청 잠금"
+  ],
+  "enabled_destination_controls": [],
+  "result": "pass",
+  "restored_gear": "Park",
+  "restored_speed_kph": 0
+}

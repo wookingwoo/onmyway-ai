@@ -1,0 +1,21 @@
+{
+  "output": "OnMyWay_AI_application_WORKING_DRAFT.docx",
+  "reference_sha256": "07be893d58b0e96ab7788f0d189d6829f0e59a2cee4bc18cb90ec37eeda2f5fd",
+  "output_sha256": "d43e98a5954f61e4b2637ee56f8032488614ad428c6182fe445d6fbae5fe6775",
+  "changed_package_parts": [
+    "word/document.xml",
+    "docProps/core.xml"
+  ],
+  "untouched_parts_byte_identical": 19,
+  "document_structure_outside_slots_unchanged": true,
+  "personal_information_consent_signature_unchanged": true,
+  "anonymous_slots_filled": 8,
+  "visual_qa": "passed_all_5_pages_word_com_export_plus_bundled_poppler",
+  "submission_status": "working_draft_incomplete_evidence_and_identity",
+  "visual_qa_renderer": "Microsoft Word read-only hidden COM PDF export; macros and link updates disabled",
+  "visual_qa_images": "qa-updated-page-1.png through qa-updated-page-5.png",
+  "reference_pages": 5,
+  "filled_pages": 5,
+  "latest_evidence": "Python 25 and Android 13 tests; signed demo/live release APK emulator run; actual UX restrictions and NaviHelper connection; 47.206s fixture recording; live API and actual route acceptance/arrival remain unverified",
+  "source_author_name_residue_parts": []
+}

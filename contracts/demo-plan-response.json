@@ -1,0 +1,98 @@
+{
+  "status": "feasible",
+  "is_fixture": true,
+  "stops": [
+    {
+      "errand_id": "medicine",
+      "label": "약 구매",
+      "place": {
+        "id": "pharmacy",
+        "name": "데모 약국",
+        "latitude": 37.503,
+        "longitude": 127.004,
+        "opening_intervals": [
+          {
+            "start": "2026-10-23T17:00:00+09:00",
+            "end": "2026-10-23T20:00:00+09:00"
+          }
+        ],
+        "hours_status": "verified",
+        "service_status": "verified",
+        "source": {
+          "provider": "synthetic-demo",
+          "retrieved_at": "2026-10-23T17:00:00+09:00",
+          "is_fixture": true
+        }
+      },
+      "arrival_time": "2026-10-23T18:05:00+09:00",
+      "start_time": "2026-10-23T18:05:00+09:00",
+      "end_time": "2026-10-23T18:15:00+09:00",
+      "travel_seconds": 300,
+      "wait_seconds": 0
+    },
+    {
+      "errand_id": "laundry",
+      "label": "세탁물 찾기",
+      "place": {
+        "id": "laundry",
+        "name": "데모 세탁소",
+        "latitude": 37.506,
+        "longitude": 127.012,
+        "opening_intervals": [
+          {
+            "start": "2026-10-23T17:00:00+09:00",
+            "end": "2026-10-23T20:00:00+09:00"
+          }
+        ],
+        "hours_status": "verified",
+        "service_status": "verified",
+        "source": {
+          "provider": "synthetic-demo",
+          "retrieved_at": "2026-10-23T17:00:00+09:00",
+          "is_fixture": true
+        }
+      },
+      "arrival_time": "2026-10-23T18:20:00+09:00",
+      "start_time": "2026-10-23T18:20:00+09:00",
+      "end_time": "2026-10-23T18:25:00+09:00",
+      "travel_seconds": 300,
+      "wait_seconds": 0
+    },
+    {
+      "errand_id": "groceries",
+      "label": "우유 구매",
+      "place": {
+        "id": "grocery",
+        "name": "데모 마트",
+        "latitude": 37.509,
+        "longitude": 127.017,
+        "opening_intervals": [
+          {
+            "start": "2026-10-23T17:00:00+09:00",
+            "end": "2026-10-23T20:00:00+09:00"
+          }
+        ],
+        "hours_status": "verified",
+        "service_status": "verified",
+        "source": {
+          "provider": "synthetic-demo",
+          "retrieved_at": "2026-10-23T17:00:00+09:00",
+          "is_fixture": true
+        }
+      },
+      "arrival_time": "2026-10-23T18:30:00+09:00",
+      "start_time": "2026-10-23T18:30:00+09:00",
+      "end_time": "2026-10-23T18:35:00+09:00",
+      "travel_seconds": 300,
+      "wait_seconds": 0
+    }
+  ],
+  "home_arrival_time": "2026-10-23T18:40:00+09:00",
+  "skipped_errands": [],
+  "warnings": [
+    "DEMO FIXTURE: synthetic places and travel times; not a live route."
+  ],
+  "reasons": [],
+  "total_travel_seconds": 1200,
+  "relaxation": null
+}

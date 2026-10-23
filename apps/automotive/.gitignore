@@ -1,0 +1,8 @@
+.gradle/
+.gradle-home/
+.compile/
+**/build/
+local.properties
+*-inspect/
+*.aar
+*.zip
