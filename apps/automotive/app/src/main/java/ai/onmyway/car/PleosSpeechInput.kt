@@ -20,14 +20,26 @@ sealed class SpeechInputEvent {
 /** One SDK instance per attempt; callbacks and watchdogs are confined to the UI thread. */
 class PleosSpeechInput(private val context: Context, private val event: (SpeechInputEvent) -> Unit) {
     private val handler = Handler(Looper.getMainLooper())
+    private val cleanupHandler = Handler(Looper.getMainLooper())
     private class Attempt(val sdk: SpeechToText) {
         var listener: ResultListener? = null
         var initialized = false
+        var closing = false
+        var released = false
+        var cleanup: Runnable? = null
     }
     private var current: Attempt? = null
+    private val retiring = mutableSetOf<Attempt>()
+    private var pendingStart = false
 
     fun start() {
         close()
+        pendingStart = true
+        connectPending()
+    }
+    private fun connectPending() {
+        if (!pendingStart || retiring.isNotEmpty()) return
+        pendingStart = false
         try {
             val attempt = Attempt(SpeechToText(context.applicationContext, Mode.ON_DEVICE))
             current = attempt
@@ -43,9 +55,14 @@ class PleosSpeechInput(private val context: Context, private val event: (SpeechI
                             event(SpeechInputEvent.Transcript(stt, completed))
                             if (completed) close()
                         }
-                        override fun onEndedRecognition() = dispatch(attempt) {
-                            // Allow an already queued final callback to arrive before reporting an empty result.
-                            handler.postDelayed({ if (current === attempt) fail(attempt, "최종 인식 결과를 받지 못했어요. 다시 말하거나 직접 입력해 주세요.") }, 350)
+                        override fun onEndedRecognition() {
+                            cleanupHandler.post {
+                                if (attempt.closing) release(attempt)
+                                else dispatch(attempt) {
+                                    // Allow an already queued final callback before reporting an empty result.
+                                    handler.postDelayed({ if (current === attempt) fail(attempt, "최종 인식 결과를 받지 못했어요. 다시 말하거나 직접 입력해 주세요.") }, 350)
+                                }
+                            }
                         }
                         override fun onError(errorType: ErrorType) = dispatch(attempt) { fail(attempt, errorMessage(errorType)) }
                         override fun onUpdatedEpdData(on: Long, off: Long) = Unit
@@ -80,13 +97,29 @@ class PleosSpeechInput(private val context: Context, private val event: (SpeechI
         event(SpeechInputEvent.Failure(message))
     }
     fun close() {
+        pendingStart = false
         val attempt = current
         current = null
         handler.removeCallbacksAndMessages(null)
         if (attempt == null) return
-        if (attempt.initialized) runCatching { attempt.sdk.stop() }
+        if (!attempt.initialized) { release(attempt); return }
+        attempt.closing = true
+        retiring += attempt
+        // SDK stop() launches a coroutine. Releasing in the same call cancels
+        // that coroutine before its remote close(), leaving the vehicle mic on.
+        // Keep the binding/listener until the ended callback or a bounded grace.
+        attempt.cleanup = Runnable { release(attempt) }.also { cleanupHandler.postDelayed(it, 2_000) }
+        runCatching { attempt.sdk.stop() }
+    }
+    private fun release(attempt: Attempt) {
+        if (attempt.released) return
+        attempt.released = true
+        attempt.cleanup?.let { cleanupHandler.removeCallbacks(it) }
         attempt.listener?.let { runCatching { attempt.sdk.removeListener(it) } }
         runCatching { attempt.sdk.release() }
+        retiring -= attempt
+        // A retry cannot race the preceding request's remote stop.
+        connectPending()
     }
     private fun errorMessage(error: ErrorType): String = when (error) {
         ErrorType.ON_DEVICE_ENGINE_ERROR, ErrorType.NOT_SUPPORTED_API -> "이 환경에서 온디바이스 음성 인식을 사용할 수 없어요. 직접 입력하거나 지원 환경에서 다시 시도해 주세요."

@@ -55,7 +55,8 @@ def main():
         tree = list(ET.fromstring(xml).iter("node"))
         labels = [n.get("text", "") for n in tree]
         evidence["restriction_labels"] = [t for t in labels if "제한 중" in t or "잠금" in t or "주행" in t]
-        unsafe_labels = {"이곳으로 안내", "집으로 안내", "목적지 승인", "저장", "할 일 확인하기", "동선 확인하기"}
+        unsafe_labels = {"이곳으로 안내", "집으로 안내", "목적지 승인", "저장", "할 일 확인하기", "동선 확인하기",
+                         "음성으로 말하기", "예시 음성 흐름 체험", "이 내용 사용하기", "다시 말하기"}
         evidence["enabled_destination_controls"] = [n.get("text") for n in tree
             if n.get("text", "") in unsafe_labels and n.get("enabled") == "true"]
         adb("shell", "screencap", "-p", "/sdcard/omw-driving.png")
@@ -63,6 +64,7 @@ def main():
         assert evidence["gear"] == "Drive" and evidence["speed_kph"] == 30
         assert evidence["restriction_labels"], "Actual restriction/OS block must be visible"
         assert not evidence["enabled_destination_controls"], "Navigation approval must be disabled while restricted"
+        assert "듣고 있어요" not in labels, "Voice session must be dismissed while driving"
         assert not any(n.get("class") == "android.widget.EditText" and n.get("enabled") == "true" for n in tree), "Editable dialogs must close or lock while driving"
         evidence["result"] = "pass"
         print(json.dumps(evidence, ensure_ascii=True))
