@@ -75,4 +75,6 @@ Use the official application form and keep identity details in its operational s
 
 Actual recording: `artifacts/evidence/OnMyWay_AI_Pleos_fixture_demo.mp4`. Written materials: `artifacts/submission/OnMyWay_AI_application_WORKING_DRAFT.docx` and `artifacts/pitch/output/OnMyWay-AI-pitch-ko.pptx`. The final package remains a working draft until live integrations and the human submission steps are complete.
 
+A local review ZIP is available at `artifacts/package/OnMyWay_AI_review_package.zip` after running `scripts/package-submission.py` with the private `OMW_ENTRANT_ACCOUNT` environment value. It includes an anonymous source archive, both signed APKs, the recording, form, pitch, readiness notes and checksums. Generated packages are excluded from Git.
+
 Primary references: [contest](https://appdevchallenge.auto-hmg.io/), [submission guide](https://appdevchallenge.auto-hmg.io/guide/submission), [Pleos SDK](https://document.pleos.ai/docs/pleos-only/connect-sdk-pleos/NaviHelper/intro), [OpenAI structured outputs](https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=responses).

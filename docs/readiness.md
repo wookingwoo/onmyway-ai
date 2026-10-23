@@ -15,7 +15,8 @@ submitted contest entry.
 | Recording | Actual 47.206-second Pleos screen recording with persistent fixture/simulation disclosure |
 | Application | Official form section 02 filled, identity/consent/signature unchanged, all five pages visually checked |
 | Pitch | Six editable Korean slides with actual evidence and explicit unverified scope; visual/file checks passed |
-| GitHub | Existing private repository confirmed through the GitHub plugin with read/write access. Local CLI uses different credentials and cannot access it; plugin upload/PR/CI is being prepared |
+| GitHub | Existing private repository updated through the plugin; draft PR #1 created; uploaded tree matches local source byte for byte |
+| CI | GitHub Actions Verify run 39972136674: both api and android jobs passed |
 
 ## Remaining work
 
@@ -29,8 +30,7 @@ submitted contest entry.
 3. Run a fresh live plan against verified real destination data and validate
    actual Pleos route acceptance and arrival. The SDK callback matching uses
    destination names, not a unique request ID; test unrelated/same-name routes.
-4. Upload to the existing private GitHub repository through the plugin and
-   complete PR/CI. Do not grant reviewers access without user
+4. Review draft PR #1 in the existing private repository. Do not grant reviewers access without user
    authorization. Confirm how the organizer's anonymity rule applies to repository
    owner names before placing a repository URL in section 02.
 5. The user reviews their identity, signs required consent, checks final organizer
