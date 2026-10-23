@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="18 18 72 72" role="img" aria-labelledby="title desc">
+  <title id="title">OnMyWay AI app icon</title>
+  <desc id="desc">A white looped route ending in a forward arrow, with a mint departure point on a charcoal background.</desc>
+  <rect x="18" y="18" width="72" height="72" rx="16" fill="#202426"/>
+  <path d="M69 54 C69 64 61 72 51 72 C41 72 33 64 33 54 C33 44 41 36 51 36 L72 36 M64 28 L72 36 L64 44" fill="none" stroke="#fff" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="69" cy="54" r="6" fill="#77E2C2"/>
+</svg>

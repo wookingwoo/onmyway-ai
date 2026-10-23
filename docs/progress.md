@@ -205,3 +205,31 @@ Plan: docs/superpowers/plans/2026-10-23-onmyway.md
   loopback/browser attempts were blocked; both checks passed in normal local
   execution. Application source is unchanged; Python/Android suites and builds
   were not rerun for this documentation-only update.
+
+## Native launcher icon — 2026-10-24
+
+- Owner requested an app icon. Added a charcoal field, white open route loop and
+  forward arrow, and a mint departure point. Both demo/live manifest icon
+  attributes now use the shared native adaptive resource. A dedicated monochrome
+  vector supports themed launchers. Existing application behavior is unchanged.
+- Added reusable vector artwork in `docs/assets/app-icon.svg` and construction
+  notes in `docs/app-icon.md`. Artwork and native vectors share the same geometry.
+  Local rendered previews under ignored `.tools/app-icon/` were visually checked
+  at 192 px and 48 px with rounded-square, circle, squircle and themed masks.
+  Rasterized alpha bounds measured a maximum radius of **31.15 dp**, within the
+  **33 dp** adaptive safe radius. These previews are artwork, not device captures.
+- Fresh Python verification: `.venv/Scripts/python.exe -m pytest
+  services/api/tests -q` — **25 passed**. Fresh Android verification with local
+  Gradle 8.9 / JDK 17 / SDK 35: `clean testDemoDebugUnitTest
+  testLiveDebugUnitTest assembleDemoDebug assembleLiveDebug lintDemoDebug
+  lintLiveDebug --offline --no-daemon --no-watch-fs` — **BUILD SUCCESSFUL**, all
+  **102 tasks executed**, **21 tests per variant / 42 executions**, zero failures,
+  errors or skips. Lint completed without errors; warning reports stay local.
+- Initial sandbox/uncached offline attempts failed before validation; the final
+  run used normal local execution after fetching missing build dependencies.
+  Moving the adaptive resource exposed stale incremental resource state; the
+  successful clean build above rebuilt both packages. AAPT inspection confirmed
+  both manifest icon references and packaged background/foreground/monochrome
+  layers. `git diff --check` passed. Generated debug APKs remain ignored and local;
+  existing signed release deliverables were not regenerated. Device launcher and
+  live-provider tests were not performed for this artwork change.
