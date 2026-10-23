@@ -15,8 +15,8 @@ submitted contest entry.
 | Recording | Actual 47.206-second Pleos screen recording with persistent fixture/simulation disclosure |
 | Application | Official form section 02 filled, identity/consent/signature unchanged, all five pages visually checked |
 | Pitch | Six editable Korean slides with actual evidence and explicit unverified scope; visual/file checks passed |
-| GitHub | Existing private repository updated through the plugin; draft PR #1 created; uploaded tree matches local source byte for byte |
-| CI | GitHub Actions Verify run 39972136674: both api and android jobs passed |
+| GitHub | Existing private repository updated through the plugin; PR #1 merged into main after source-only history cleanup; uploaded source matches local files |
+| CI | GitHub Actions Verify run 39975910593: both api and android jobs passed on the cleaned source tree |
 
 ## Remaining work
 
@@ -30,14 +30,18 @@ submitted contest entry.
 3. Run a fresh live plan against verified real destination data and validate
    actual Pleos route acceptance and arrival. The SDK callback matching uses
    destination names, not a unique request ID; test unrelated/same-name routes.
-4. Review draft PR #1 in the existing private repository. Do not grant reviewers access without user
-   authorization. Confirm how the organizer's anonymity rule applies to repository
+4. Review the submission materials in the existing private repository. PR #1 is
+   merged. Do not grant reviewers access without user authorization. Confirm how
+   the organizer's anonymity rule applies to repository
    owner names before placing a repository URL in section 02.
 5. The user reviews their identity, signs required consent, checks final organizer
    updates and sends the final email. No email has been sent, and nothing has been
    publicly deployed.
 
 No current users, measured time savings, retention or hiring benefits are claimed.
+Generated binary deliverables are kept locally and excluded from every current
+branch's history. GitHub can still serve unreachable old-SHA objects; immediate
+server-side cache deletion has not been established.
 Business metrics in the proposal are labelled hypotheses. A larger alternate-route
 list, voice input, auto-location and production hosting are not part of this quick
 delivery. The implemented alternative is a concrete deadline extension when valid.

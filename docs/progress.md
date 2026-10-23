@@ -52,3 +52,16 @@ Plan: docs/superpowers/plans/2026-10-23-onmyway.md
   revision. Do not merge or push a clone containing the old history into this
   repository. GitHub may retain unreachable objects or cached old-SHA views;
   rewriting branch history does not establish immediate server-side deletion.
+
+## Integration verification — 2026-10-24
+
+- GitHub Verify run 39975910593 completed successfully for both API and Android
+  after history cleanup. PR #1 was marked ready and merged into main as
+  2d07cad7b6ecc919fc0969dcfe228ecf4f718994, with an expected-head guard.
+- Remote cleanup audit covered all four branch/PR refs and their six reachable
+  commits before integration: no excluded binary path or old contaminated commit
+  remained reachable. Local stored Git blobs are at most 43,504 bytes; all 15
+  deliverables retain their original SHA-256 outside Git.
+- Server environment recheck: OpenAI key/model and both Kakao keys remain empty,
+  as requested by the owner. Live-provider and actual route tests remain pending;
+  no claim of end-to-end live operation or final submission readiness is made.
