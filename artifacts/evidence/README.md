@@ -2,6 +2,11 @@
 
 ## Current automotive UI recording — 2026-10-24
 
+Versioned captions: [OnMyWay_AI_Pleos_new_ui_demo.srt](OnMyWay_AI_Pleos_new_ui_demo.srt).
+The owner authorized this 2,027-byte UTF-8 Korean SRT in Git. Its 18 cues match
+the 135.7-second clean video below; it is also retained beside that local video.
+The video, raw captures and verification JSON remain local and ignored.
+
 Local files under `artifacts/evidence/automotive-ux/`:
 
 - `OnMyWay_AI_Pleos_new_ui_demo.mp4`: clean, silent 135.7-second, 1920 × 1080,

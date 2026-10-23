@@ -6,6 +6,7 @@ verifying the end-to-end errand flow over adding infrastructure or features.
 - Korean UI and contest prose; English source, engineering docs and commits.
 - Keep generated APKs, recordings, office documents and archives local.
   The owner permits selected actual screenshots under docs/screenshots/ for PR evidence.
+  The owner also permits the Korean new-UI demo SRT under artifacts/evidence/.
   Do not force-add ignored deliverables or reintroduce pre-cleanup Git history.
 - User supplies API keys later. Only the server reads ignored environment files.
   Never embed keys in APKs, prompts in screenshots, source or test reports.

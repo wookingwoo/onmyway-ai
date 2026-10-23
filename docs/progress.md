@@ -169,3 +169,16 @@ Plan: docs/superpowers/plans/2026-10-23-onmyway.md
   `fed03af59e009534faafb6329bb2ecf1b2b0eaf235a7d362891757087e5d2f57`.
   Original recordings and verification JSON are local. Nothing was uploaded or
   force-added to Git; the earlier 47-second old-UI recording remains unchanged.
+
+## Versioned new-UI subtitles — 2026-10-24
+
+- Owner subsequently authorized uploading the small SRT. Copied the final caption
+  bytes to tracked `artifacts/evidence/OnMyWay_AI_Pleos_new_ui_demo.srt`, beside
+  the existing historical caption sources. The paired local copy is retained.
+  Video, raw evidence and APK exclusions remain in place; no ignored file is
+  force-added and no app/API source changes.
+- Verified UTF-8 parsing, 18 sequential non-overlapping cues, two-line limit and
+  timestamps within the 135.7-second video. The new copy is byte-identical to the
+  previously verified local SRT: 2,027 bytes, SHA-256
+  `1b319f6cb70c6047db5a7421d77992cf4ad547d3d50bcd47b15cb59cf38f892e`.
+  Document/caption-only change; Android and Python application checks are not rerun.
