@@ -32,27 +32,36 @@ voice dialog and keeps the existing live parse and explicit fixture paths.
 Files: new `VoiceInputSession.kt`, `VoiceInputSessionTest.kt`; add pure model to
 `safety-tests/build.gradle.kts` source includes.
 
-- [ ] Write failing tests for actual-park gate, partial/final, confirmation,
+- [x] Write failing tests for actual-park gate, partial/final, confirmation,
   cancellation, stale/duplicate results and example provenance.
-- [ ] Run tests and observe the missing behavior; implement the pure model.
-- [ ] Run the focused tests and full Android unit suites.
+- [x] Run tests and observe the missing behavior; implement the pure model.
+- [x] Run the focused tests and full Android unit suites.
 
 ## Task 2: SDK adapter and native UI
 
 Files: new `PleosSpeechInput.kt`; modify MainActivity, Gradle dependencies and
 AndroidManifest permissions; add demo-only sample input where appropriate.
 
-- [ ] Inspect the actual SDK signatures and use ON_DEVICE without secrets.
-- [ ] Implement bounded connect/listen, cleanup and safe callback routing.
-- [ ] Add transcript review, explicit apply/cancel, real-SDK errors and a labelled
+- [x] Inspect the actual SDK signatures and use ON_DEVICE without secrets.
+- [x] Implement bounded connect/listen, cleanup and safe callback routing.
+- [x] Add transcript review, explicit apply/cancel, real-SDK errors and a labelled
   independent example flow. Existing text input and fixture action stay usable.
-- [ ] Build both variants and inspect the actual emulator UI and SDK response.
+- [x] Build both variants and inspect the actual emulator UI and SDK response.
 
 ## Task 3: Demo and evidence
 
 Files: voice smoke script, README/Android guide and `docs/progress.md`.
 
-- [ ] Exercise example transcript confirmation and complete fixture journey.
-- [ ] Check driving/background cancellation and actual SDK connection behavior.
-- [ ] Run Python tests, Android demo/live unit tests and debug/release builds.
-- [ ] Record commands, results, limitations and how to run the demo; review diff.
+- [x] Exercise example transcript confirmation and complete fixture journey.
+- [x] Check driving/background cancellation and actual SDK connection behavior.
+- [x] Run Python tests, Android demo/live unit tests and debug/release builds.
+- [x] Record commands, results, limitations and how to run the demo; review diff.
+
+## Execution notes
+
+Implemented inline on the requested feature branch. A read-only reviewer found
+one P2 example-provenance issue; fixed with a failing-then-passing regression.
+Actual AppOps checking additionally reproduced a microphone cleanup race; fixed
+by awaiting SDK shutdown before unbinding and verified by the real SDK smoke.
+Real Korean final transcription remains unverified; explicit example presentation
+is complete. Exact commands, environment limits and results are in docs/progress.md.

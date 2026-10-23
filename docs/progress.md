@@ -233,3 +233,67 @@ Plan: docs/superpowers/plans/2026-10-23-onmyway.md
   layers. `git diff --check` passed. Generated debug APKs remain ignored and local;
   existing signed release deliverables were not regenerated. Device launcher and
   live-provider tests were not performed for this artwork change.
+
+## Pleos voice input and demonstrable transcript flow — 2026-10-24
+
+- Owner requested a feature branch, incremental commits, a completed PR with
+  screenshots in its description, and native styling consistent with the app.
+  Branch: `feat/pleos-voice-demo`, based on `0ed4cc4`. Added Pleos SpeechToText
+  3.3.1 in ON_DEVICE mode, STT_SERVICE permission, a native day/night transcript
+  dialog, explicit final-result confirmation, cancel/retry and editable input.
+  Real microphone access requires actual PARKED state even in a fixture session.
+  There are no Android API keys or registration credentials. Gleo registration,
+  TTS, cloud STT and live LLM changes are outside this change.
+- SDK artifact retrieval returned HTTP 200. Its manifest requires CAAS >=4.1.29;
+  the installed service is 4.2.10-coral-aosp. On the official Pleos Connect 2.1.0
+  / API 34 AVD, the signed demo actually initialized the SDK, requested Korean
+  ON_DEVICE recognition and received listening-readiness events. No final Korean
+  transcription success is claimed. A local Windows Heami synthetic Korean WAV
+  was generated for testing; injecting it through the emulator's authenticated
+  localhost gRPC audio API terminated the emulator before a result. Restored the
+  same AVD without wiping data. The generated audio and gRPC helpers stay ignored.
+- Added eight behavior tests: actual-park gate, partial versus final transcript,
+  explicit confirmation, stale callbacks, duplicate/blank results, invalidated
+  confirmation, example provenance and missing-final-result handling. First seven
+  were observed RED then GREEN. A fresh read-only reviewer found a P2 where the
+  example-labelled footer could call live parsing after returning from a fixture
+  review; the eighth test reproduced that mismatch RED, then passed after using
+  one exact-text/provenance predicate for both labels and actions and clearing the
+  marker on fixture load/reset. No other reviewer findings or deferred minors.
+- Actual runtime checking found another bug beyond dialog visibility: immediate
+  `stop()` followed by `release()` cancelled the SDK's asynchronous remote close,
+  leaving Speech Service RECORD_AUDIO marked `(running)`. Reproduced that failure
+  before changing cleanup. The adapter now keeps its binding/listener until the
+  ended callback or a bounded 2-second grace and serializes retries behind cleanup.
+  The strengthened SDK smoke passed after the fix: cancel, actual backgrounding
+  via the Settings Activity, and 30-second no-audio timeout each leave the original
+  draft intact and the service microphone idle. AppOps confirmed a completed
+  recording duration with no `(running)` marker. Pleos Home alone is not used as
+  a background test because its multi-window workspace can leave this app visible.
+- `scripts/smoke-voice.py --mode example` passed on the actual AVD: independent
+  labelled sample -> cancel preserves text -> explicit apply -> explicit fixture
+  request -> provenance round trip -> plan -> three separately approved simulated
+  arrivals and explicit completions -> separately approved simulated home arrival.
+  The sample predicts 18:40 home arrival against 19:00. It is prepared text and
+  fixture planning, not a live STT/LLM result or actual navigation.
+- Actual `--mode lock-ready` plus `scripts/smoke-pleos-lock.py` passed at Drive /
+  30 km/h: the live SDK dialog dismissed, all voice/approval controls were locked,
+  and the service microphone stopped. The console restored Park / 0. Screenshot
+  capture checks also assert no microphone activity in example-only screens.
+- Fresh final checks: Python `pytest services/api/tests -q` — **25 passed**.
+  Android `testDemoDebugUnitTest testLiveDebugUnitTest assembleDemoDebug
+  assembleLiveDebug assembleDemoRelease assembleLiveRelease lintDemoDebug
+  lintLiveDebug --offline --no-daemon --no-watch-fs` — **BUILD SUCCESSFUL**, **29
+  tests per variant / 58 executions**, no failures/errors/skips. Both signed
+  release APKs passed v3 verification; the updated demo installed with the existing
+  development signature, preserving data. SDK and debug-build warnings are local.
+  Existing long-TEMP Java socket/native-library failures were resolved by using
+  the writable short CreatorTemp directory and the existing Windows selector flag.
+- Selected actual, unedited full-device screenshots are authorized for Git under
+  `docs/screenshots/voice-input/`; raw captures and test logs remain ignored in
+  `artifacts/evidence/voice-demo/` and `.tools/`. Local Git/gh credentials cannot
+  access this repository (403); the connected GitHub app has repository push
+  permission, so commits are transferred through Git Data APIs with exact source
+  tree checks. No new access grant or credential was created. PR body contains
+  explicit screenshot embeds and validation limits. No merge, publication or
+  contest submission is performed by this task.

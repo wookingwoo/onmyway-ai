@@ -7,7 +7,8 @@ submitted contest entry.
 | Requirement | Actual evidence |
 | --- | --- |
 | Deterministic planner and API | 25 Python tests pass; real localhost HTTP health/demo/plan/missing-key smoke passes |
-| Native state, journey and approval policy | 21 Android Gradle unit tests pass, including stage transitions, draft isolation, date/dwell edits, stale-plan and arrival/completion boundaries |
+| Native state, journey and approval policy | 29 tests per Android variant pass, including voice confirmation, stale speech callbacks, example provenance and existing journey/approval boundaries |
+| Voice input | Pleos STT 3.3.1 ON_DEVICE integration; actual SDK initialization/listening and cancellation/no-audio paths checked; final Korean transcription still unverified |
 | APK | Both demo/live release APKs built, v3 signatures verified, installed on Pleos API 34 and launched |
 | Vehicle restrictions | Actual CarUxRestrictions reads; Virtual Console Drive / 30 km/h disables controls even in demo; restored Park / 0 |
 | SDK | NaviHelper 3.0.5 actual service connection confirmed; route request acceptance and arrival not verified |
@@ -48,7 +49,7 @@ The old local review ZIP predates this redesign and must be regenerated before
 sharing. GitHub can still serve unreachable old-SHA objects; immediate
 server-side cache deletion has not been established.
 Business metrics in the proposal are labelled hypotheses. A larger alternate-route
-list, voice input, auto-location and production hosting are not part of this quick
+list, TTS, Gleo app-schema integration, auto-location and production hosting are not part of this quick
 delivery. The implemented alternative is a concrete deadline extension when valid.
 
 See `artifacts/evidence/README.md`, `docs/submission/checklist-ko.md` and
