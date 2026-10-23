@@ -4,6 +4,14 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class VoiceInputSessionTest {
+    @Test fun loadedFixtureSummaryCannotKeepAnExampleSpeechAction() {
+        assertTrue(VoiceInputSession.isExampleDraft(VoiceInputSession.EXAMPLE_TEXT, true, true))
+        assertFalse(VoiceInputSession.isExampleDraft("예시: 약 구매 · 세탁물 찾기 · 우유 구매", true, true))
+        assertFalse(VoiceInputSession.isExampleDraft("", true, true))
+        assertFalse(VoiceInputSession.isExampleDraft(VoiceInputSession.EXAMPLE_TEXT, false, true))
+        assertFalse(VoiceInputSession.isExampleDraft(VoiceInputSession.EXAMPLE_TEXT, true, false))
+        assertFalse(VoiceInputSession.isExampleDraft(VoiceInputSession.EXAMPLE_TEXT + " 수정", true, true))
+    }
     @Test fun microphoneRequiresActualParkEvenWhenDemoCanOtherwiseInteract() {
         val voice = VoiceInputSession()
         assertNull(voice.start(VoiceSource.PLEOS, VehicleState.UNKNOWN, true))

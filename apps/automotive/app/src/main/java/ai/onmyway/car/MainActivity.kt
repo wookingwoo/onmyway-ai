@@ -47,6 +47,7 @@ class MainActivity : Activity() {
     private var restored = false
     private var requiresParse = false
     private var voiceExample = false
+    private val exampleInput get() = VoiceInputSession.isExampleDraft(prefs.getString("input", "").orEmpty(), voiceExample, BuildConfig.DEMO)
     private var voiceDialog: VoiceInputDialog? = null
     private var status = "정차 상태를 확인한 뒤 계획을 시작하세요."
     private var navStatus = "Pleos 내비 연결 확인 중"
@@ -252,11 +253,11 @@ class MainActivity : Activity() {
         }
         voiceCard.add(voiceActions, 0)
         showEditor(body, "오늘 할 일", input)
-        val inputNote = text(if (voiceExample) "예시 문장 · 실제 음성 인식·AI 해석 아님" else "음성 입력과 수정은 정차 중에만 해 주세요.", 22f, if (voiceExample) amber else muted)
+        val inputNote = text(if (exampleInput) "예시 문장 · 실제 음성 인식·AI 해석 아님" else "음성 입력과 수정은 정차 중에만 해 주세요.", 22f, if (exampleInput) amber else muted)
         body.add(inputNote, 20)
         if (BuildConfig.DEMO) button(body, "예시로 체험 · 모의 안내") { simulate = true; loadFixture() }
-        val next = button(footer, if (voiceExample) "예시 할 일 확인하기" else "할 일 확인하기", true, { input.text.isNotBlank() }) {
-            if (voiceExample && BuildConfig.DEMO && input.text.toString() == VoiceInputSession.EXAMPLE_TEXT) {
+        val next = button(footer, if (exampleInput) "예시 할 일 확인하기" else "할 일 확인하기", true, { input.text.isNotBlank() }) {
+            if (exampleInput) {
                 simulate = true; loadFixture()
             } else parse()
         }
@@ -279,7 +280,7 @@ class MainActivity : Activity() {
             input.setText(draft.text)
             voiceExample = draft.source == VoiceSource.EXAMPLE && BuildConfig.DEMO
             prefs.edit().putBoolean("voice-example", voiceExample).apply()
-            status = "인식 내용을 적용했습니다. 문장을 확인하고 필요하면 수정해 주세요."
+            status = "문장을 적용했습니다. 내용을 확인하고 필요하면 수정해 주세요."
             render()
         }
         voiceDialog = dialog
@@ -471,8 +472,8 @@ class MainActivity : Activity() {
     private fun resetJourney() {
         dialog(AlertDialog.Builder(this).setTitle("새 일정을 시작할까요?").setMessage("현재 일정과 완료 기록을 초기화합니다.").setNegativeButton("유지", null).setPositiveButton("새로 시작") { _, _ -> if (allowed() && !busy) {
             clearFixtureDrafts()
-            state.completed.clear(); state.routeFailed(); state.edited(); request = null; plan = null; errands = JSONArray(); fixture = false; requiresParse = false
-            prefs.edit().putString("input", "").putString("delay", "0").apply(); errorMessage = null; reviewNotes = null; simulate = false; computedElapsedMillis = null; flow.start(); persist(); render()
+            state.completed.clear(); state.routeFailed(); state.edited(); request = null; plan = null; errands = JSONArray(); fixture = false; requiresParse = false; voiceExample = false
+            prefs.edit().putString("input", "").putBoolean("voice-example", false).putString("delay", "0").apply(); errorMessage = null; reviewNotes = null; simulate = false; computedElapsedMillis = null; flow.start(); persist(); render()
         } })
     }
     private fun clearFixtureDrafts() {
@@ -549,6 +550,8 @@ class MainActivity : Activity() {
         val client = api()
         async({ client.call("/v1/demo") }) { result ->
             request = result; errands = result.getJSONArray("errands"); fixture = true; plan = null
+            voiceExample = false
+            prefs.edit().putBoolean("voice-example", false).apply()
             requiresParse = false
             syncDraftLocations(result)
             prefs.edit().putString("draft-deadline", result.getString("deadline")).putString("input", "예시: " + (0 until errands.length()).joinToString(" · ") { errands.getJSONObject(it).optString("label") }).apply()

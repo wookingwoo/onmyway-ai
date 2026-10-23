@@ -55,6 +55,8 @@ class VoiceInputSession {
         error = null
     }
     companion object {
+        fun isExampleDraft(text: String, marked: Boolean, demoBuild: Boolean) =
+            marked && demoBuild && text == EXAMPLE_TEXT
         const val EXAMPLE_TEXT = "약국 들르고 세탁물 찾아줘. 우유는 시간 되면 사고, 저녁 7시까지 집에 가야 해."
     }
 }
