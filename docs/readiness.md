@@ -7,16 +7,17 @@ submitted contest entry.
 | Requirement | Actual evidence |
 | --- | --- |
 | Deterministic planner and API | 25 Python tests pass; real localhost HTTP health/demo/plan/missing-key smoke passes |
-| Native state and approval policy | 13 Android Gradle unit tests pass, including stale-plan and arrival/completion boundaries |
+| Native state, journey and approval policy | 21 Android Gradle unit tests pass, including stage transitions, draft isolation, date/dwell edits, stale-plan and arrival/completion boundaries |
 | APK | Both demo/live release APKs built, v3 signatures verified, installed on Pleos API 34 and launched |
 | Vehicle restrictions | Actual CarUxRestrictions reads; Virtual Console Drive / 30 km/h disables controls even in demo; restored Park / 0 |
 | SDK | NaviHelper 3.0.5 actual service connection confirmed; route request acceptance and arrival not verified |
-| End-to-end demo | Actual HTTP fixture -> timeline -> approved simulated navigation -> simulated arrival -> user completion -> remaining plan |
-| Recording | Actual 47.206-second Pleos screen recording with persistent fixture/simulation disclosure |
+| End-to-end demo | Staged native journey; actual HTTP fixture -> dwell edit -> plan -> separately approved simulated stops -> explicit completion/replan -> separately approved final home |
+| UI evidence | Actual day/night, input/review/route and driving-lock captures under docs/screenshots/automotive-ux; native date/reset and real open-dialog driving restriction checks |
+| Recording | Current 135.7-second silent new-UI recording, 18-cue Korean SRT, full decode and stage/caption checks passed; videos local, authorized SRT versioned |
 | Application | Official form section 02 filled, identity/consent/signature unchanged, all five pages visually checked |
 | Pitch | Six editable Korean slides with actual evidence and explicit unverified scope; visual/file checks passed |
-| GitHub | Existing private repository updated through the plugin; PR #1 merged into main after source-only history cleanup; uploaded source matches local files |
-| CI | GitHub Actions Verify run 39975910593: both api and android jobs passed on the cleaned source tree |
+| GitHub | Private repository; PR #1 merged after history cleanup; automotive UX PR #2 open for review with six authorized actual screenshots, all images rendered successfully |
+| CI | GitHub Actions Verify run 39996479748 passed on documentation/subtitle head fb3707b; UX implementation df674a4 also passed run 39988320825 |
 
 ## Remaining work
 
@@ -39,8 +40,12 @@ submitted contest entry.
    publicly deployed.
 
 No current users, measured time savings, retention or hiring benefits are claimed.
-Generated binary deliverables are kept locally and excluded from every current
-branch's history. GitHub can still serve unreachable old-SHA objects; immediate
+Generated APKs, recordings, office documents and archives remain local. The owner
+explicitly authorized selected actual screenshots in Git for the UI review.
+The owner also authorized the small Korean new-UI SRT. GIF conversion previews
+remain local after the owner declined uploading them.
+The old local review ZIP predates this redesign and must be regenerated before
+sharing. GitHub can still serve unreachable old-SHA objects; immediate
 server-side cache deletion has not been established.
 Business metrics in the proposal are labelled hypotheses. A larger alternate-route
 list, voice input, auto-location and production hosting are not part of this quick

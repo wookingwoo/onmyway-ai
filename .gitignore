@@ -20,6 +20,7 @@ artifacts/submission/qa-reference/
 artifacts/evidence/*_raw.mp4
 artifacts/evidence/*.log
 artifacts/package/
+artifacts/evidence/automotive-ux/
 
 # Generated deliverables stay local; keep their source and verification notes.
 /apk/

@@ -49,20 +49,21 @@ def main():
         state = request("/vehicle/state")
         evidence["gear"] = state["gear"]["actual"]["value"]
         evidence["speed_kph"] = state["controls"]["speed_kph"]
-        adb("shell", "input", "keyevent", "4")  # close an optional approval dialog
         adb("shell", "uiautomator", "dump", "/sdcard/omw-driving.xml")
         xml = adb("shell", "cat", "/sdcard/omw-driving.xml")
         (output / "pleos-driving-ui.xml").write_text(xml, encoding="utf-8")
         tree = list(ET.fromstring(xml).iter("node"))
         labels = [n.get("text", "") for n in tree]
         evidence["restriction_labels"] = [t for t in labels if "제한 중" in t or "잠금" in t or "주행" in t]
+        unsafe_labels = {"이곳으로 안내", "집으로 안내", "목적지 승인", "저장", "할 일 확인하기", "동선 확인하기"}
         evidence["enabled_destination_controls"] = [n.get("text") for n in tree
-            if "다음 목적지 확인" in n.get("text", "") and n.get("enabled") == "true"]
+            if n.get("text", "") in unsafe_labels and n.get("enabled") == "true"]
         adb("shell", "screencap", "-p", "/sdcard/omw-driving.png")
         adb("pull", "/sdcard/omw-driving.png", str(output / "pleos-driving-lock.png"))
         assert evidence["gear"] == "Drive" and evidence["speed_kph"] == 30
         assert evidence["restriction_labels"], "Actual restriction/OS block must be visible"
         assert not evidence["enabled_destination_controls"], "Navigation approval must be disabled while restricted"
+        assert not any(n.get("class") == "android.widget.EditText" and n.get("enabled") == "true" for n in tree), "Editable dialogs must close or lock while driving"
         evidence["result"] = "pass"
         print(json.dumps(evidence, ensure_ascii=True))
     finally:
