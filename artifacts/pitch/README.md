@@ -4,6 +4,8 @@
 
 Slide order: problem, requirements and planning flow, fixture demo, vehicle trust, engineering evidence, user validation and business assumptions.
 
+The PPTX is a local deliverable excluded from Git; it is not present in a fresh clone.
+
 ## Validation
 
 - All six slides rendered and individually inspected at 1280 × 720.

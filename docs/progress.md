@@ -28,3 +28,12 @@ Plan: docs/superpowers/plans/2026-10-23-onmyway.md
 - GitHub plugin upload completed: draft PR #1, remote commit 249ecad924660465b15cf4c893656e4f2cfb0943. Its tree exactly matches local commit 7177670dbb85e3084aaf7ffad4cf9728f77e00f4: 0b2c426f5b043778aafb5f0e2fe46575854d1bb8. GitHub API ancestry differs from local bootstrap history; local history remains preserved.
 - GitHub Actions Verify run 39972136674: api and android jobs both completed successfully. No live provider secrets were supplied to CI.
 - Anonymous local review package created and archive/hash checks passed; actual API credentials, route acceptance/arrival and human submission steps remain pending. Package is excluded from Git to avoid duplicating APKs/video; it can be regenerated with scripts/package-submission.py and a private OMW_ENTRANT_ACCOUNT scan value.
+
+## Local artifact policy — 2026-10-24
+
+- User requested avoiding large GitHub uploads. Generated APKs, recordings,
+  screenshots, office documents and archives are excluded from Git; local files
+  are preserved. Text sources, scripts and evidence notes remain versioned.
+- Removed the CI APK upload step. Build and unit-test checks remain enabled.
+- Existing commits are preserved; removing current tracking does not purge
+  binaries already present in earlier Git history. No history rewrite was performed.

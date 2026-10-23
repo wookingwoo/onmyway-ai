@@ -2,6 +2,8 @@
 
 These are working drafts, not final or submitted materials. They contain no entrant identity. Personal information, legal consent, signature, publication and final submission remain with the entrant.
 
+Binary deliverables referenced below are local files, excluded from Git. A fresh clone contains the text sources, scripts and verification notes, but not the DOCX, PPTX, APK, screenshots or recording. Uploading any optional binary submission requires a separately chosen submission method; it is not automatic.
+
 - `application-ko.md`: Korean source aligned to official project section 02 items 1–8.
 - `pitch-and-demo-ko.md`: executive narrative, five-minute pitch outline and 150-second demo script.
 - `email-draft-ko.md`: unsent email with explicit placeholders.

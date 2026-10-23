@@ -21,7 +21,9 @@ running on the official Pleos Connect 2.1.0 x86_64 API 34 emulator.
 
 Reproduction scripts: `scripts/smoke-android.py`, `scripts/smoke-pleos-lock.py`,
 `scripts/record-demo.ps1`. Use an explicitly selected isolated test emulator.
-The unedited local recording is retained outside Git because of its size.
+All screenshots and recordings, including the unedited recording, remain local
+and are excluded from Git. A fresh clone contains these notes and reproduction
+scripts, not the binary evidence files.
 
 Not yet verified: live OpenAI interpretation, live Kakao places/road responses,
 actual Pleos route acceptance/arrival, physical vehicle operation, user research,
