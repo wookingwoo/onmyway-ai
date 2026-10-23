@@ -1,6 +1,6 @@
 # Verification evidence
 
-The screenshots and recording are captured from the actual signed release app
+The original screenshots and recording below show the previous UI, captured from the actual signed release app
 running on the official Pleos Connect 2.1.0 x86_64 API 34 emulator.
 
 - `pleos-live-connected.png`: live variant reads actual unrestricted vehicle UX
@@ -21,9 +21,14 @@ running on the official Pleos Connect 2.1.0 x86_64 API 34 emulator.
 
 Reproduction scripts: `scripts/smoke-android.py`, `scripts/smoke-pleos-lock.py`,
 `scripts/record-demo.ps1`. Use an explicitly selected isolated test emulator.
-All screenshots and recordings, including the unedited recording, remain local
-and are excluded from Git. A fresh clone contains these notes and reproduction
-scripts, not the binary evidence files.
+Raw screenshots and recordings, including the unedited recording, remain local
+and are excluded from Git. The owner separately authorized selected actual
+screenshots of the automotive redesign under `docs/screenshots/automotive-ux/`.
+That directory documents the current input, review, route, night and driving-lock
+screens, plus the historical before image. Current raw UI dumps, smoke captures
+and `pleos-driving-check.json` are in ignored `artifacts/evidence/automotive-ux/`.
+The old recording and existing local review ZIP have not been regenerated for
+the redesign; do not present them as captures of the new UI.
 
 Not yet verified: live OpenAI interpretation, live Kakao places/road responses,
 actual Pleos route acceptance/arrival, physical vehicle operation, user research,

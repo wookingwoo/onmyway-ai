@@ -44,6 +44,14 @@ cd apps/automotive
 
 The `demo` application is visibly labelled and permits explicit simulation. The `live` application requires real vehicle restrictions and SDK readiness. A fixture plan is never a live-data guarantee. Local signed release builds are in `apk/OnMyWay_AI_demo_release.apk` and `apk/OnMyWay_AI_live_release.apk`; APKs are excluded from Git and are not included in a fresh clone.
 
+The native journey presents one stage at a time: errands → review → next stop.
+It follows Pleos day/night mode, uses large controls and keeps coordinates,
+server configuration and evidence details behind secondary actions. Review the
+[actual Pleos screenshots](docs/screenshots/automotive-ux/README.md), including
+the previous UI and the actual driving restriction overlay. The example button
+explicitly requests fixtures and simulated guidance; it never substitutes for a
+failed live request.
+
 To reproduce local signed builds after SDK setup:
 
 ```powershell
@@ -73,7 +81,7 @@ $env:JAVA_TOOL_OPTIONS='-Djava.nio.channels.spi.SelectorProvider=sun.nio.ch.Wind
 
 Use the official application form and keep identity details in its operational section only. Keep personal names, company, contact information and secrets out of project materials and shared assets. Final legal signatures, access grants, public publishing and contest email submission remain user actions. Repository publication is not automatic.
 
-Local actual recording: `artifacts/evidence/OnMyWay_AI_Pleos_fixture_demo.mp4`. Local written materials: `artifacts/submission/OnMyWay_AI_application_WORKING_DRAFT.docx` and `artifacts/pitch/output/OnMyWay-AI-pitch-ko.pptx`. Generated APKs, videos, screenshots, office documents and archives stay on the developer's machine and are excluded from Git. CI builds and tests the app without uploading APK artifacts. Text sources, generation scripts and verification notes remain versioned. The final package remains a working draft until live integrations and the human submission steps are complete.
+Local actual recording: `artifacts/evidence/OnMyWay_AI_Pleos_fixture_demo.mp4` (previous UI). Local written materials: `artifacts/submission/OnMyWay_AI_application_WORKING_DRAFT.docx` and `artifacts/pitch/output/OnMyWay-AI-pitch-ko.pptx`. Generated APKs, videos, office documents, archives and raw screenshots stay local. The owner explicitly permits selected actual PR screenshots under `docs/screenshots/` in Git. CI builds and tests the app without uploading APK artifacts. Text sources, generation scripts and verification notes remain versioned. The final package remains a working draft until live integrations and the human submission steps are complete; regenerate the local package after source or APK changes.
 
 A local review ZIP is available at `artifacts/package/OnMyWay_AI_review_package.zip` after running `scripts/package-submission.py` with the private `OMW_ENTRANT_ACCOUNT` environment value. It includes an anonymous source archive, both signed APKs, the recording, form, pitch, readiness notes and checksums. Generated packages are excluded from Git.
 

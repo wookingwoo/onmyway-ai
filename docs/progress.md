@@ -65,3 +65,68 @@ Plan: docs/superpowers/plans/2026-10-23-onmyway.md
 - Server environment recheck: OpenAI key/model and both Kakao keys remain empty,
   as requested by the owner. Live-provider and actual route tests remain pending;
   no claim of end-to-end live operation or final submission readiness is made.
+
+## Automotive UX branch — 2026-10-24
+
+- Owner requested a separate branch, a much simpler in-car flow consistent with
+  the Pleos shell, and a completed review PR with actual screenshots. Work is on
+  `feat/automotive-ux`; main is reserved for the owner's later review. The owner
+  explicitly authorized selected actual screenshots in Git, superseding the
+  blanket screenshot exclusion above. APKs, recordings, office files, archives
+  and raw test evidence remain local.
+- Replaced the dense two-pane form with INPUT → REVIEW → ROUTE and separate
+  Settings. Neutral day/night surfaces follow the system; the main flow uses
+  large text, 80dp actions and one fixed primary button. Coordinates, server
+  details, ISO timestamps and evidence are secondary. Native five-minute dwell
+  steppers and an explicit date/time editor avoid small numeric inputs.
+- Added pure JourneyFlow and JourneyDrafts behavior tests. New stage tests were
+  observed failing before implementation and passing after implementation.
+  Existing revision/freshness, mandatory-errand, arrival/completion and separate
+  final-home approval behavior remains in place.
+- Fresh independent AI review found three P2 issues: the time-only editor could
+  retain yesterday's deadline, asynchronous navigation errors disappeared when
+  the active route cleared, and a new live session could inherit fixture
+  coordinates. Added failing regression coverage, fixed all three, and verified
+  GREEN. The footer retains navigation errors independently of activeId; date
+  selection changes the date explicitly; leaving fixtures clears sample location
+  and deadline drafts while preserving real input/server configuration.
+- Actual-device iteration caught a fragile numeric dwell edit and an invisible
+  neutral date button in the platform time dialog. Replaced them with large
+  dwell steppers and a native number-wheel dialog with a visible calendar
+  button. A Kotlin NumberPicker property-shadowing compile error was corrected
+  before the final build. These failed intermediate attempts are not counted as
+  successful verification.
+- Final `scripts/build-android.ps1 -Release`: exit 0. Demo/live debug and signed
+  release builds succeeded; v3 signatures verified. Gradle XML reports contain
+  21 tests, zero failures/errors: SessionState 7, PlanPayload 2,
+  NavigationPolicy 4, JourneyFlow 5 and JourneyDrafts 3. Final APK SHA-256 values
+  are recorded in `artifacts/submission/apk-checksums.txt`; APKs remain ignored.
+- Final Python run: `python -u -X faulthandler -m pytest services/api/tests -q`,
+  **25 passed in 1.51s**, exit 0. An earlier restricted-shell invocation produced
+  no output and was stopped; the same suite completed in the normal local
+  execution context. No backend source change or live-provider call was needed.
+- Both final signed APKs installed on official Pleos Connect 2.1.0, API 34,
+  isolated `OnMyWay_Pleos` / emulator-5556. Final installed-demo
+  `smoke-android.py --full-journey`: exit 0. Actual localhost fixture, three-stage
+  flow, hidden technical settings, pharmacy dwell 10→15 minutes, settings return,
+  expected home ETA 18:45 / deadline 19:00, three individually approved simulated
+  destinations/arrivals, explicit completion/replans and separately approved
+  final home all passed.
+- `--boundaries-only`: exit 0. Four sample coordinate fields were empty after
+  fixture reset; the visible native calendar changed the saved deadline from
+  October 23 to October 24. The script left a real task editor open.
+- `smoke-pleos-lock.py`: exit 0. Official Virtual Console Drive / 30 km/h caused
+  actual restrictions, no enabled editing/destination actions, and restored
+  Park / 0 in cleanup. A subsequent actual UI dump confirmed the editor had
+  been dismissed by the app and review was usable again after parking.
+- Day/night screenshots were visually inspected. Night mode was restored to
+  light. Six actual selected captures under `docs/screenshots/automotive-ux/`
+  include the historical before UI, input, review, next stop, night and actual
+  restriction overlay. No entrant identity, keys or account details are visible.
+  Raw logs/XML/JSON remain in ignored `artifacts/evidence/automotive-ux/` and
+  `.tools/automotive-ux-*.log`.
+- Prior recording, office/pitch files and local package ZIP predate this UI
+  redesign. They are preserved and explicitly labelled historical; regenerate
+  them before sharing as current materials. Live providers, actual SDK route
+  acceptance/arrival, physical vehicle usability and measured UX outcomes remain
+  unverified. This branch does not establish contest submission readiness.
