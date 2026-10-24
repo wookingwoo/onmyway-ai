@@ -51,4 +51,21 @@ class IntentReviewTest {
         assertTrue(next.ready)
         assertEquals(2, next.answers.length())
     }
+    @Test fun unrelatedAnswerCannotRelaxAnExtractedHomeDeadline() {
+        val value = review(response(questions = listOf("완료인가요?")))
+        val payload = value.answerPayload("완료인가요?", "네", value.response.getJSONArray("errands"))
+        assertEquals(value.deadline, payload.getString("previous_deadline"))
+        val next = value.acceptAnswer(response("2026-10-23T20:00:00+09:00"), payload)
+        assertEquals("2026-10-23T19:00:00+09:00", next.deadline)
+    }
+    @Test fun onePrimaryActionGuidesQuestionThenHomeTimeThenPlan() {
+        val value = review(response(null, listOf("완료인가요?")))
+        assertEquals(ReviewAction.ANSWER, value.action)
+        value.response.put("clarification_questions", JSONArray())
+        assertEquals(ReviewAction.HOME_TIME, value.action)
+        value.selectDeadline("2026-10-23T19:00:00+09:00")
+        assertEquals(ReviewAction.PLAN, value.action)
+        value.selectDeadline("2026-10-23T19:15:00+09:00")
+        assertEquals("2026-10-23T19:15:00+09:00", IntentReview.restore(value.toJson()).deadline)
+    }
 }

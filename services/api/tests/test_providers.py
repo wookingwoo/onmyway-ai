@@ -55,6 +55,26 @@ def test_clarification_cannot_lose_or_downgrade_prior_errand(monkeypatch, change
     asyncio.run(run())
 
 
+def test_unrelated_clarification_cannot_silently_weaken_existing_time_constraints(monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "never-expose-test-key")
+    monkeypatch.setenv("OPENAI_MODEL", "test-model")
+    old = parsed()["errands"][0]
+    old["latest_finish"] = "2026-10-23T18:40:00+09:00"
+    raw = parse_request().model_dump(mode="json")
+    raw.update(answers=[{"question": "몇 시까지 귀가하나요?", "answer": "19시"}], previous_errands=[old], previous_deadline="2026-10-23T19:00:00+09:00")
+    answer = parsed()
+    answer["deadline"] = "2026-10-23T20:00:00+09:00"
+    answer["errands"][0].update(dwell_seconds=0, latest_finish=None)
+    async def run():
+        async with httpx.AsyncClient(transport=httpx.MockTransport(lambda _: httpx.Response(200, json={"status":"completed", "output":[{"content":[{"type":"output_text", "text":json.dumps(answer)}]}]}))) as client:
+            result = await parse_text(ParseRequest.model_validate(raw), client)
+            assert result.errands[0].dwell_seconds == 600
+            assert result.errands[0].latest_finish.isoformat() == old["latest_finish"]
+            assert result.deadline.isoformat() == raw["previous_deadline"]
+            assert any("직접 수정" in w for w in result.warnings)
+    asyncio.run(run())
+
+
 def test_openai_strict_schema_and_validated_output(monkeypatch):
     monkeypatch.setenv("OPENAI_API_KEY", "never-expose-test-key")
     monkeypatch.setenv("OPENAI_MODEL", "user-selected-model")

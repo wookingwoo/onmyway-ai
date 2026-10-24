@@ -155,6 +155,7 @@ class ParseRequest(Model):
     reference_time: AwareDatetime
     answers: list[QuestionAnswer] = Field(default_factory=list, max_length=10)
     previous_errands: list[ErrandInput] = Field(default_factory=list, max_length=5)
+    previous_deadline: AwareDatetime | None = None
 
     @model_validator(mode="after")
     def unique_context(self):

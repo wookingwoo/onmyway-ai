@@ -315,30 +315,39 @@ class MainActivity : Activity() {
             button(body, "출발 · 귀가 설정") { flow.settings(); render() }
         }
         if (!fixture && !reviewNotes.isNullOrBlank()) body.add(text(reviewNotes!!, 22f, amber))
-        button(footer, when { requiresParse -> "할 일 다시 정리하기"; intentReview?.ready == false -> "확인할 내용에 답해 주세요"; else -> "동선 확인하기" }, true,
-            { requiresParse || intentReview?.ready != false }) {
-            if (requiresParse) { flow.start(); render() } else calculate()
+        val reviewAction = intentReview?.action ?: ReviewAction.PLAN
+        button(footer, when {
+            requiresParse -> "할 일 다시 정리하기"
+            reviewAction == ReviewAction.ANSWER -> "질문에 답하기"
+            reviewAction == ReviewAction.HOME_TIME -> "귀가 시간 정하기"
+            reviewAction == ReviewAction.EDIT_REQUEST -> "요청 다시 입력하기"
+            else -> "동선 확인하기"
+        }, true) {
+            when {
+                requiresParse || reviewAction == ReviewAction.EDIT_REQUEST -> { flow.start(); render() }
+                reviewAction == ReviewAction.ANSWER -> intentReview?.let { answerQuestion(it, it.questions.first()) }
+                reviewAction == ReviewAction.HOME_TIME -> chooseHomeTime()
+                else -> calculate()
+            }
         }
     }
     private fun renderIntentReview(body: LinearLayout) {
         val review = intentReview ?: return
         val panel = card(body, if (review.example) "예시 요청 해석 · 준비된 내용" else "AI가 이해한 요청",
             if (review.example) "실제 STT·LLM 결과가 아닌 질문·답변 체험입니다." else "AI 초안이에요. 원문과 비교해 빠진 조건이 없는지 확인하세요.")
-        panel.add(text("“${review.originalText}”", 22f, muted), 8)
+        panel.add(text("“${review.originalText}”", 22f, muted).apply { maxLines = 2; ellipsize = android.text.TextUtils.TruncateAt.END }, 8)
         val required = (0 until errands.length()).count { errands.getJSONObject(it).optBoolean("mandatory", true) }
         panel.add(text("필수 ${required}개 · 선택 ${errands.length() - required}개 · " + (review.deadline?.let { "${clock(it)}까지 귀가" } ?: "귀가 시간 미정"), 23f, ink, true), 4)
         if (review.deadline == null) panel.add(text("귀가 시간은 추측하지 않아요. 아래에서 직접 정해 주세요.", 22f, amber), 4)
-        for (question in review.questions) {
-            panel.add(text(question, 23f, amber, true), 4)
-            button(panel, "확인 질문에 답하기") { answerQuestion(review, question) }
+        review.questions.firstOrNull()?.let { question ->
+            panel.add(text("확인 ${review.questions.size}개 · $question", 23f, amber, true), 4)
         }
-        if (review.answers.length() > 0) {
-            button(panel, "내 답변 확인 · ${review.answers.length()}개") {
-                val lines = (0 until review.answers.length()).joinToString("\n\n") {
+        button(panel, "원문 · 내 답변 보기") {
+                val lines = "입력 원문\n${review.originalText}\n\n" + (0 until review.answers.length()).joinToString("\n\n") {
                     review.answers.getJSONObject(it).let { answer -> "${answer.optString("question")}\n→ ${answer.optString("answer")}" }
                 }
-                dialog(AlertDialog.Builder(this).setTitle("확인한 조건").setMessage(lines).setPositiveButton("닫기", null))
-            }
+                val content = text(lines, 24f).apply { setPadding(dp(28), dp(12), dp(28), dp(12)) }
+                dialog(AlertDialog.Builder(this).setTitle("원문과 확인한 조건").setView(ScrollView(this).apply { addView(content) }).setPositiveButton("닫기", null))
         }
     }
 
@@ -439,7 +448,7 @@ class MainActivity : Activity() {
                 if (relaxation == null) { flow.parsed(); render() } else {
                     val proposed = relaxation.getString("required_deadline")
                     dialog(AlertDialog.Builder(this).setTitle("귀가 시간을 바꿀까요?").setMessage("${clock(proposed)}까지 ${minutes(relaxation.optInt("extension_seconds"))}분 늘리면 시간 조건을 맞출 수 있어요. 새 동선을 다시 확인해야 합니다.")
-                        .setNegativeButton("유지", null).setPositiveButton("바꾸고 재계산") { _, _ -> if (allowed() && !busy) { deadline.setText(proposed); render(); calculate() } })
+                        .setNegativeButton("유지", null).setPositiveButton("바꾸고 재계산") { _, _ -> if (allowed() && !busy) { applyHomeDeadline(proposed); render(); calculate() } })
                 }
             }
             state.arrivedId == "__home" -> button(footer, "새 일정 시작", true) { resetJourney() }
@@ -455,7 +464,12 @@ class MainActivity : Activity() {
         }
     }
     private fun chooseHomeTime() {
-        chooseDeadline(deadline.text.toString(), "집 도착 시간") { selected -> intentReview?.selectDeadline(selected); deadline.setText(selected); persist(); render() }
+        chooseDeadline(deadline.text.toString(), "집 도착 시간") { selected -> applyHomeDeadline(selected); render() }
+    }
+    private fun applyHomeDeadline(value: String) {
+        intentReview?.selectDeadline(value)
+        deadline.setText(value)
+        persist()
     }
     private fun chooseDeadline(value: String, title: String, chosen: (String) -> Unit) {
         val current = runCatching { OffsetDateTime.parse(value) }.getOrDefault(OffsetDateTime.now())

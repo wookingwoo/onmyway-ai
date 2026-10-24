@@ -4,6 +4,8 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.time.OffsetDateTime
 
+enum class ReviewAction { ANSWER, HOME_TIME, EDIT_REQUEST, PLAN }
+
 /** Review context is a draft, never navigation authority. No network or Android dependency. */
 class IntentReview(
     val originalText: String,
@@ -17,7 +19,13 @@ class IntentReview(
     val questions: List<String> get() = response.optJSONArray("clarification_questions")?.let { array ->
         (0 until array.length()).map { array.optString(it).trim() }.filter { it.isNotBlank() }.distinct()
     }.orEmpty()
-    val ready: Boolean get() = deadline != null && questions.isEmpty() && (response.optJSONArray("errands")?.length() ?: 0) > 0
+    val action: ReviewAction get() = when {
+        questions.isNotEmpty() -> ReviewAction.ANSWER
+        (response.optJSONArray("errands")?.length() ?: 0) == 0 -> ReviewAction.EDIT_REQUEST
+        deadline == null -> ReviewAction.HOME_TIME
+        else -> ReviewAction.PLAN
+    }
+    val ready: Boolean get() = action == ReviewAction.PLAN
 
     fun selectDeadline(value: String) {
         OffsetDateTime.parse(value)
@@ -41,12 +49,16 @@ class IntentReview(
             previous.put(item)
         }
         return JSONObject().put("text", originalText).put("reference_time", referenceTime)
-            .put("answers", next).put("previous_errands", previous)
+            .put("answers", next).put("previous_errands", previous).put("previous_deadline", deadline ?: JSONObject.NULL)
     }
 
-    fun acceptAnswer(result: JSONObject, payload: JSONObject): IntentReview = IntentReview(
-        originalText, referenceTime, false, result, JSONArray(payload.getJSONArray("answers").toString()), selectedDeadline
-    ).also { if (selectedDeadline != null) result.put("deadline", selectedDeadline) }
+    fun acceptAnswer(result: JSONObject, payload: JSONObject): IntentReview {
+        val returned = result.optString("deadline").takeUnless { it.isBlank() || it == "null" }
+        val previous = deadline
+        val retained = selectedDeadline ?: previous?.takeIf { returned == null || OffsetDateTime.parse(returned).isAfter(OffsetDateTime.parse(it)) }
+        if (retained != null) result.put("deadline", retained)
+        return IntentReview(originalText, referenceTime, false, result, JSONArray(payload.getJSONArray("answers").toString()), selectedDeadline)
+    }
 
     fun toJson(): String = JSONObject().put("original", originalText).put("reference", referenceTime)
         .put("example", example).put("response", response).put("answers", answers)
