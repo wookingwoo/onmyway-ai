@@ -33,7 +33,54 @@ Pure safety tests can run without an Android SDK:
 .\gradlew.bat -p safety-tests test
 ```
 
-The 21 tests cover stage transitions, fixture draft isolation, date/dwell edits, vehicle lock and simulation boundaries, revision and destination approval, stale responses, retained navigation errors, arrival versus completion, completed-location matrix trimming and the final home leg. Successful compile is not proof of SDK service connection, request acceptance, arrival or vehicle-state behavior on a Pleos device; capture those separately on the actual emulator/device.
+The 29 tests per variant cover voice confirmation/cancellation, stale and duplicate
+speech callbacks, example provenance, stage transitions, fixture draft isolation,
+date/dwell edits, vehicle lock and simulation boundaries, revision and destination
+approval, stale responses, arrival versus completion and the final home leg.
+Successful compile is not proof of SDK service connection, request acceptance,
+arrival or vehicle-state behavior; capture those separately on the emulator/device.
+
+## Voice input demo
+
+The app uses `ai.pleos.playground:SpeechToText:3.3.1` in `ON_DEVICE` mode with
+`pleos.car.permission.STT_SERVICE`. There are no Android provider credentials or
+server registration calls. The actual vehicle must be PARKED to start the mic,
+including in the demo variant. The user taps **음성으로 말하기**, waits for
+**듣고 있어요**, speaks Korean, then explicitly confirms a final result with
+**이 내용 사용하기**. The result remains editable in the original input field;
+**할 일 확인하기** uses the existing server-side live parser and requires its
+configured provider. Speech alone never sends a destination or completes a task.
+
+The SDK has an 8-second connection deadline and a 30-second recognition deadline.
+Cancel, restrictions and backgrounding discard the session. SDK `stop()` is
+asynchronous: the adapter retains its binding until the ended callback or a
+2-second cleanup grace before release, and serializes retries behind cleanup.
+
+For a key-free presentation, explicitly tap **예시 음성 흐름 체험**, confirm the
+prepared transcript, then select **예시 할 일 확인하기**. This requests the existing
+labelled fixture plan with simulated navigation. The UI says this is example text,
+not real speech recognition or LLM interpretation. Editing the sentence clears
+the example marker; a failed live recognition never selects this mode.
+
+Actual SDK initialization/listening and cancellation/no-audio failure are verified;
+successful final Korean transcription is not. A synthetic microphone injection
+attempt through emulator gRPC terminated the emulator before a final result. The
+same AVD was restored without wiping app data. No cloud STT, live LLM parsing or
+physical-vehicle speech accuracy is claimed. See `../../docs/progress.md`.
+
+With the signed demo at the input stage on the parked isolated AVD:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/smoke-voice.py --adb .tools/android-sdk/platform-tools/adb.exe --serial emulator-5556 --mode sdk
+.\.venv\Scripts\python.exe scripts/smoke-voice.py --adb .tools/android-sdk/platform-tools/adb.exe --serial emulator-5556 --mode example
+```
+
+Run these commands from the repository root. `--reset-fixture` explicitly resets
+an earlier labelled fixture journey; it refuses to reset a live journey. The SDK
+smoke includes checking that the shared Speech Service no longer records audio
+after cancel, background and timeout. Generated captures remain ignored under
+`artifacts/evidence/voice-demo/`; selected owner-authorized screenshots are in
+`docs/screenshots/voice-input/`.
 
 With the localhost API running and an explicitly selected parked Pleos emulator:
 

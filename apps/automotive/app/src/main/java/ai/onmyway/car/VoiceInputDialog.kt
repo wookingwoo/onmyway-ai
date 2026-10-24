@@ -1,0 +1,164 @@
+package ai.onmyway.car
+
+import android.app.Activity
+import android.app.AlertDialog
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
+import android.os.Bundle
+import android.view.Gravity
+import android.view.View
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.TextView
+
+/** Native transcript review; microphone input never runs in the background. */
+class VoiceInputDialog(
+    private val owner: Activity,
+    private val source: VoiceSource,
+    private val vehicle: () -> VehicleState,
+    private val applied: (VoiceDraft) -> Unit
+) : AlertDialog(owner) {
+    private val session = VoiceInputSession()
+    private var token: Long? = null
+    private val sdk = PleosSpeechInput(owner) { event ->
+        val id = token
+        if (id != null && isShowing) {
+            if (vehicle() != VehicleState.PARKED) { dismiss(); return@PleosSpeechInput }
+            when (event) {
+                SpeechInputEvent.Connected -> connection = "마이크를 준비하고 있어요"
+                SpeechInputEvent.Listening -> session.listening(id)
+                is SpeechInputEvent.Transcript -> session.update(id, event.text, event.completed)
+                is SpeechInputEvent.Failure -> session.fail(id, event.message)
+            }
+            refresh()
+        }
+    }
+    private var connection = "차량 음성 서비스에 연결하고 있어요"
+    private val dark = owner.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK == android.content.res.Configuration.UI_MODE_NIGHT_YES
+    private val surface = Color.parseColor(if (dark) "#222426" else "#FFFFFF")
+    private val ink = Color.parseColor(if (dark) "#F2F3F4" else "#202124")
+    private val muted = Color.parseColor(if (dark) "#B4B8BC" else "#62676C")
+    private val soft = Color.parseColor(if (dark) "#303336" else "#F2F4F5")
+    private val mint = Color.parseColor(if (dark) "#9BE4CA" else "#216A53")
+    private lateinit var title: TextView
+    private lateinit var transcript: TextView
+    private lateinit var detail: TextView
+    private lateinit var confirm: Button
+    private lateinit var retry: Button
+    private lateinit var orb: View
+    private fun dp(value: Int) = (value * owner.resources.displayMetrics.density).toInt()
+    private fun shape(color: Int, radius: Int = 28) = GradientDrawable().apply { setColor(color); cornerRadius = dp(radius).toFloat() }
+    private fun label(value: String, size: Float, color: Int = ink, bold: Boolean = false) = TextView(owner).apply {
+        text = value; textSize = size; setTextColor(color)
+        if (bold) setTypeface(typeface, Typeface.BOLD)
+    }
+    private fun LinearLayout.add(view: View, gap: Int = 16) {
+        addView(view, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(gap) })
+    }
+    private fun action(value: String, primary: Boolean = false, click: () -> Unit) = Button(owner).apply {
+        text = value; textSize = 24f; isAllCaps = false; minHeight = dp(80)
+        setTextColor(if (primary) surface else ink); backgroundTintList = null
+        background = shape(if (primary) ink else soft, 40)
+        setOnClickListener { click() }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setCanceledOnTouchOutside(false)
+        val body = LinearLayout(owner).apply {
+            orientation = LinearLayout.VERTICAL; setPadding(dp(40), dp(32), dp(40), dp(32))
+            background = shape(surface)
+        }
+        body.add(label(if (source == VoiceSource.EXAMPLE) "예시 문장 체험 · 실제 음성 인식 아님" else "PLEOS · 온디바이스 음성 입력", 19f, mint, true), 24)
+        val heading = LinearLayout(owner).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+        orb = object : View(owner) {
+            private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+            override fun onDraw(canvas: Canvas) {
+                super.onDraw(canvas)
+                val scale = width / 112f
+                canvas.save(); canvas.scale(scale, scale)
+                paint.style = Paint.Style.FILL; paint.color = ink; canvas.drawCircle(56f, 56f, 54f, paint)
+                paint.color = surface; canvas.drawRoundRect(47f, 27f, 65f, 63f, 9f, 9f, paint)
+                paint.style = Paint.Style.STROKE; paint.strokeWidth = 4f; paint.strokeCap = Paint.Cap.ROUND
+                canvas.drawArc(38f, 38f, 74f, 73f, 0f, 180f, false, paint)
+                canvas.drawLine(56f, 73f, 56f, 84f, paint); canvas.drawLine(45f, 84f, 67f, 84f, paint)
+                paint.style = Paint.Style.FILL; paint.color = mint; canvas.drawCircle(96f, 16f, 9f, paint)
+                canvas.restore()
+            }
+        }.apply { importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO }
+        heading.addView(orb, LinearLayout.LayoutParams(dp(112), dp(112)).apply { rightMargin = dp(28) })
+        val headings = LinearLayout(owner).apply { orientation = LinearLayout.VERTICAL }
+        title = label("", 34f, ink, true).apply { accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_POLITE }
+        headings.add(title, 10)
+        headings.add(label("할 일과 집에 도착할 시간을 함께 말해 주세요.", 22f, muted), 0)
+        heading.addView(headings, LinearLayout.LayoutParams(0, -2, 1f)); body.add(heading, 28)
+        transcript = label("", 28f).apply {
+            setPadding(dp(26), dp(24), dp(26), dp(24)); background = shape(soft, 20)
+            minHeight = dp(136); maxLines = 4; gravity = Gravity.CENTER_VERTICAL
+        }
+        body.add(transcript, 16)
+        detail = label("", 21f, muted).apply { minHeight = dp(64); maxLines = 3 }
+        body.add(detail, 24)
+        val actions = LinearLayout(owner).apply { orientation = LinearLayout.HORIZONTAL }
+        val cancel = action("취소") { dismiss() }
+        retry = action("다시 말하기") { begin() }
+        confirm = action("이 내용 사용하기", true) {
+            val result = token?.let { session.confirm(it, vehicle(), BuildConfig.DEMO) } ?: return@action
+            dismiss()
+            applied(result)
+        }
+        actions.addView(cancel, LinearLayout.LayoutParams(0, -2, .65f).apply { rightMargin = dp(12) })
+        actions.addView(retry, LinearLayout.LayoutParams(0, -2, .9f).apply { rightMargin = dp(12) })
+        actions.addView(confirm, LinearLayout.LayoutParams(0, -2, 1.35f))
+        body.add(actions, 0)
+        setContentView(body)
+        window?.setBackgroundDrawableResource(android.R.color.transparent)
+        window?.setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
+        window?.setLayout(minOf(dp(1180), (owner.resources.displayMetrics.widthPixels * .9).toInt()), -2)
+    }
+
+    override fun show() { super.show(); begin() }
+    private fun begin() {
+        sdk.close()
+        token = session.start(source, vehicle(), BuildConfig.DEMO)
+        if (token == null) { dismiss(); return }
+        connection = "차량 음성 서비스에 연결하고 있어요"
+        if (source == VoiceSource.EXAMPLE) session.update(token!!, VoiceInputSession.EXAMPLE_TEXT, true)
+        refresh()
+        if (source == VoiceSource.PLEOS) sdk.start()
+    }
+    private fun refresh() {
+        val phase = session.phase
+        title.text = when (phase) {
+            VoicePhase.REVIEW -> "이렇게 말씀하셨나요?"
+            VoicePhase.ERROR -> "음성 입력을 마치지 못했어요"
+            VoicePhase.LISTENING -> "듣고 있어요"
+            else -> connection
+        }
+        transcript.text = session.transcript.ifBlank {
+            if (phase == VoicePhase.ERROR) "직접 입력으로도 계속할 수 있어요."
+            else "“약국 들르고, 저녁 7시까지 집에 가야 해.”"
+        }
+        transcript.setTextColor(if (session.transcript.isBlank()) muted else ink)
+        detail.text = when {
+            source == VoiceSource.EXAMPLE -> "준비된 예시 문장입니다. 적용 후 ‘예시 할 일 확인하기’를 누르면 시연용 동선을 확인해요."
+            phase == VoicePhase.ERROR -> session.error
+            phase == VoicePhase.REVIEW -> "내용을 사용한 뒤 입력란에서 고칠 수 있어요. 확인 전에는 일정에 반영하지 않아요."
+            else -> "최대 30초 동안 입력해요. 인식 결과를 확인한 뒤 사용해 주세요."
+        }
+        confirm.isEnabled = phase == VoicePhase.REVIEW
+        confirm.alpha = if (confirm.isEnabled) 1f else .35f
+        retry.visibility = if (source == VoiceSource.EXAMPLE) View.GONE else View.VISIBLE
+        retry.isEnabled = phase in setOf(VoicePhase.REVIEW, VoicePhase.ERROR)
+        retry.alpha = if (retry.isEnabled) 1f else .35f
+    }
+    override fun dismiss() {
+        token = null
+        session.cancel()
+        sdk.close()
+        super.dismiss()
+    }
+}

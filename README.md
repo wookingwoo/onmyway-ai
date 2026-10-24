@@ -189,6 +189,24 @@ With the API running and the demo app open while parked:
 The repeatable fixture uses **2026-10-23**. Its dates, places and timings are
 demonstration inputs, not a current driving recommendation.
 
+### Voice input
+
+While actually parked, **음성으로 말하기** starts Pleos on-device Korean speech
+recognition. A final transcript requires **이 내용 사용하기** before it replaces
+the editable input. Parsing and planning remain separate user actions. Cancel,
+background and driving restrictions stop the session and release the microphone.
+
+For a key-free presentation, choose **예시 음성 흐름 체험 → 이 내용 사용하기 →
+예시 할 일 확인하기**, then continue the existing fixture journey. This is prepared
+example text with simulated navigation, explicitly labelled throughout; it does
+not claim live STT or LLM interpretation. Actual SDK readiness is verified, while
+successful final Korean transcription remains unverified.
+
+![Actual native example transcript confirmation, explicitly labelled as prepared text](docs/screenshots/voice-input/example-review.png)
+
+[Voice verification and reproduction](apps/automotive/README.md#voice-input-demo)
+· [Actual day/night and driving-lock captures](docs/screenshots/voice-input/README.md)
+
 ### Configure live providers later
 
 Edit only the ignored server-side `.env`, then restart the API:
@@ -216,7 +234,7 @@ validation. Exact commands, revisions and caveats are in the
 | Check | Recorded evidence |
 | --- | --- |
 | Backend | 25 Python tests passed; provider HTTP tested through mocks |
-| Android | 21 unit tests passed, including journey transitions, deadline/dwell edits, fixture isolation and approval boundaries |
+| Android | 29 unit tests per variant passed, including voice confirmation/cancellation, stale callbacks, example provenance, journey transitions, deadlines and approval boundaries |
 | Builds | Demo/live debug and signed release builds passed; release v3 signatures verified |
 | Actual Pleos demo | HTTP fixture → edit → plan → three explicitly completed simulated stops → separately approved simulated home |
 | Actual vehicle restrictions | Drive / 30 km/h locked actions and dismissed an open editor; Park / 0 restored |
@@ -236,7 +254,11 @@ Live OpenAI/Kakao authentication, real place/road results, actual Pleos route
 acceptance and arrival, and physical-vehicle usability remain unverified.
 Current Kakao keyword results do not establish opening hours or service
 availability; current-traffic durations are snapshots rather than forecasts.
-Voice input, TTS and automatic location acquisition are not implemented.
+Pleos ON_DEVICE voice input is implemented, with explicit transcript confirmation
+and an independent, labelled example-text demo. Actual SDK initialization,
+listening readiness, cancellation, background cleanup and bounded no-audio failure
+have been checked on the emulator. Successful final Korean transcription remains
+unverified. TTS and automatic location acquisition are not implemented.
 
 No measured time savings, current users or retention results are claimed.
 [Current readiness and next verification steps](docs/readiness.md).
