@@ -45,8 +45,9 @@ stay enforced. User authorized implementation, push, PR and final main merge.
 - [x] Evidence: signed demo install, actual parked/day/night/Drive checks, example
   clarification -> plan -> all completions -> home. Save selected screenshots and
   reproducible smoke; update progress/readiness/demo guide; commit.
-- [ ] Fresh branch review; fix findings with regressions. Push, create PR with
+- [x] Fresh branch review; fix findings with regressions. Push, create PR with
   screenshot embeds, verify CI and images, merge to main and synchronize locally.
+  Completed in PR #4, merge 8ec7b9d; six actual images rendered, Verify CI passed.
 
 ## Rulings
 
