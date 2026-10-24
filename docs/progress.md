@@ -297,3 +297,56 @@ Plan: docs/superpowers/plans/2026-10-23-onmyway.md
   tree checks. No new access grant or credential was created. PR body contains
   explicit screenshot embeds and validation limits. No merge, publication or
   contest submission is performed by this task.
+
+## Intent review, grounded explanation and complete demo — 2026-10-24
+
+- Branch `feat/ai-intent-review` starts from merged voice PR #3 (`979de875`). The
+  owner authorized implementation, incremental commits, screenshot PRs and final
+  main merges, while keeping external provider keys for later and binaries local.
+- Added bounded clarification answers, previous errands and previous home deadline
+  to the stateless parser. Context is untrusted input. Lost/replaced errands and
+  downgraded mandatory flags reject the result. Dwell and finish/home deadlines
+  cannot silently weaken; conservative retention adds a Korean warning directing
+  intentional relaxation to the manual editor.
+- Native review retains original text, answers and explicit deadlines across
+  recreation. One primary action progresses through a question, missing home time
+  and planning. Original text/details are available on demand; vehicle styling
+  follows the existing neutral Pleos day/night surfaces and 80dp controls.
+  Missing conditions block calculation; editing the original invalidates review.
+- Plan explanations use actual solver status, home margin, road/wait/dwell totals,
+  excluded items and adjustment data. They do not invent exclusion causes or
+  business hours and do not require another LLM call.
+- A fresh read-only review found P1 weakened time constraints and P2 an approved
+  extension not updating interpretation. Both were reproduced with regressions
+  and fixed, including sharing home-time mutation between selection and extension.
+  Native tests initially failed for the new model, then passed; the extra home
+  deadline regression was observed failing before its fix. Provider constraint
+  regression was likewise observed failing before conservative normalization.
+- Final code checks: Python **30 passed**; Android **41 tests per variant / 82
+  executions**, demo/live debug and release builds and both debug lint checks
+  passed. `.tools/intent-final-validation.log` records BUILD SUCCESSFUL; both
+  regenerated local release APKs passed v3 verification. The signed demo updated
+  the existing official API 34 AVD without wiping app data.
+- `scripts/smoke-intent.py --mode all` passed on that AVD: prepared question ->
+  cancel -> restore pending state -> explicit answer -> missing home still blocks
+  -> explicit home selection -> restore/theme change -> plan -> three separately
+  approved simulated arrivals and explicit completions -> separate home approval.
+  Normal fixture arrival is 18:40 against 19:00. Tight home time 18:20 requires an
+  explicitly approved 11-minute extension to 18:31; the recalculated mandatory
+  route excludes milk, and returning to review confirms the new 18:31 condition.
+- The first tight-case automation attempted typing into a focus-blocked native
+  wheel; actual UI inspection proved it left 19:00 unchanged. The driver now uses
+  wheel buttons and asserts 18:20 before applying. This was a driver failure,
+  not a successful tight-case test. Likewise the OEM full-screen keyboard was
+  explicitly closed before testing the main action, instead of tapping through it.
+- Additional actual `--mode edits` passed: editing the prepared original invalidates
+  review and an explicitly requested parse returns missing-key 503 without fixture
+  fallback. `--mode lock-ready` plus `smoke-pleos-lock.py` passed actual Drive /
+  30 km/h, with no enabled question/approval/editor controls. Restored Park / 0.
+- Selected actual screenshots are under `docs/screenshots/intent-review/`; originals
+  and logs remain ignored. `scripts/start-demo.ps1` was actually run to install and
+  launch the local signed demo and check API health. Korean reproduction, presenter
+  and recovery instructions are in `docs/demo-guide-ko.md`.
+- Live final STT, OpenAI/Kakao calls, real route acceptance/arrival and physical
+  vehicle usability remain unverified. No external API key was provisioned and
+  none of these fixture results is claimed as a live model or navigation result.

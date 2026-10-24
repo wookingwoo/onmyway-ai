@@ -33,7 +33,8 @@ Pure safety tests can run without an Android SDK:
 .\gradlew.bat -p safety-tests test
 ```
 
-The 29 tests per variant cover voice confirmation/cancellation, stale and duplicate
+The 41 tests per variant cover clarification and deadline preservation, explanation
+evidence, voice confirmation/cancellation, stale and duplicate
 speech callbacks, example provenance, stage transitions, fixture draft isolation,
 date/dwell edits, vehicle lock and simulation boundaries, revision and destination
 approval, stale responses, arrival versus completion and the final home leg.
@@ -41,6 +42,19 @@ Successful compile is not proof of SDK service connection, request acceptance,
 arrival or vehicle-state behavior; capture those separately on the emulator/device.
 
 ## Voice input demo
+
+For the current complete presenter flow, see `../../docs/demo-guide-ko.md`.
+`scripts/start-demo.ps1` installs the existing local signed APK and checks/starts
+the local API against an already running official AVD. The independently selected
+**질문과 답변 체험 · 예시 해석** path shows prepared interpretation, a clarification,
+explicit home-time selection, full simulated completion/home and deadline adjustment.
+There is one primary next action. Unresolved questions or a missing home deadline
+cannot trigger planning. Original text and answers are available on demand.
+
+Clarification sends the original reference time, bounded answers and prior errands
+to the existing live parser. Existing deadlines and dwell cannot be silently
+weakened; users change these explicitly through the editor. Native home-time
+selection and approved deadline extensions update the same review state.
 
 The app uses `ai.pleos.playground:SpeechToText:3.3.1` in `ON_DEVICE` mode with
 `pleos.car.permission.STT_SERVICE`. There are no Android provider credentials or

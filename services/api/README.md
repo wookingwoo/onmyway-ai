@@ -104,3 +104,15 @@ implies user approval.
 HTTP mock tests cover these adapter contracts. Authentication, account permissions,
 real place results and road results require user-provided credentials and a
 separate live smoke test. No real provider integration is claimed here.
+
+## Clarification context
+
+`POST /v1/parse` also accepts optional `answers` (at most ten question/answer
+pairs), `previous_errands` (at most five) and `previous_deadline`. The original
+`text` and timezone-aware `reference_time` remain unchanged across clarification.
+All context is untrusted data. Missing/replaced errands or downgraded mandatory
+flags reject the provider result. Existing dwell and per-errand/home deadlines
+are retained conservatively if a clarification weakens them, with an explicit
+Korean warning to use the manual editor for relaxation. No provider failure falls
+back to an example. Credentials remain server-only and are not required for the
+independently requested fixture endpoints.
