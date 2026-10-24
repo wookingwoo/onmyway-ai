@@ -6,8 +6,9 @@ submitted contest entry.
 
 | Requirement | Actual evidence |
 | --- | --- |
-| Deterministic planner and API | 25 Python tests pass; real localhost HTTP health/demo/plan/missing-key smoke passes |
-| Native state, journey and approval policy | 29 tests per Android variant pass, including voice confirmation, stale speech callbacks, example provenance and existing journey/approval boundaries |
+| Deterministic planner and API | 30 Python tests pass, including clarification context and constraint preservation; actual localhost fixture and missing-key paths checked |
+| Native state, journey and approval policy | 41 tests per Android variant pass, including clarification, explicit deadlines, evidence explanations, voice and journey boundaries |
+| Intent review demo | Actual prepared question/answer, explicit home time, restore/day/night, full three-stop/home journey, and 18:20 -> 18:31 approved adjustment passed |
 | Voice input | Pleos STT 3.3.1 ON_DEVICE integration; actual SDK initialization/listening and cancellation/no-audio paths checked; final Korean transcription still unverified |
 | APK | Both demo/live release APKs built, v3 signatures verified, installed on Pleos API 34 and launched |
 | Vehicle restrictions | Actual CarUxRestrictions reads; Virtual Console Drive / 30 km/h disables controls even in demo; restored Park / 0 |

@@ -30,19 +30,19 @@ stay enforced. User authorized implementation, push, PR and final main merge.
 
 ## Tasks
 
-- [ ] Backend: add QuestionAnswer and ParseRequest.answers/previous_errands;
+- [x] Backend: add QuestionAnswer and ParseRequest.answers/previous_errands;
   test request context, duplicate IDs and missing/downgraded errands RED/GREEN.
   Send bounded context as data, Korean questions/warnings, preserve strict schema.
   Run full Python tests; commit.
-- [ ] Native: add IntentReview.kt and tests for pending questions, explicit
+- [x] Native: add IntentReview.kt and tests for pending questions, explicit
   deadline, original-text invalidation, answer payload and fixture isolation.
   Add persistent review/source context, native answer editor, independent example
   questions, explicit deadline selection and planning guard. Run Android units;
   commit.
-- [ ] Explanation: add PlanExplanation.kt, test verified/unknown/infeasible,
+- [x] Explanation: add PlanExplanation.kt, test verified/unknown/infeasible,
   duration totals and non-causal skipped explanations; show native detail card.
   Run both variant unit/build/lint and full Python tests; commit.
-- [ ] Evidence: signed demo install, actual parked/day/night/Drive checks, example
+- [x] Evidence: signed demo install, actual parked/day/night/Drive checks, example
   clarification -> plan -> all completions -> home. Save selected screenshots and
   reproducible smoke; update progress/readiness/demo guide; commit.
 - [ ] Fresh branch review; fix findings with regressions. Push, create PR with

@@ -15,11 +15,10 @@ deadline for getting home.
 > Live OpenAI/Kakao calls and actual navigation acceptance/arrival still require
 > separate verification. Screens below use **example data and simulated guidance**.
 
-![Actual Pleos next-stop screen with destination, arrival time and home deadline](docs/screenshots/automotive-ux/route.png)
+![Actual Pleos native interpretation review with explicitly prepared example text](docs/screenshots/intent-review/confirmed.png)
 
-*Actual signed-demo capture on Pleos Connect 2.1.0, API 34. Pharmacy dwell was
-explicitly edited from 10 to 15 minutes. Places, opening windows and road times
-in this capture are fixtures.*
+*Actual signed-demo capture on Pleos Connect 2.1.0, API 34. Interpretation is
+prepared example text; places, opening windows and road times are fixtures.*
 
 ## The problem
 
@@ -191,6 +190,15 @@ demonstration inputs, not a current driving recommendation.
 
 ### Voice input
 
+For the current key-free native demo, run `scripts/start-demo.ps1`, then choose
+**질문과 답변 체험 · 예시 해석**. One primary action guides clarification, explicit
+home-time selection and planning. Original text and answers remain reviewable;
+plan explanations use the solver's actual times and uncertainty.
+
+[Korean presenter and recovery guide](docs/demo-guide-ko.md).
+Prepared interpretation and simulated navigation are labelled; no live model
+result is claimed by this example.
+
 While actually parked, **음성으로 말하기** starts Pleos on-device Korean speech
 recognition. A final transcript requires **이 내용 사용하기** before it replaces
 the editable input. Parsing and planning remain separate user actions. Cancel,
@@ -233,8 +241,8 @@ validation. Exact commands, revisions and caveats are in the
 
 | Check | Recorded evidence |
 | --- | --- |
-| Backend | 25 Python tests passed; provider HTTP tested through mocks |
-| Android | 29 unit tests per variant passed, including voice confirmation/cancellation, stale callbacks, example provenance, journey transitions, deadlines and approval boundaries |
+| Backend | 30 Python tests passed; provider HTTP tested through mocks, including clarification constraint preservation |
+| Android | 41 unit tests per variant passed, including clarification, explicit home deadlines, grounded explanation, voice sessions and journey approval boundaries |
 | Builds | Demo/live debug and signed release builds passed; release v3 signatures verified |
 | Actual Pleos demo | HTTP fixture → edit → plan → three explicitly completed simulated stops → separately approved simulated home |
 | Actual vehicle restrictions | Drive / 30 km/h locked actions and dismissed an open editor; Park / 0 restored |

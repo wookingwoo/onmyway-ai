@@ -23,6 +23,7 @@ artifacts/evidence/*.log
 artifacts/package/
 artifacts/evidence/automotive-ux/
 artifacts/evidence/voice-demo/
+artifacts/evidence/intent-demo/
 
 # Generated deliverables stay local; keep their source and verification notes.
 /apk/
