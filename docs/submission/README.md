@@ -1,16 +1,48 @@
 # Submission drafts
 
-These are working drafts, not final or submitted materials. They contain no entrant identity. Personal information, legal consent, signature, publication and final submission remain with the entrant.
+Current sources checked 2026-10-24; nothing has been submitted or published.
+Korean project text and presentation screens contain no entrant identity.
+Identity, consent, signature, access grants and final submission remain user actions.
 
-Binary deliverables referenced below are local files, excluded from Git. A fresh clone contains the text sources, scripts and verification notes, but not the DOCX, PPTX, APK, screenshots or recording. Uploading any optional binary submission requires a separately chosen submission method; it is not automatic.
+- `application-ko.md`: current anonymous official project section 02 items 1–8.
+- `pitch-and-demo-ko.md`: first scene, five-minute talk, demo facts and Q&A.
+- `../contest-strategy-ko.md`: official criteria/research, alternatives, target,
+  business assumptions and launch gates.
+- `../demo-guide-ko.md`: current key-free operation, reset, recovery and recording.
+- `checklist-ko.md`: evidence, anonymity and user-controlled submission gates.
+- `email-draft-ko.md`: unsent draft with placeholders; recheck all filenames first.
 
-- `application-ko.md`: Korean source aligned to official project section 02 items 1–8.
-- `pitch-and-demo-ko.md`: executive narrative, five-minute pitch outline and 150-second demo script.
-- `email-draft-ko.md`: unsent email with explicit placeholders.
-- `checklist-ko.md`: submission, evidence and anonymity gates with official sources.
-- `../../artifacts/submission/official-template.docx`: unmodified official downloaded form.
-- `../../artifacts/submission/OnMyWay_AI_application_WORKING_DRAFT.docx`: official form with all eight anonymous project slots filled; personal information, consent and signature untouched; author/editor metadata cleared.
+Current local deliverables (excluded from Git):
 
-Verified evidence now includes 25 Python tests, 13 Android unit tests, demo/live debug/release builds, signed release APK installation/run on the Pleos Connect 2.1.0 API 34 emulator, actual CarUxRestrictions reading and navigation-service connection, Drive 30 km/h editing/approval lock, and the explicitly selected HTTP fixture flow through approval, simulated arrival, explicit completion and remaining-errand replanning. A 47.206-second actual app recording is available in `../../artifacts/evidence/OnMyWay_AI_Pleos_fixture_demo.mp4`. No live OpenAI/Kakao call, actual SDK route acceptance/arrival, physical vehicle test, user research or measured benefit is asserted. MAU and retention figures remain hypothetical. The live variant shows a missing-key 503 rather than silently substituting fixtures.
+- `artifacts/evidence/intent-demo/OnMyWay_AI_intent_demo.mp4`: 107.667 seconds,
+  actual latest app, synthetic interpretation/route and simulated guidance,
+  actual driving restriction, labelled 2x, permanent Korean disclosure.
+- `artifacts/evidence/intent-demo/media-verification.json`: hashes, full decode,
+  scene review and actual browser playback to the end.
+- `artifacts/pitch/current/index.html`: seven self-contained Korean slides with
+  five embedded actual screenshots, generated with `scripts/build-pitch.py`.
+- `apk/OnMyWay_AI_demo_release.apk` and `apk/OnMyWay_AI_live_release.apk`:
+  current signed local releases. Check latest hashes in progress/evidence.
 
-The bundled LibreOffice renderer was unavailable. A fallback exported the reference and filled DOCX through installed Microsoft Word in read-only, hidden mode with macros and link updates disabled, then rasterized each local PDF using bundled Poppler. All five reference and five filled pages were inspected. Unrelated ZIP parts and document structure outside the named text slots remain unchanged; the source form's yellow highlight in project item 6 was retained. See `../../artifacts/submission/docx-verification.json` for evidence. Layout verification does not make the working draft submission-ready: engineering evidence, entrant information, consent and signature remain incomplete. The official form's deadline states November 15, 2026 at 23:59; official schedule pages state KST. Recheck changes before sending.
+Latest implementation checks: Python 30 tests, Android 41 per variant, demo/live
+builds/lint, actual full simulated journey, day/night and Drive/Park checks.
+No final Korean STT, live OpenAI/Kakao call, actual route acceptance/arrival,
+physical-vehicle test, user research or measured benefit is asserted.
+See `../readiness.md` and `../progress.md` for exact scope.
+
+## Superseded local binaries
+
+The downloaded official form remains `artifacts/submission/official-template.docx`.
+Its original five pages and the earlier filled draft were visually checked through
+Word/Poppler on 2026-10-23. The old filled DOCX, six-slide PPTX, old 47/135-second
+videos and review ZIP predate the current flow and business assumptions. They are
+historical drafts and must not be submitted as current materials. Rebuild official
+forms from the latest `application-ko.md`, preserve identity/consent/signature
+blanks for the user, then visually recheck every page. The historical packager now
+fails closed instead of exporting stale documents. It exports nothing.
+
+A fresh clone includes sources, scripts and selected authorized actual screenshots,
+not APKs, video, HTML pitch or office binaries. GitHub owner/commit identity has
+not been anonymized. User must determine anonymous sharing and judge access
+before placing repository links into the official application. Nothing here grants
+access or changes repository visibility. Recheck official notices before sending.

@@ -61,7 +61,7 @@ LLM 연결 경로는 별도로 구현되어 있습니다. 키는 나중에 서�
 1. 새 일정을 시작하고 질문·답변 예시를 다시 선택합니다.
 2. 세탁물 수령은 **18:30 전 수령 완료**로 답하고, 귀가는 **18:20**으로 정합니다.
 3. 동선을 확인하면 필수 일정과 마감 조건을 함께 지킬 수 없음을 표시합니다.
-4. **시간 조정 제안 보기**에서 늘어나야 할 시간을 확인합니다. **유지**를 누르면
+4. **시간 조정 제안 보기**에서 11분 연장, **18:31** 귀가를 확인합니다. **유지**를 누르면
    기존 마감이 유지됩니다. **바꾸고 재계산**을 선택해야 새 조건으로 계산합니다.
 5. 필수 일정이 남아 있는지, 우유가 이번 동선에 포함되지 않았는지, 원문 확인
    화면에도 승인한 귀가 마감이 반영되었는지 확인합니다.
@@ -88,6 +88,23 @@ LLM 연결 경로는 별도로 구현되어 있습니다. 키는 나중에 서�
 `--mode lock-ready` 후 `scripts/smoke-pleos-lock.py`로 별도 검사합니다.
 
 ## 복구와 제한
+
+최신 실제 앱 영상은 로컬 `artifacts/evidence/intent-demo/OnMyWay_AI_intent_demo.mp4`
+(107.667초, 1920×1080, 무음)입니다. 정상·질문 답변·세 용무 완료·별도 귀가,
+촉박한 마감 조정, 실제 Drive 잠금을 담았습니다. 준비된 예시·모의 안내와
+실제 STT·LLM·실경로 미검증 고지를 상시 표시하고 2배속임을 밝힙니다.
+검증 내역은 같은 폴더 `media-verification.json`입니다.
+
+```powershell
+.\.venv\Scripts\python.exe scripts/record-intent-demo.py --adb .tools/android-sdk/platform-tools/adb.exe --serial emulator-5556
+.\.venv\Scripts\python.exe scripts/build-pitch.py
+```
+
+녹화에는 PATH의 ffmpeg·ffprobe와 Windows 맑은 고딕이 필요합니다. 격리된 공식
+AVD의 예시 일정만 사용합니다. 새 녹화 후 장면·고지·전체 재생을 다시 확인합니다.
+발표 파일은 `artifacts/pitch/current/index.html`, 대본·예상 질문은
+`submission/pitch-and-demo-ko.md`입니다. 이전 영상·DOCX·PPTX·ZIP은 최신 자료로
+사용하지 않습니다.
 
 - 서버 연결 오류: `start-demo.ps1`을 다시 실행하고 서버 주소가
   `http://10.0.2.2:8000`인지 정차 중 고급 설정에서 확인합니다. 로컬 API는

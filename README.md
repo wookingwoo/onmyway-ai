@@ -10,6 +10,12 @@ deadline for getting home.
 [Architecture](#architecture) · [Verification](#verification) ·
 [Submission readiness](docs/readiness.md)
 
+Current contest positioning and honest differentiation:
+[Korean strategy](docs/contest-strategy-ko.md). Presenter/recovery instructions:
+[demo guide](docs/demo-guide-ko.md), [five-minute pitch and Q&A](docs/submission/pitch-and-demo-ko.md).
+The latest local 107.667-second video and seven-slide HTML pitch are listed in
+[readiness](docs/readiness.md); generated deliverables are excluded from Git.
+
 > **Current status:** The native app, deterministic planner and explicitly
 > labelled demo flow have been verified on the official Pleos emulator.
 > Live OpenAI/Kakao calls and actual navigation acceptance/arrival still require

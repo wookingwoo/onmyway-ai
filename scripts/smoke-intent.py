@@ -10,6 +10,7 @@ import subprocess
 import time
 import urllib.request
 import xml.etree.ElementTree as ET
+from demo_recording import DemoRecording
 
 
 def main():
@@ -18,9 +19,12 @@ def main():
     parser.add_argument('--serial', required=True)
     parser.add_argument('--mode', choices=['all', 'lock-ready', 'edits'], default='all')
     parser.add_argument('--output', default='artifacts/evidence/intent-demo')
+    parser.add_argument('--record', action='store_true', help='Record the actual normal/tight journeys locally')
     args = parser.parse_args()
     out = Path(args.output)
     out.mkdir(parents=True, exist_ok=True)
+    assert not args.record or args.mode == 'all'
+    recording = DemoRecording(args.adb, args.serial, out) if args.record else None
 
     def adb(*items):
         return subprocess.run([args.adb, '-s', args.serial, *items], check=True, capture_output=True, text=True, encoding='utf-8').stdout
@@ -73,6 +77,7 @@ def main():
     def shot(name):
         adb('shell', 'screencap', '-p', '/sdcard/omw-intent.png')
         adb('pull', '/sdcard/omw-intent.png', str(out / name))
+        if recording: time.sleep(2)
 
     def reset_fixture():
         tree = nodes()
@@ -109,6 +114,7 @@ def main():
         shot('intent-no-provider.png')
         print('PASS: original edit invalidates review; explicit live parse returns missing-key error without fixture fallback', flush=True)
         return
+    if recording: recording.start('normal')
     click('질문과 답변 체험 · 예시 해석')
     wait('예시 요청 해석 · 준비된 내용')
     assert wait('질문에 답하기').get('enabled') == 'true'
@@ -120,27 +126,30 @@ def main():
     if args.mode == 'lock-ready':
         print('READY: explicit example question dialog for actual driving lock', flush=True)
         return
-    click('취소')
-    assert wait('질문에 답하기').get('enabled') == 'true'
-    assert find('동선 확인하기', nodes()) is None
-    restart()
-    wait('예시 요청 해석 · 준비된 내용')
-    assert wait('질문에 답하기').get('enabled') == 'true'
-    click('질문에 답하기'); click('18:30 전 수령 완료')
+    if not recording:
+        click('취소')
+        assert wait('질문에 답하기').get('enabled') == 'true'
+        assert find('동선 확인하기', nodes()) is None
+        restart()
+        wait('예시 요청 해석 · 준비된 내용')
+        assert wait('질문에 답하기').get('enabled') == 'true'
+        click('질문에 답하기')
+    click('18:30 전 수령 완료')
     assert wait('귀가 시간 정하기').get('enabled') == 'true'
     assert find('동선 확인하기', nodes()) is None, 'Missing home time must still block calculation'
     click('귀가 시간 정하기'); click('적용')
     assert wait('동선 확인하기').get('enabled') == 'true'
-    restart()
+    if not recording: restart()
     wait('동선 확인하기')
     assert find('질문에 답하기', nodes()) is None
     # Restore scroll to the interpretation card for unedited day/night evidence.
     for _ in range(4): scroll(nodes(), False)
     shot('intent-confirmed.png')
-    adb('shell', 'cmd', 'uimode', 'night', 'yes')
-    wait('예시 요청 해석 · 준비된 내용')
-    shot('intent-night.png')
-    adb('shell', 'cmd', 'uimode', 'night', 'no')
+    if not recording:
+        adb('shell', 'cmd', 'uimode', 'night', 'yes')
+        wait('예시 요청 해석 · 준비된 내용')
+        shot('intent-night.png')
+        adb('shell', 'cmd', 'uimode', 'night', 'no')
     click('동선 확인하기')
     wait('다음은 이곳이에요')
     if find('모의 안내 켜기', nodes()) is not None: click('모의 안내 켜기')
@@ -158,8 +167,10 @@ def main():
     click('집으로 안내'); click('목적지 승인'); click('도착 체험 · 모의 이벤트')
     wait('집에 도착했어요')
     shot('intent-home.png')
+    if recording: recording.stop()
 
     reset_fixture()
+    if recording: recording.start('tight')
     click('질문과 답변 체험 · 예시 해석')
     wait('이렇게 들르고 갈까요?')
     click('질문에 답하기'); click('18:30 전 수령 완료')
@@ -200,11 +211,15 @@ def main():
     assert find('우유 구매', nodes(), True) is not None
     shot('intent-optional.png')
     click('닫기')
+    if recording: recording.stop()
+    skipped = ['cancel leaves unanswered', 'pending survives restart', 'confirmed survives restart/theme']
+    checks = ['missing home blocks', 'explicit answer and home selection', 'grounded explanation',
+              'three separate completions', 'separate home approval', 'tight deadline explicit adjustment', 'optional exclusion named']
     (out / 'intent-check.json').write_text(json.dumps({'result':'pass', 'interpretation':'prepared example, not live STT/LLM',
-        'navigation':'simulated', 'checks':['cancel leaves unanswered', 'pending survives restart', 'missing home blocks',
-        'explicit answer and home selection', 'confirmed survives restart/theme', 'grounded explanation',
-        'three separate completions', 'separate home approval', 'tight deadline explicit adjustment', 'optional exclusion named']}, indent=2), encoding='utf-8')
-    print('PASS: actual native example clarification, restoration, full home journey and tight-deadline adjustment', flush=True)
+        'navigation':'simulated', 'mode':'recording' if recording else 'full verification',
+        'checks':checks + ([] if recording else skipped), 'checks_not_run':skipped if recording else []}, indent=2), encoding='utf-8')
+    print('PASS: actual native example clarification, full home journey and tight-deadline adjustment' +
+          ('; recording mode skips restoration/cancel/theme checks' if recording else '; restoration/cancel/theme also verified'), flush=True)
 
 
 if __name__ == '__main__':

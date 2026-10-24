@@ -1,0 +1,29 @@
+{
+  "text": "약국은 꼭 들르고 세탁물도 찾아줘. 7시까지 집에 갈 거야.",
+  "reference_time": "2026-10-23T18:00:00+09:00",
+  "answers": [
+    {
+      "question": "세탁물은 몇 시까지 수령을 마쳐야 하나요?",
+      "answer": "18시 30분까지 수령 완료"
+    }
+  ],
+  "previous_errands": [
+    {
+      "id": "medicine",
+      "label": "약 구매",
+      "query": "약국",
+      "mandatory": true,
+      "dwell_seconds": 600,
+      "latest_finish": null
+    },
+    {
+      "id": "laundry",
+      "label": "세탁물 찾기",
+      "query": "세탁소",
+      "mandatory": true,
+      "dwell_seconds": 300,
+      "latest_finish": null
+    }
+  ],
+  "previous_deadline": "2026-10-23T19:00:00+09:00"
+}
