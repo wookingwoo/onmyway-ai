@@ -139,9 +139,30 @@ class PlanResponse(Model):
     relaxation: DeadlineRelaxation | None = None
 
 
+class QuestionAnswer(Model):
+    question: Annotated[str, Field(min_length=1, max_length=500)]
+    answer: Annotated[str, Field(min_length=1, max_length=1000)]
+
+    @model_validator(mode="after")
+    def nonblank(self):
+        if not self.question.strip() or not self.answer.strip():
+            raise ValueError("question and answer must not be blank")
+        return self
+
+
 class ParseRequest(Model):
     text: Annotated[str, Field(min_length=1, max_length=4000)]
     reference_time: AwareDatetime
+    answers: list[QuestionAnswer] = Field(default_factory=list, max_length=10)
+    previous_errands: list[ErrandInput] = Field(default_factory=list, max_length=5)
+
+    @model_validator(mode="after")
+    def unique_context(self):
+        if len({e.id for e in self.previous_errands}) != len(self.previous_errands):
+            raise ValueError("previous errand ids must be unique")
+        if len({a.question for a in self.answers}) != len(self.answers):
+            raise ValueError("answer questions must be unique")
+        return self
 
 
 class ParseResponse(Model):

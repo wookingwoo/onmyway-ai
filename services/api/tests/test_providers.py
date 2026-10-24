@@ -18,6 +18,43 @@ def parse_request():
     return ParseRequest(text="약 사고 7시까지 집에", reference_time="2026-10-23T18:00:00+09:00")
 
 
+def test_clarification_reuses_original_request_and_retains_errands(monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "never-expose-test-key")
+    monkeypatch.setenv("OPENAI_MODEL", "test-model")
+    raw = parse_request().model_dump(mode="json")
+    raw.update(answers=[{"question": "도착인가요, 완료인가요?", "answer": "수령 완료예요"}],
+               previous_errands=parsed()["errands"])
+    def handler(req):
+        context = json.loads(json.loads(req.content)["input"])
+        assert context["text"] == raw["text"]
+        assert context["reference_time"] == raw["reference_time"]
+        assert context["answers"][0]["answer"] == "수령 완료예요"
+        assert context["previous_errands"][0]["id"] == "medicine"
+        return httpx.Response(200, json={"status": "completed", "output": [{"content": [{"type": "output_text", "text": json.dumps(parsed())}]}]})
+    async def run():
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+            result = await parse_text(ParseRequest.model_validate(raw), client)
+            assert result.errands[0].mandatory
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("change", ["missing", "downgraded"])
+def test_clarification_cannot_lose_or_downgrade_prior_errand(monkeypatch, change):
+    monkeypatch.setenv("OPENAI_API_KEY", "never-expose-test-key")
+    monkeypatch.setenv("OPENAI_MODEL", "test-model")
+    raw = parse_request().model_dump(mode="json")
+    raw.update(answers=[{"question": "몇 시까지인가요?", "answer": "19시"}], previous_errands=parsed()["errands"])
+    answer = parsed()
+    if change == "missing": answer["errands"] = []
+    else: answer["errands"][0]["mandatory"] = False
+    async def run():
+        async with httpx.AsyncClient(transport=httpx.MockTransport(lambda _: httpx.Response(200, json={"status": "completed", "output": [{"content": [{"type": "output_text", "text": json.dumps(answer)}]}]}))) as client:
+            with pytest.raises(ProviderError) as caught:
+                await parse_text(ParseRequest.model_validate(raw), client)
+            assert caught.value.code == "llm_invalid_output"
+    asyncio.run(run())
+
+
 def test_openai_strict_schema_and_validated_output(monkeypatch):
     monkeypatch.setenv("OPENAI_API_KEY", "never-expose-test-key")
     monkeypatch.setenv("OPENAI_MODEL", "user-selected-model")
