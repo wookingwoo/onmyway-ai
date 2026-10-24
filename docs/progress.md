@@ -350,3 +350,75 @@ Plan: docs/superpowers/plans/2026-10-23-onmyway.md
 - Live final STT, OpenAI/Kakao calls, real route acceptance/arrival and physical
   vehicle usability remain unverified. No external API key was provisioned and
   none of these fixture results is claimed as a live model or navigation result.
+
+## 2026-10-24 — contest strategy and fresh intent-review demo
+
+PR #4 head4776e081 passed Verify run40055113629. Six images rendered at2560x1440
+in actual GitHub Chrome. Merged as8ec7b9de335e0cb84acc2ab232533563162a02ec,
+fast-forwarded local main, then created docs/contest-demo-readiness.
+
+Official overview/judging/development/FAQ/all three notices and Pleos
+driving/design/privacy docs were read. Google Maps and Route4Me official docs
+confirm waypoint/time-window alternatives. Korean strategy narrows the target
+to commuters with mandatory errands and a home deadline. No unsupported monopoly,
+ranking or customer claims. Small MAU60/84/about94 is an explicit calculation
+hypothesis; monthly reuse is distinct from cohort retention. Launch gates cover
+real evidence, platform, privacy/operations, demand/cost and authorized submission.
+
+Actual local media:
+- Ran smoke-intent.py --record on current installed signed demo: prepared Q&A,
+  explicit missing-home selection, three separate completions, approved simulated
+  home, deadline adjustment and named milk exclusion passed.
+- Recording mode skips cancel/restart/theme checks; those passed in the prior
+  full non-recording run below. Review found the unconditional report incorrectly
+  included them; now executed and skipped checks are separate, and local recording
+  JSON was corrected to the actual run.
+- record-intent-demo.py --reuse-journeys added fresh actual Drive30/Park0 capture.
+  Raw durations: normal130.716311s, tight73.636s, driving10.935533s.
+- Final artifacts/evidence/intent-demo/OnMyWay_AI_intent_demo.mp4:
+  **107.666667s /1920x1080 /30fps /silent**, labelled2x with permanent Korean
+  synthetic/prepared/simulated disclosure. First caption layout clipped its second
+  line; fixed with explicit line positions and re-encoded (--assemble-only).
+  Final full ffmpeg decode passed; normal/tight/driving scene frames inspected.
+  SHA256:4dfd90e56005af11a8d11921cb0f0bcb801ba4db65024987c79ed5e2e1547817.
+- Actual Chrome playback: currentTime=duration107.666667, ended=true, paused=true,
+  no media error, width1920/height1080. Local media-verification.json records it.
+- build-pitch.py: seven self-contained Korean HTML slides with five actual images,
+  no external assets. Actual Chrome checked all image loads, seven page navigation
+  and layout at1448x772. Initial dense pages overflowed; reduced desktop spacing/
+  type and rechecked all seven. Output artifacts/pitch/current/index.html.
+- Korean official application text, five-minute opening/demo/Q&A and recovery
+  match current UI. Old DOCX/PPTX/ZIP/videos labelled superseded; historical
+  packager exits without exporting stale material. Official form rebuild and
+  user identity/consent/signature review remain pre-submission work.
+
+Actual final checks:
+- .venv/Scripts/python.exe -m pytest services/api/tests -q: **30 passed /0.58s**.
+- .tools/intent-gradle.ps1 with both demo/live unit tests, debug/release assemblies
+  and both debug lint tasks: **BUILD SUCCESSFUL in38s /200 tasks**. JUnit41 each,
+  82 executions, zero failures. Existing shortTEMP/WindowsSelector setup used.
+- BuildTools35 apksigner verify --verbose: both local release APKs v3=true.
+  demo:b2125e44216bdcb6d69d0d3a1bdea8328c34fde887fc291188bc02dfc6ba7f42
+  live:a2a986e9751767bff450e6c2ec19b2d54cc79cad80ec22ed1d89cc2cb867c8e1
+  Updated small checksum metadata only; APKs remain ignored.
+- Found the old project uvicorn by its exact command. Stopped only known
+  process39900/child70168 and restarted current server hidden. Actual OpenAPI now
+  exposes answers/previous_errands/previous_deadline; provider health booleans
+  allfalse. Public schema regenerated and illustrative clarification input
+  validated. No external key provisioned. Guarded start-demo.ps1 checks isolated
+  official AVD and current API schema; actual install/launch passed preserving data.
+- smoke-voice.py --mode sdk --reset-fixture: **PASS** actual SDK ready/listening;
+  mic released after cancel/background/no-audio timeout; original draft retained,
+  no fallback. Final Korean transcription is still unverified.
+- Independent review found skipped-check reporting, stale evidence index and
+  premature playback completion wording. Conditional reports, historical labels
+  and actual completed playback/JSON resolve them. No further substantive
+  assembler/pitch defects reported. Narrow current file/credential checks are
+  not comprehensive Git-history or anonymity certification.
+
+Unverified: final Korean STT, live LLM/Kakao, actual route acceptance/arrival,
+physical vehicle usability, measured demand/retention/economics. Coordinates
+are manual, current live candidate hours/service are unknown. Public hosting
+requires authentication/privacy/operations work. No visibility change, grants,
+publication, identity, consent, signature or email submission performed.
+

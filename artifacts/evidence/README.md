@@ -1,6 +1,24 @@
 # Verification evidence
 
-## Current automotive UI recording — 2026-10-24
+## Current intent-review recording — 2026-10-24
+
+Local/ignored `intent-demo/OnMyWay_AI_intent_demo.mp4`: **107.667 seconds**,
+1920x1080, silent, explicitly 2x. Fresh actual official Pleos AVD captures show
+prepared question/answer, missing-home selection, three separately completed
+errands and separately approved simulated home, tight-deadline approval, and
+actual Drive 30 km/h restriction/restoration. Interpretation/place/time and
+navigation/arrival are clearly labelled prepared/synthetic/simulated. Final live
+STT/LLM/provider/navigation behavior remains unverified.
+
+`intent-demo/media-verification.json` records hashes, raw/final durations, full
+decode and visual/browser playback verification. Permanent Korean disclosure was
+checked after fixing a clipped second line. Reproduce with
+`scripts/record-intent-demo.py`; guide: `docs/demo-guide-ko.md`.
+
+## Historical automotive UI recording — 2026-10-24
+
+The 135.7-second recording/SRT below and the older 47.206-second video predate
+the current interpretation UI and are not current deliverables.
 
 Versioned captions: [OnMyWay_AI_Pleos_new_ui_demo.srt](OnMyWay_AI_Pleos_new_ui_demo.srt).
 The owner authorized this 2,027-byte UTF-8 Korean SRT in Git. Its 18 cues match

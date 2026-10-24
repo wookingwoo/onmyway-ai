@@ -419,6 +419,34 @@
             "type": "string",
             "format": "date-time",
             "title": "Reference Time"
+          },
+          "answers": {
+            "items": {
+              "$ref": "#/components/schemas/QuestionAnswer"
+            },
+            "type": "array",
+            "maxItems": 10,
+            "title": "Answers"
+          },
+          "previous_errands": {
+            "items": {
+              "$ref": "#/components/schemas/ErrandInput"
+            },
+            "type": "array",
+            "maxItems": 5,
+            "title": "Previous Errands"
+          },
+          "previous_deadline": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Deadline"
           }
         },
         "additionalProperties": false,
@@ -675,6 +703,29 @@
           "total_travel_seconds"
         ],
         "title": "PlanResponse"
+      },
+      "QuestionAnswer": {
+        "properties": {
+          "question": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Question"
+          },
+          "answer": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Answer"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "question",
+          "answer"
+        ],
+        "title": "QuestionAnswer"
       },
       "SkippedErrand": {
         "properties": {

@@ -6,6 +6,9 @@
 - `demo-plan-request.json`: complete explicit synthetic fixture, also `GET /v1/demo`.
 - `demo-plan-response.json`: deterministic result of sending the fixture to `POST /v1/plan`.
 - `parse-request.json`: natural-language request plus timezone-aware reference time.
+- `parse-clarification-request.json`: original request/reference plus bounded
+  question/answer context, previous errands and home deadline; illustrative input,
+  not a recorded model call. Added fields are optional for existing clients.
 - `parse-response-example.json`: illustrative editable extraction, **not a recorded live LLM response**.
 - `discover-request.json`: edited requirements and explicit coordinates for live Kakao discovery.
 
