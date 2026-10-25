@@ -46,11 +46,22 @@ and warnings. The frontend must review and edit this draft before discovery.
 Refusal, incomplete output, invalid output, HTTP failures and timeouts produce
 explicit errors and never synthetic results.
 
+`POST /v1/places` accepts `{query, origin}` (nonblank query up to 200 characters)
+and returns `{places}` with at most three nearby Kakao candidates, including
+road address or fallback parcel address. It requires only the server's
+`KAKAO_REST_API_KEY`. Search never establishes hours or requested-service
+availability; both remain `unknown`, with no availability evidence.
+
 `POST /v1/discover` accepts the edited errands, explicit origin/home coordinates,
 departure time and deadline. Set `KAKAO_REST_API_KEY` and
-`KAKAO_MOBILITY_REST_API_KEY` on the server. It finds one nearby candidate per
-errand, obtains a directed road matrix, and returns a `PlanRequest` for review
-and `POST /v1/plan`. Maximum five Local calls and 31 Mobility calls per discovery.
+`KAKAO_MOBILITY_REST_API_KEY` on the server. Each optional `selected_place`
+preserves the chosen identity, coordinates, source, address and availability
+evidence, bypasses keyword search and becomes its sole candidate. Live discovery
+rejects a selected fixture with 422 `fixture_place_not_allowed`, before reading
+provider configuration. Pinned-only requests need no Local key. Legacy errands
+without selection still search for one candidate. Discovery always obtains the
+directed road matrix and returns a `PlanRequest` for review and `POST /v1/plan`.
+Maximum five Local calls and 31 Mobility calls per discovery.
 These calls can consume provider quota; no live call was made during development.
 Discovery searches within 20 km of the origin. Kakao keyword results do not
 establish opening hours or the requested service: these remain `unknown`.
@@ -76,8 +87,14 @@ Every unscheduled mandatory task is explicitly named in failure reasons.
 service evidence, full dwell fits before both closing and `latest_finish`, and
 the final home leg meets the deadline. Waiting is included. It is conditional
 on the supplied evidence; traffic and shop availability can change. Unknown
-hours/service yield `needs_verification`. A missing candidate or required road
-edge with no complete route also yields `needs_verification`, with no invented
+hours/service yield `needs_verification`. Live `verified` flags also require
+`availability_evidence: {basis, confirmed_at}`: a nonblank basis of at most 500
+characters and an aware confirmation time no later than departure and no more
+than 24 hours before it. Missing, future or older evidence adds verification
+warnings; it cannot establish feasibility. Stated opening intervals and dwell
+are still enforced. Evidence never upgrades unknown hours or service status.
+Explicit fixture places remain labelled and exempt from this live evidence rule.
+A missing candidate or required road edge with no complete route also yields `needs_verification`, with no invented
 timeline. Proven timing failure with complete evidence yields `infeasible`.
 Mandatory tasks are never silently dropped. An input location id must always
 refer to the same coordinates; duplicate errands and directed edges are rejected.
@@ -89,11 +106,13 @@ The Android app owns explicit approval, vehicle-state restrictions and Pleos
 navigation. This API never starts navigation. Replanning is a new `PlanRequest`
 with explicit remaining errands, current origin/departure and updated matrix;
 completed errands are removed only by the user's completion action.
-An empty errand list computes the remaining direct home leg. A verified timing
-failure may include `relaxation` with the earliest mandatory-only home deadline
-within 24 hours and the exact extension in seconds. Opening hours and individual
-finish deadlines remain enforced; the suggestion never changes the input or
-implies user approval.
+An empty errand list computes the remaining direct home leg. A timing failure
+may include `relaxation` with a computed mandatory-only home deadline within 24 hours and the exact extension in seconds. When evidence is
+uncertain, `requires_verification: true`, retained `warnings` and a conditional
+description identify that uncertainty. The original plan status is preserved.
+Missing required roads or no complete relaxed route means no suggestion.
+Opening intervals and individual finish deadlines remain enforced; the
+suggestion never changes the input or implies user approval.
 
 ## Sources and remaining verification
 

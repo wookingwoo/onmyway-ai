@@ -153,12 +153,84 @@
           }
         }
       }
+    },
+    "/v1/places": {
+      "post": {
+        "summary": "Find Places",
+        "operationId": "find_places_v1_places_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlaceSearchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlaceSearchResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "AvailabilityEvidence": {
+        "properties": {
+          "basis": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Basis"
+          },
+          "confirmed_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Confirmed At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "basis",
+          "confirmed_at"
+        ],
+        "title": "AvailabilityEvidence"
+      },
       "DeadlineRelaxation": {
         "properties": {
+          "requires_verification": {
+            "type": "boolean",
+            "title": "Requires Verification",
+            "default": false
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          },
           "required_deadline": {
             "type": "string",
             "format": "date-time",
@@ -202,7 +274,7 @@
           },
           "errands": {
             "items": {
-              "$ref": "#/components/schemas/ErrandInput"
+              "$ref": "#/components/schemas/DiscoveryErrand"
             },
             "type": "array",
             "maxItems": 5,
@@ -219,6 +291,70 @@
           "errands"
         ],
         "title": "DiscoverRequest"
+      },
+      "DiscoveryErrand": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Id"
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Label"
+          },
+          "query": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Query"
+          },
+          "mandatory": {
+            "type": "boolean",
+            "title": "Mandatory",
+            "default": true
+          },
+          "dwell_seconds": {
+            "type": "integer",
+            "maximum": 86400.0,
+            "minimum": 0.0,
+            "title": "Dwell Seconds",
+            "default": 600
+          },
+          "latest_finish": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Finish"
+          },
+          "selected_place": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Place"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "query"
+        ],
+        "title": "DiscoveryErrand"
       },
       "Errand": {
         "properties": {
@@ -263,6 +399,16 @@
               }
             ],
             "title": "Latest Finish"
+          },
+          "selected_place": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Place"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "candidates": {
             "items": {
@@ -530,6 +676,21 @@
             "minimum": -180.0,
             "title": "Longitude"
           },
+          "address": {
+            "type": "string",
+            "title": "Address",
+            "default": ""
+          },
+          "availability_evidence": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AvailabilityEvidence"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "opening_intervals": {
             "items": {
               "$ref": "#/components/schemas/OpeningInterval"
@@ -572,6 +733,41 @@
           "source"
         ],
         "title": "Place"
+      },
+      "PlaceSearchRequest": {
+        "properties": {
+          "query": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Query"
+          },
+          "origin": {
+            "$ref": "#/components/schemas/Location"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "query",
+          "origin"
+        ],
+        "title": "PlaceSearchRequest"
+      },
+      "PlaceSearchResponse": {
+        "properties": {
+          "places": {
+            "items": {
+              "$ref": "#/components/schemas/Place"
+            },
+            "type": "array",
+            "maxItems": 3,
+            "title": "Places"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "PlaceSearchResponse"
       },
       "PlanRequest": {
         "properties": {

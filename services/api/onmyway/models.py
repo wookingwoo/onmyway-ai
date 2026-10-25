@@ -35,7 +35,20 @@ class OpeningInterval(Model):
         return self
 
 
+class AvailabilityEvidence(Model):
+    basis: Annotated[str, Field(min_length=1, max_length=500)]
+    confirmed_at: AwareDatetime
+
+    @model_validator(mode="after")
+    def nonblank(self):
+        if not self.basis.strip():
+            raise ValueError("availability basis must not be blank")
+        return self
+
+
 class Place(Location):
+    address: str = ""
+    availability_evidence: AvailabilityEvidence | None = None
     opening_intervals: list[OpeningInterval] = Field(default_factory=list, max_length=20)
     hours_status: Literal["verified", "unknown", "closed"] = "unknown"
     service_status: Literal["verified", "unknown", "unavailable"] = "unknown"
@@ -51,7 +64,11 @@ class ErrandInput(Model):
     latest_finish: AwareDatetime | None = None
 
 
-class Errand(ErrandInput):
+class DiscoveryErrand(ErrandInput):
+    selected_place: Place | None = None
+
+
+class Errand(DiscoveryErrand):
     candidates: list[Place] = Field(default_factory=list, max_length=3)
 
 
@@ -62,12 +79,27 @@ class TravelEdge(Model):
     source: Source
 
 
+class PlaceSearchRequest(Model):
+    query: Annotated[str, Field(min_length=1, max_length=200)]
+    origin: Location
+
+    @model_validator(mode="after")
+    def nonblank(self):
+        if not self.query.strip():
+            raise ValueError("place query must not be blank")
+        return self
+
+
+class PlaceSearchResponse(Model):
+    places: list[Place] = Field(default_factory=list, max_length=3)
+
+
 class DiscoverRequest(Model):
     origin: Location
     home: Location
     departure_time: AwareDatetime
     deadline: AwareDatetime
-    errands: list[ErrandInput] = Field(max_length=5)
+    errands: list[DiscoveryErrand] = Field(max_length=5)
 
     @model_validator(mode="after")
     def valid_request(self):
@@ -122,6 +154,8 @@ class SkippedErrand(Model):
 
 
 class DeadlineRelaxation(Model):
+    requires_verification: bool = False
+    warnings: list[str] = Field(default_factory=list)
     required_deadline: AwareDatetime
     extension_seconds: int
     description: str

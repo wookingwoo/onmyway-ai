@@ -24,11 +24,11 @@ if __name__ == "__main__":
         "text": "약국은 꼭 들르고 세탁물도 찾아줘. 7시까지 집에 갈 거야.",
         "reference_time": "2026-10-23T18:00:00+09:00",
         "answers": [{"question": "세탁물은 몇 시까지 수령을 마쳐야 하나요?", "answer": "18시 30분까지 수령 완료"}],
-        "previous_errands": [e.model_dump(mode="json", exclude={"candidates"}) for e in request.errands[:2]],
+        "previous_errands": [e.model_dump(mode="json", exclude={"candidates", "selected_place"}) for e in request.errands[:2]],
         "previous_deadline": request.deadline.isoformat()})
     # This is an illustrative editable extraction, not a claim of a live LLM call.
     write(target / "parse-response-example.json", {
-        "errands": [e.model_dump(mode="json", exclude={"candidates"}) for e in request.errands],
+        "errands": [e.model_dump(mode="json", exclude={"candidates", "selected_place"}) for e in request.errands],
         "deadline": request.deadline.isoformat(), "clarification_questions": [],
         "warnings": ["ILLUSTRATIVE EXAMPLE, not a live OpenAI response. Dwell durations are editable estimates."]})
     write(target / "discover-request.json", request.model_dump(mode="json", exclude={"travel_edges", "errands"}) | {
