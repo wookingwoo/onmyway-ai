@@ -465,7 +465,7 @@ class MainActivity : Activity() {
             dialog(AlertDialog.Builder(this).setTitle("현재 안내를 취소할까요?")
                 .setMessage("차량 내비 안내를 취소하고 남은 동선을 다시 계산합니다. 완료하지 않은 볼일은 그대로 남습니다.")
                 .setNegativeButton("유지", null).setPositiveButton("취소하고 다시 계산") { _, _ -> if (allowed() && !busy) {
-                    navigation.cancelPending(); state.routeFailed(); navigation.connect(); calculate()
+                    runCatching { navigation.cancelPending(); state.routeFailed(); navigation.connect(); calculate() }.onFailure { showError(it) }
                 } })
         }
         when {
@@ -793,14 +793,6 @@ class MainActivity : Activity() {
     }
     private fun calculate() {
         check(allowed())
-        if (navigation.hasActiveRequest) {
-            dialog(AlertDialog.Builder(this).setTitle("현재 안내를 취소하고 다시 계산할까요?")
-                .setMessage("이미 승인한 안내가 진행 중입니다. 취소한 뒤 새 동선을 확인하고 목적지를 다시 승인해야 해요.")
-                .setNegativeButton("안내 유지", null).setPositiveButton("취소하고 다시 계산") { _, _ -> if (allowed() && !busy) {
-                    cancelOwnedNavigation(); state.routeFailed(); navigation.connect(); calculate()
-                } })
-            return
-        }
         require(!requiresParse) { "입력 문장이 바뀌었습니다. 먼저 할 일을 다시 정리하세요." }
         require(intentReview?.ready != false) { "확인 질문과 귀가 시간에 먼저 답해 주세요." }
         val remaining = if (fixture) PlaceReview.fixtureErrands(errands, state.completed) else PlaceReview.discoveryErrands(errands, state.completed)
@@ -824,6 +816,15 @@ class MainActivity : Activity() {
                 payload.getJSONObject("home").getDouble("longitude") == oldHome.getDouble("longitude")) {
                 "예시 좌표를 바꾸면 이동 시간 fixture를 사용할 수 없습니다. 예시를 다시 불러오세요."
             }
+        }
+        // Validate the full draft before asking to cancel an already approved route.
+        if (navigation.hasActiveRequest) {
+            dialog(AlertDialog.Builder(this).setTitle("현재 안내를 취소하고 다시 계산할까요?")
+                .setMessage("이미 승인한 안내가 진행 중입니다. 취소한 뒤 새 동선을 확인하고 목적지를 다시 승인해야 해요.")
+                .setNegativeButton("안내 유지", null).setPositiveButton("취소하고 다시 계산") { _, _ -> if (allowed() && !busy) {
+                    runCatching { cancelOwnedNavigation(); state.routeFailed(); navigation.connect(); calculate() }.onFailure { showError(it) }
+                } })
+            return
         }
         val client = api()
         async({
@@ -884,7 +885,7 @@ class MainActivity : Activity() {
                 plan = null; status = "완료를 저장했어요. 선택한 장소를 유지하고 남은 동선을 새로 확인합니다."
                 flow.parsed(); persist(); render()
                 if (!fixture) navigation.connect()
-                calculate()
+                runCatching { calculate() }.onFailure { showError(it) }
             } })
     }
     private fun onNavigation(event: String) {
