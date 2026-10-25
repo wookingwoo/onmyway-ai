@@ -1,7 +1,9 @@
 # Submission readiness
 
 **Status: KEY-FREE DEMO READY; LIVE LAUNCH AND SUBMISSION PENDING.**
-Checked 2026-10-25. This is a functioning native demo, not a verified live service
+Core app and motion Short checked 2026-10-25. The Short uses earlier intent-review
+footage and does not verify the current venue/automatic-preview flow.
+This is a functioning native demo, not a verified live service
 or a submitted entry.
 
 | Requirement | Actual evidence |
@@ -16,6 +18,7 @@ or a submitted entry.
 | Missing providers | Actual missing-key 503 without fixture fallback. All provider health booleans false; no external key provisioned |
 | Screenshots | Six actual unedited captures in docs/screenshots/intent-review; PR #4's six images render at 2560x1440 |
 | Historical video | 107.667 seconds, 1920x1080, silent, explicitly 2x; full home journey, adjustment, actual driving lock; permanent Korean disclosure, full decode and visual/playback verification |
+| YouTube Short | Separate 42-second, 18-scene animated 1080×1920 silent edit and Korean SRT, based on earlier intent-review footage. Regenerate for the current core UI before contest sharing; owner TTS/public posting pending. Storyboard: docs/submission/shortform-ko.md |
 | Historical pitch | Seven previously checked Korean HTML slides; regenerate to reflect the new venue/automatic-preview flow before contest sharing |
 | Application | Current anonymous Korean section 02 source updated. Old local DOCX/PPTX/ZIP predate this flow and must not be submitted as current |
 | GitHub/CI | Private repository. PRs #1–#4 merged incrementally. PR #4 head 4776e081 passed Verify run 40055113629; preparation PR evidence recorded in progress and GitHub |
@@ -28,7 +31,7 @@ Select **질문과 답변 체험 · 예시 해석**. Follow `docs/demo-guide-ko.
 `docs/submission/pitch-and-demo-ko.md`.
 The example uses fixed 2026-10-23 18:00 data; it is not today's live recommendation.
 
-Current APKs and screenshots supersede the previous recording/pitch flow. Regenerate video, pitch and official office files before contest sharing. Synthetic comparison results and the unperformed user protocol are in docs/evaluation-guide.md and docs/submission/user-study-ko.md.
+Current APKs and screenshots supersede the previous recording/pitch flow. Regenerate videos (including the Short), pitch and official office files before contest sharing. Synthetic comparison results and the unperformed user protocol are in docs/evaluation-guide.md and docs/submission/user-study-ko.md.
 
 Local deliverables:
 
@@ -36,6 +39,8 @@ Local deliverables:
 - `artifacts/evidence/intent-demo/OnMyWay_AI_intent_demo.mp4`
 - `artifacts/evidence/intent-demo/media-verification.json`
 - `artifacts/pitch/current/index.html` (generate with `scripts/build-pitch.py`)
+- `artifacts/shortform/OnMyWay_AI_Shorts_silent.mp4` (generate with `scripts/build-shortform.py`; requires approved local raw footage)
+- `artifacts/evidence/OnMyWay_AI_Shorts_ko.srt` (versioned small caption file)
 
 ## Remaining launch and submission work
 
@@ -60,8 +65,10 @@ certification is claimed. Business numbers are explicitly hypothetical in
 alternatives and launch gates.
 
 APKs, video, HTML pitch, raw captures/logs, office files and archives stay local.
-Only selected authorized actual screenshots are committed; the historical allowed
-SRT remains. The older review ZIP and old office/video files are superseded.
+Only selected authorized actual screenshots and small caption/source files are
+committed. The historical allowed SRT remains. The older review ZIP and old
+office/video files are superseded; the vertical Short is a separate edit of the
+earlier intent-review flow and is not evidence of the new core UI.
 Repository visibility is unchanged. Owner identity in GitHub/Git history has not
 been made anonymous; public release and reviewer grants require user action.
 Historical remote Git objects may persist; cache erasure is not established.

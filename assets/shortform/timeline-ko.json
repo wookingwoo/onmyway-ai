@@ -1,0 +1,400 @@
+{
+  "width": 1080,
+  "height": 1920,
+  "fps": 30,
+  "sources": {
+    "normal": {
+      "file": "normal-raw.mp4",
+      "sha256": "b6aa904947f730ec4f296dfd26f8e860df0fd5e330c8436d446061abd57cc622"
+    },
+    "tight": {
+      "file": "tight-raw.mp4",
+      "sha256": "75f64e1120d58e26cf168dcfa3cc0f67c047690bc961d62102de24a7c0004be1"
+    },
+    "driving": {
+      "file": "driving-raw.mp4",
+      "sha256": "16e018e96a4ae31e0e29a18a353106d8abdea55692b53c6ee293a41887d76f40"
+    }
+  },
+  "scenes": [
+    {
+      "id": "hook",
+      "duration": 1.5,
+      "chapter": "POV: 퇴근 2회차",
+      "headline": [
+        "퇴근했는데",
+        "퀘스트가 또 뜸."
+      ],
+      "art": "quest",
+      "caption": "퇴근했는데, 또 할 일?",
+      "transition": {
+        "kind": "cut",
+        "frames": 0
+      },
+      "sticker": "퇴근 ≠ 귀가"
+    },
+    {
+      "id": "clock",
+      "duration": 1.5,
+      "chapter": "오늘의 귀가 마감",
+      "headline": [
+        "집은 7시까지.",
+        "남은 용무는 3개."
+      ],
+      "art": "clock",
+      "caption": "집은 일곱 시까지.",
+      "transition": {
+        "kind": "zoom",
+        "frames": 6
+      }
+    },
+    {
+      "id": "required",
+      "duration": 2,
+      "chapter": "메인 퀘스트 · 필수",
+      "headline": [
+        "약은 꼭.",
+        "세탁물도 꼭."
+      ],
+      "art": "required",
+      "caption": "약은 꼭.\n세탁물은 여섯 시 반까지.",
+      "transition": {
+        "kind": "swipe",
+        "frames": 6
+      }
+    },
+    {
+      "id": "milk",
+      "duration": 1.5,
+      "chapter": "사이드 퀘스트 · 선택",
+      "headline": [
+        "우유도…?",
+        "시간이 되면."
+      ],
+      "art": "milk",
+      "caption": "우유는 시간 되면.",
+      "transition": {
+        "kind": "zoom",
+        "frames": 6
+      }
+    },
+    {
+      "id": "possible",
+      "duration": 1.5,
+      "chapter": "잠깐만요",
+      "headline": [
+        "이거, 시간 안에",
+        "가능한 일정임?"
+      ],
+      "art": "question",
+      "caption": "이거, 시간 안에 가능?",
+      "transition": {
+        "kind": "split",
+        "frames": 6
+      },
+      "sticker": "뇌 속에서 동선 계산 중"
+    },
+    {
+      "id": "clarify",
+      "duration": 2.5,
+      "chapter": "먼저, 뜻을 확인",
+      "headline": [
+        "6시 반, 도착?",
+        "수령 완료?"
+      ],
+      "art": "footage",
+      "caption": "도착 마감?\n수령 완료?",
+      "transition": {
+        "kind": "wipe",
+        "frames": 6
+      },
+      "focus": "두 마감은 달라요",
+      "note": "준비된 질문 체험 · 실제 AI 호출 아님",
+      "clip": {
+        "source": "normal",
+        "start": 14,
+        "rate": 1,
+        "crop": [
+          850,
+          425,
+          840,
+          200
+        ]
+      }
+    },
+    {
+      "id": "calculate",
+      "duration": 2.5,
+      "chapter": "빠뜨린 시간까지 계산",
+      "headline": [
+        "길 위 시간만",
+        "세면 안 되니까."
+      ],
+      "art": "calculate",
+      "caption": "이동, 대기, 용무,\n귀가까지 계산.",
+      "transition": {
+        "kind": "swipe",
+        "frames": 6
+      },
+      "focus": "귀가 예상 18:40 · 여유 20분",
+      "note": "도로 이동 + 영업 대기 + 머무름 + 귀가",
+      "clip": {
+        "source": "normal",
+        "start": 59,
+        "rate": 1,
+        "crop": [
+          850,
+          345,
+          840,
+          330
+        ]
+      }
+    },
+    {
+      "id": "normal-result",
+      "duration": 3,
+      "chapter": "예시 A · 귀가 마감 19:00",
+      "headline": [
+        "세 용무 마치고",
+        "18:40, 집으로."
+      ],
+      "art": "footage",
+      "caption": "첫 예시에선\n여섯 시 사십 분 귀가.",
+      "transition": {
+        "kind": "zoom",
+        "frames": 6
+      },
+      "focus": "약 → 세탁물 → 우유 → 집",
+      "note": "예시 계획의 예상 · 실제 도착 실적 아님",
+      "clip": {
+        "source": "normal",
+        "start": 48,
+        "rate": 1,
+        "crop": [
+          660,
+          175,
+          1220,
+          690
+        ]
+      }
+    },
+    {
+      "id": "conflict",
+      "duration": 1.5,
+      "chapter": "예시 B · 마감을 바꾸면?",
+      "headline": [
+        "근데 갑자기",
+        "6시 20분까지?"
+      ],
+      "art": "deadline",
+      "caption": "근데, 6시 20분까지?",
+      "transition": {
+        "kind": "split",
+        "frames": 6
+      },
+      "warning": true,
+      "sticker": "잠깐, 조건 변경!"
+    },
+    {
+      "id": "propose",
+      "duration": 2,
+      "chapter": "필수는 못 버리지",
+      "headline": [
+        "필수는 그대로.",
+        "11분 연장을 제안."
+      ],
+      "art": "footage",
+      "caption": "필수는 그대로.\n십일 분 연장?",
+      "transition": {
+        "kind": "wipe",
+        "frames": 6
+      },
+      "focus": "18:20 → 18:31",
+      "note": "지금은 불가능 · 변경은 사용자 승인 후",
+      "clip": {
+        "source": "tight",
+        "start": 39.5,
+        "rate": 1,
+        "crop": [
+          850,
+          425,
+          840,
+          200
+        ]
+      },
+      "warning": true
+    },
+    {
+      "id": "approve",
+      "duration": 2.5,
+      "chapter": "내가 확인하고 승인하면",
+      "headline": [
+        "승인한 뒤에만",
+        "계획이 바뀜."
+      ],
+      "art": "footage",
+      "caption": "내가 승인하면\n다시 계산해요.",
+      "transition": {
+        "kind": "swipe",
+        "frames": 6
+      },
+      "focus": "필수 2개 유지 · 선택 1개 제외",
+      "note": "사용자 승인 후 재계산한 예시 결과",
+      "clip": {
+        "source": "tight",
+        "start": 67,
+        "rate": 1,
+        "crop": [
+          850,
+          345,
+          840,
+          340
+        ]
+      }
+    },
+    {
+      "id": "milk-out",
+      "duration": 2,
+      "chapter": "우유의 합리적인 퇴장",
+      "headline": [
+        "우유: ㅇㅋ",
+        "그럼 다음에."
+      ],
+      "art": "milk-out",
+      "caption": "우유는 다음에.\n필수는 유지!",
+      "transition": {
+        "kind": "zoom",
+        "frames": 6
+      }
+    },
+    {
+      "id": "complete",
+      "duration": 3,
+      "chapter": "예시 A로 복귀 · 정차 후",
+      "headline": [
+        "도착했다고",
+        "끝난 게 아님."
+      ],
+      "art": "footage",
+      "caption": "첫 예시로.\n도착과 완료는 따로.",
+      "transition": {
+        "kind": "wipe",
+        "frames": 6
+      },
+      "focus": "용무 완료 → 남은 일정 다시 확인",
+      "note": "정차 후 완료를 따로 확인해요",
+      "clip": {
+        "source": "normal",
+        "start": 90,
+        "rate": 1,
+        "crop": [
+          660,
+          175,
+          1220,
+          780
+        ]
+      }
+    },
+    {
+      "id": "driving",
+      "duration": 3,
+      "chapter": "차량 상태에 맞춰",
+      "headline": [
+        "운전 중?",
+        "손은 잠깐 쉬자."
+      ],
+      "art": "footage",
+      "caption": "달릴 땐\n조작을 잠가요.",
+      "transition": {
+        "kind": "split",
+        "frames": 6
+      },
+      "focus": "Drive · 30 km/h",
+      "note": "Pleos 에뮬레이터 주행 제한 검증",
+      "clip": {
+        "source": "driving",
+        "start": 3,
+        "rate": 1,
+        "crop": [
+          0,
+          0,
+          1920,
+          970
+        ]
+      }
+    },
+    {
+      "id": "home",
+      "duration": 2.5,
+      "chapter": "예시 A · 마지막 목적지",
+      "headline": [
+        "최종 퀘스트,",
+        "집으로."
+      ],
+      "art": "footage",
+      "caption": "집으로 가는 안내도\n내가 승인.",
+      "transition": {
+        "kind": "swipe",
+        "frames": 6
+      },
+      "focus": "귀가 안내도 별도로 승인",
+      "note": "모의 귀가 안내 · 실제 내비 도착 아님",
+      "clip": {
+        "source": "normal",
+        "start": 122,
+        "rate": 1,
+        "crop": [
+          660,
+          175,
+          1220,
+          780
+        ]
+      }
+    },
+    {
+      "id": "payoff",
+      "duration": 2.5,
+      "chapter": "예시 A · 완료 흐름",
+      "headline": [
+        "할 일은 마치고,",
+        "집으로."
+      ],
+      "art": "payoff",
+      "caption": "할 일을 마치고, 집으로.",
+      "transition": {
+        "kind": "zoom",
+        "frames": 6
+      }
+    },
+    {
+      "id": "brand",
+      "duration": 3,
+      "chapter": "퇴근길 완료 플래너",
+      "headline": [
+        "가는 길에,",
+        "할 일까지."
+      ],
+      "art": "brand",
+      "caption": "가는 길에, 할 일까지.\n온마이웨이 AI.",
+      "transition": {
+        "kind": "wipe",
+        "frames": 6
+      }
+    },
+    {
+      "id": "close",
+      "duration": 4,
+      "chapter": "다시 당신의 퇴근길",
+      "headline": [
+        "오늘 퇴근길엔",
+        "퀘스트 몇 개?"
+      ],
+      "art": "close",
+      "caption": "오늘 퇴근길엔\n무슨 일이 남았나요?",
+      "transition": {
+        "kind": "zoom",
+        "frames": 6
+      }
+    }
+  ]
+}

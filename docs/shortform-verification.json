@@ -1,0 +1,129 @@
+{
+  "file": "OnMyWay_AI_Shorts_silent.mp4",
+  "sha256": "6eb92f83090280897b219f0583e9a6ddd30fe675e4df84f40aa1c59f379125d5",
+  "bytes": 2701260,
+  "width": 1080,
+  "height": 1920,
+  "fps": 30,
+  "seconds": 42.0,
+  "codec": "h264",
+  "pixel_format": "yuv420p",
+  "audio_streams": 0,
+  "full_decode": "passed",
+  "srt_file": "OnMyWay_AI_Shorts_ko.srt",
+  "srt_sha256": "90f4110cb289f17545114aa18c3c2a9e7ff4b4b3c065d9dcf23e7313c8b049d6",
+  "srt_cues": 18,
+  "rendered_frames": 1260,
+  "motion": "original layered character/card animation; swipe, wipe, split and zoom cuts; stationary caption/disclosure",
+  "source_hashes": {
+    "normal": "b6aa904947f730ec4f296dfd26f8e860df0fd5e330c8436d446061abd57cc622",
+    "tight": "75f64e1120d58e26cf168dcfa3cc0f67c047690bc961d62102de24a7c0004be1",
+    "driving": "16e018e96a4ae31e0e29a18a353106d8abdea55692b53c6ee293a41887d76f40"
+  },
+  "source_scope": "genuine Pleos emulator recordings; prepared interpretation and synthetic place/time; simulated navigation/arrival",
+  "editorial_speed": "1x selected raw excerpts; crops and titles are editorial",
+  "visual_review": {
+    "result": "passed",
+    "scene_midpoints": 18,
+    "animation_beat_frames": 25,
+    "all_scene_entry_samples": 54,
+    "first_last_frames": true,
+    "phone_preview_css": [
+      430,
+      900
+    ],
+    "scope": "local preview; no actual YouTube overlay or physical-device test"
+  },
+  "browser_playback": {
+    "result": "passed",
+    "duration": 42,
+    "current_time": 42,
+    "ended": true,
+    "paused": true,
+    "media_error": null,
+    "video_width": 1080,
+    "video_height": 1920,
+    "decoded_frames": 1260,
+    "dropped_frames": 0,
+    "viewport_css": [
+      430,
+      900
+    ],
+    "scope": "local browser playback; no YouTube publication"
+  },
+  "checked_date_korea": "2026-10-25",
+  "version": "motion-v2",
+  "tempo": {
+    "previous_seconds": 54,
+    "current_seconds": 42,
+    "shorter_percent": 22.222,
+    "previous_scenes": 14,
+    "current_scenes": 18,
+    "average_scene_seconds": 2.3333333333333335
+  },
+  "srt_packet_validation": {
+    "packets": 18,
+    "last_end_seconds": 42,
+    "every_boundary": "matched exact scene frame boundaries by independent review",
+    "utf8": "plain, no BOM, no trailing blank line",
+    "matches_burned_copy": true
+  },
+  "independent_review": {
+    "base": "bdff612",
+    "reviewed_checkpoint": "1376478",
+    "critical": 0,
+    "important": 0,
+    "minor": "verifier now reads actual decoded frames using FFprobe; mismatch test RED to GREEN; MP4 hash unchanged",
+    "reviewer_test_rerun": "9 passed, 1 sandbox TEMP error; separate author run passed all 11"
+  },
+  "regression_checks": {
+    "builder_unittest": {
+      "passed": 11
+    },
+    "python_api_pytest": {
+      "passed": 30
+    },
+    "android_unit_build": "BUILD SUCCESSFUL, 86 tasks up-to-date; existing 41 tests per demo/live variant; not fresh test executions"
+  },
+  "metadata": {
+    "streams": [
+      {
+        "tags": {
+          "language": "und",
+          "handler_name": "VideoHandler"
+        }
+      }
+    ],
+    "format": {
+      "tags": {
+        "major_brand": "isom",
+        "minor_version": "512",
+        "compatible_brands": "isomiso2avc1mp41",
+        "encoder": "Lavf63.1.100"
+      }
+    }
+  },
+  "delivery_files": {
+    "video": "OnMyWay_AI_Shorts_motion_v2.mp4",
+    "srt": "OnMyWay_AI_Shorts_motion_v2_ko.srt",
+    "relationship": "byte-identical copies of the verified canonical outputs"
+  },
+  "capture_scope_note": "The verified Short uses earlier intent-review footage; it does not demonstrate the newer main venue/automatic-preview/recovery UI. Regenerate before current-core contest sharing.",
+  "merge_validation": {
+    "date_korea": "2026-10-25",
+    "main": "a4b24cd2e96f9d25ba24de09594d88dce0d4f416",
+    "feature_parent": "addfc6ed8e72e90840715c2c29e91c493630ed51",
+    "conflicted_file": "docs/readiness.md",
+    "main_production_code_contracts_screenshots": "unchanged",
+    "video_and_srt_hashes": "unchanged",
+    "shortform_tests": 11,
+    "api_tests": 63,
+    "synthetic_comparison_cases": 3,
+    "android_unit_tests": {
+      "demo": 80,
+      "live": 80,
+      "failures": 0
+    },
+    "android_build": "both debug variants passed; 50 seconds, 16 executed and 70 up-to-date tasks"
+  }
+}
