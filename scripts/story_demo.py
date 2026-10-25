@@ -174,6 +174,11 @@ def wrapped(text, font, maximum):
     return lines
 
 
+def native_presentation():
+    """Full 16:9 Pleos surface, including the left vehicle panel and bottom bar."""
+    return 176, 88, 1568, 882
+
+
 def background(chapter, index, total, target, font_dir):
     from PIL import Image, ImageDraw, ImageFont
     bg, panel, ink, muted, mint, gold = "#101C29", "#192A3B", "#F4F2EA", "#A8B9C7", "#8BE0CB", "#E8C88C"
@@ -185,6 +190,16 @@ def background(chapter, index, total, target, font_dir):
 
     def text(x, y, value, size=28, color=ink, bold=False):
         draw.text((x, y), value, font=font(size, bold), fill=color, anchor="lt")
+
+    if chapter["kind"] not in {"opening", "closing"}:
+        draw.rectangle((0, 970, 1920, 1080), fill="#0B1420")
+        text(32, 10, f"OnMyWay AI · {index+1:02d}/{total:02d} · {chapter['eyebrow']}", 21, mint)
+        text(32, 42, chapter["title"].replace("\n", " "), 30, ink, True)
+        text(1370, 10, "준비된 대화 · 실제 STT·LLM 아님", 20, gold)
+        text(1370, 43, "Pleos 전체 화면 · 모의 안내 · 1×·일부 정지", 19, muted)
+        draw.rectangle((174, 86, 1746, 972), outline="#466276", width=2)
+        image.save(target)
+        return
 
     draw.rectangle((0, 958, 1920, 1080), fill="#0B1420")
     draw.line((76, 104, 1844, 104), fill="#2B3E4F", width=1)
@@ -314,11 +329,9 @@ def build(root, story_path, font_dir):
             for j, (a, b) in enumerate(windows):
                 graph.append(f"[0:v]trim=start={a}:end={b},setpts=PTS-STARTPTS[v{j}]")
             graph.append("".join(f"[v{j}]" for j in range(len(windows))) + f"concat=n={len(windows)}:v=1:a=0[native]")
-            crop = "" if ch["kind"] == "vehicle" else "crop=1262:908:640:68,"
-            size = "1152:648" if ch["kind"] == "vehicle" else "1152:816"
-            y = 215 if ch["kind"] == "vehicle" else 132
-            graph.append(f"[native]{crop}scale={size},setsar=1,fps=30,tpad=stop_mode=clone:stop_duration={duration},trim=duration={duration}[screen]")
-            graph.append(f"[1:v][screen]overlay=700:{y}:shortest=1,fps=30,format=yuv420p[v]")
+            x, y, width, height = native_presentation()
+            graph.append(f"[native]scale={width}:{height}:force_original_aspect_ratio=decrease,pad={width}:{height}:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30,tpad=stop_mode=clone:stop_duration={duration},trim=duration={duration}[screen]")
+            graph.append(f"[1:v][screen]overlay={x}:{y}:shortest=1,fps=30,format=yuv420p[v]")
             ai, mi = 2, 3
         else:
             command += ["-loop", "1", "-i", str(bg), "-i", str(root/"audio"/(name+".mp3")), "-ss", str(timing["start"]), "-i", str(cuts/"original-bed.wav")]

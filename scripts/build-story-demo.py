@@ -8,7 +8,7 @@ from story_demo import build
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--output", default="artifacts/evidence/story-demo")
+    parser.add_argument("--output", default="artifacts/evidence/voice-first-demo")
     parser.add_argument("--story", default="scripts/story_demo.json")
     parser.add_argument("--font-dir", default="C:/Windows/Fonts")
     args = parser.parse_args()

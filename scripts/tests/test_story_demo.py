@@ -13,6 +13,15 @@ from story_demo import inside, captions, validate_inputs, video_windows, validat
 
 
 class StoryDemoBoundaries(unittest.TestCase):
+    def test_full_pleos_frame_fits_without_cropping_or_caption_overlap(self):
+        from story_demo import native_presentation
+        x, y, width, height = native_presentation()
+        self.assertEqual(width / height, 16 / 9)
+        self.assertGreaterEqual(x, 0)
+        self.assertGreaterEqual(y, 80)
+        self.assertLessEqual(x + width, 1920)
+        self.assertLessEqual(y + height, 970)
+
     def test_rejects_path_escaping_the_local_capture_directory(self):
         with tempfile.TemporaryDirectory() as folder:
             with self.assertRaisesRegex(ValueError, "outside"):
