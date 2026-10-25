@@ -25,8 +25,10 @@
   states fixture interpretation/place/time and simulated guidance/arrival.
 - Small versioned UTF-8 SRT: 14 ordered cues from 0 to 54 seconds, no BOM or
   style tags; byte-identical local delivery copy. SHA-256
-  `a2b789f5c99e6991b28831e96e368cae1f0e01a9ff87bcea54b446305b4c8369`.
+  `0ae051725ff25c1985503716c3451028d580ddb717543949a2568099ce0ffba4`.
   FFprobe parsed all 14 subtitle packets; the final cue ends at 54 seconds.
+  Removed the redundant final blank line after a focused RED→GREEN assertion;
+  regenerated output has the same MP4 hash and passes Git whitespace checking.
   It matches burned captions; synchronization to future owner TTS is pending.
 - Full FFmpeg `-xerror` decode passed. FFprobe checked codec/dimensions/frame
   rate/audio/duration; metadata contains only generic container/encoder tags.

@@ -100,7 +100,7 @@ def make_srt(data):
         end = cursor + scene["duration"]
         output.append(f"{number}\n{stamp(cursor)} --> {stamp(end)}\n{scene['caption']}\n")
         cursor = end
-    return "\n".join(output) + "\n"
+    return "\n".join(output)
 
 
 @lru_cache(maxsize=100)

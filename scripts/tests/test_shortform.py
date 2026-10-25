@@ -38,6 +38,7 @@ class ShortformTests(unittest.TestCase):
         self.assertIn("00:00:48,000 --> 00:00:54,000", result)
         self.assertNotIn("<", result)
         self.assertEqual(len(result.strip().split("\n\n")), 14)
+        self.assertFalse(result.endswith("\n\n"), "Keep SRT separators between cues without a Git trailing-blank-line warning")
 
     def test_timeline_rejects_overlong_or_zero_length_scenes(self):
         module = self.builder()

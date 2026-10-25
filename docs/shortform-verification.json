@@ -11,7 +11,7 @@
   "audio_streams": 0,
   "full_decode": "passed",
   "srt_file": "OnMyWay_AI_Shorts_ko.srt",
-  "srt_sha256": "a2b789f5c99e6991b28831e96e368cae1f0e01a9ff87bcea54b446305b4c8369",
+  "srt_sha256": "0ae051725ff25c1985503716c3451028d580ddb717543949a2568099ce0ffba4",
   "srt_cues": 14,
   "source_hashes": {
     "normal": "b6aa904947f730ec4f296dfd26f8e860df0fd5e330c8436d446061abd57cc622",
@@ -50,7 +50,8 @@
     "first_start_seconds": 0,
     "last_end_seconds": 54,
     "utf8": "plain, no BOM",
-    "matches_burned_copy": true
+    "matches_burned_copy": true,
+    "trailing_blank_line": "none; single final newline, Git whitespace check clean"
   },
   "metadata_review": "passed: generic MP4 format/video handler/encoder tags only; no identity or source paths",
   "independent_review": {
