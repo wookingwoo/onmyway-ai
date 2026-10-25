@@ -11,6 +11,7 @@ class NavigationRequestState(private val clock: () -> Long) {
     private var completedRouting = false
     private var usedConnection = false
     var requiresReset = false; private set
+    val hasActiveRequest: Boolean get() = phase == Phase.WAITING || phase == Phase.ACCEPTED
 
     fun begin(name: String): Long? {
         if (name.isBlank() || usedConnection || requiresReset || phase != Phase.IDLE) return null
@@ -58,7 +59,7 @@ class NavigationRequestState(private val clock: () -> Long) {
         return true
     }
     fun cancel(): Boolean {
-        val active = phase in setOf(Phase.WAITING, Phase.ACCEPTED)
+        val active = hasActiveRequest
         invalidate()
         return active
     }

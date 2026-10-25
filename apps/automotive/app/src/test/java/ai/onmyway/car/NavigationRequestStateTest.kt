@@ -97,6 +97,31 @@ class NavigationRequestStateTest {
         s.resetConnection()
         assertNotEquals(token, s.begin("집"))
     }
+    @Test fun activeOwnershipSpansWaitingAndAcceptedUntilArrival() {
+        val s = state()
+        assertFalse(s.hasActiveRequest)
+        val token = s.begin("집")!!
+        assertTrue(s.hasActiveRequest)
+        s.routeStarted(token, "집"); assertTrue(s.routingCompleted(token))
+        assertTrue(s.hasActiveRequest)
+        assertTrue(s.arrived(token, "집"))
+        assertFalse(s.hasActiveRequest)
+        assertFalse(s.cancel())
+    }
+    @Test fun cancellationReportsOwnedRequestOnlyOnceAndFailureReleasesOwnership() {
+        val s = state()
+        assertFalse(s.cancel())
+        s.begin("약국")!!
+        assertTrue(s.cancel())
+        assertFalse(s.hasActiveRequest)
+        assertFalse(s.cancel())
+        s.resetConnection()
+        val token = s.begin("집")!!
+        assertTrue(s.hasActiveRequest)
+        assertTrue(s.fail(token))
+        assertFalse(s.hasActiveRequest)
+        assertFalse(s.cancel())
+    }
     @Test fun monotonicRollbackCannotExtendAcceptanceWait() {
         val s = state(); val token = s.begin("약국")!!
         now--

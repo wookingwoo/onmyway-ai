@@ -22,6 +22,7 @@ class PleosNavigation(private val context: Context, private val event: (String) 
     private var requestToken: Long? = null
     private var acceptanceTimeout: Runnable? = null
     var connected = false; private set
+    val hasActiveRequest: Boolean get() = requests.hasActiveRequest
 
     private fun dispatch(connection: Long, action: () -> Unit) {
         handler.post { if (connection == session) action() }
@@ -111,7 +112,10 @@ class PleosNavigation(private val context: Context, private val event: (String) 
 
     fun request(latitude: Double, longitude: Double, name: String) {
         check(connected) { "Pleos 내비 서비스가 연결되지 않았습니다. 다시 연결하세요." }
-        val token = checkNotNull(requests.begin(name)) { "이전 내비 요청이 남아 있습니다. 취소 후 다시 연결하고 승인하세요." }
+        val token = requests.begin(name) ?: run {
+            disconnect(cancelRoute = hasActiveRequest)
+            error("이전 내비 요청 상태를 초기화했습니다. 다시 연결한 뒤 현재 계획을 다시 승인하세요.")
+        }
         requestToken = token
         val timeout = Runnable { requestTimedOut(token) }
         acceptanceTimeout = timeout
@@ -130,7 +134,7 @@ class PleosNavigation(private val context: Context, private val event: (String) 
 
     fun cancelPending() {
         val active = requests.cancel()
-        disconnect(cancelRoute = true)
+        disconnect(cancelRoute = active)
         if (active) event("error:경로 요청을 취소했습니다. 다시 연결하고 새 계획을 승인하세요.")
     }
     private fun disconnect(cancelRoute: Boolean) {
