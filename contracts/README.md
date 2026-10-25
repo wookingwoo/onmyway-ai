@@ -5,6 +5,11 @@
 
 - `demo-plan-request.json`: complete explicit synthetic fixture, also `GET /v1/demo`.
 - `demo-plan-response.json`: deterministic result of sending the fixture to `POST /v1/plan`.
+- `demo-deadline-conflict-request.json` and `demo-deadline-conflict-response.json`:
+  separately selected synthetic `GET /v1/demo?scenario=deadline_conflict` example.
+  Preserves both mandatory errands, has an 18:20 home/18:30 laundry deadline and
+  unknown pharmacy availability, and returns a conditional 18:31 proposal.
+  Default /v1/demo (`scenario=basic`) is unchanged; neither example calls providers.
 - `parse-request.json`: natural-language request plus timezone-aware reference time.
 - `parse-clarification-request.json`: original request/reference plus bounded
   question/answer context, previous errands and home deadline; illustrative input,

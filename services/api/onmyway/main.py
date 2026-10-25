@@ -1,3 +1,5 @@
+from typing import Literal
+
 import httpx
 from fastapi import FastAPI, HTTPException
 
@@ -18,8 +20,8 @@ def health():
 
 
 @app.get("/v1/demo", response_model=PlanRequest)
-def demo():
-    return demo_request()
+def demo(scenario: Literal["basic", "deadline_conflict"] = "basic"):
+    return demo_request(scenario)
 
 
 @app.post("/v1/plan", response_model=PlanResponse)

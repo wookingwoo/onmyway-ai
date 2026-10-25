@@ -26,6 +26,22 @@
       "get": {
         "summary": "Demo",
         "operationId": "demo_v1_demo_get",
+        "parameters": [
+          {
+            "name": "scenario",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "basic",
+                "deadline_conflict"
+              ],
+              "type": "string",
+              "default": "basic",
+              "title": "Scenario"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -33,6 +49,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PlanRequest"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }

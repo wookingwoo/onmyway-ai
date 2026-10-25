@@ -1,0 +1,34 @@
+{
+  "status": "infeasible",
+  "is_fixture": true,
+  "stops": [],
+  "home_arrival_time": null,
+  "skipped_errands": [
+    {
+      "id": "groceries",
+      "reason": "No complete mandatory route found"
+    }
+  ],
+  "warnings": [
+    "DEMO FIXTURE: synthetic places and travel times; not a live route.",
+    "medicine/pharmacy: opening hours need verification",
+    "medicine/pharmacy: requested service needs verification"
+  ],
+  "reasons": [
+    "No route satisfies all mandatory errands, opening intervals, dwell and home deadline.",
+    "Mandatory errand laundry was not scheduled.",
+    "Mandatory errand medicine was not scheduled."
+  ],
+  "total_travel_seconds": 0,
+  "relaxation": {
+    "requires_verification": true,
+    "warnings": [
+      "DEMO FIXTURE: synthetic places and travel times; not a live route.",
+      "medicine/pharmacy: opening hours need verification",
+      "medicine/pharmacy: requested service needs verification"
+    ],
+    "required_deadline": "2026-10-23T18:31:00+09:00",
+    "extension_seconds": 660,
+    "description": "Conditional proposal: all mandatory errands fit the computed timeline if the home deadline is extended; availability and road evidence must still be verified. Opening intervals and individual finish deadlines remain enforced. Optional errands are excluded. User approval is required."
+  }
+}

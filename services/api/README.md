@@ -38,6 +38,14 @@ unchanged to `POST /v1/plan`; the result is explicitly `is_fixture: true` and
 contains a fixture warning. The example remains fixed at 2026-10-23 for a
 repeatable demonstration. It is not a current driving suggestion.
 
+The separately selected `GET /v1/demo?scenario=deadline_conflict` example keeps
+all synthetic place/road sources and both mandatory errands. Its home deadline
+is 18:20 and laundry completion deadline is 18:30; the synthetic pharmacy's hours
+and service are explicitly unknown. Planning returns an infeasible original
+request plus a conditional 18:31 home-deadline proposal that still requires
+verification. It never runs a provider or serves as a live failure fallback.
+The default /v1/demo and `scenario=basic` retain the original basic example.
+
 `POST /v1/parse` accepts natural language plus an offset-aware reference time.
 It uses the OpenAI Responses API with strict JSON schema and returns editable
 errands, optional `latest_finish` constraints, a nullable home deadline, questions

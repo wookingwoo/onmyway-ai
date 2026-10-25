@@ -18,6 +18,9 @@ if __name__ == "__main__":
     write(target / "openapi.json", app.openapi())
     write(target / "demo-plan-request.json", request.model_dump(mode="json"))
     write(target / "demo-plan-response.json", plan(request).model_dump(mode="json"))
+    conflict = demo_request("deadline_conflict")
+    write(target / "demo-deadline-conflict-request.json", conflict.model_dump(mode="json"))
+    write(target / "demo-deadline-conflict-response.json", plan(conflict).model_dump(mode="json"))
     write(target / "parse-request.json", {"text": "약국에서 약 사고 세탁물 찾아줘. 시간 되면 우유도 사고 7시까지 집에 도착하고 싶어.",
                                            "reference_time": "2026-10-23T18:00:00+09:00"})
     write(target / "parse-clarification-request.json", {
