@@ -208,6 +208,7 @@ class MainActivity : Activity() {
         input = field(storage, "할 일", prefs.getString("input", "").orEmpty(), true) {
             voiceExample = false
             intentReview = null
+            pendingParse = null; pendingPrior = null
             prefs.edit().putString("input", it).putBoolean("voice-example", false).apply(); requiresParse = true; edited()
         }.apply { hint = "약국 들르고, 세탁물 찾고, 장도 보고 싶어요" }
         server = field(storage, "서버 주소", prefs.getString("server", BuildConfig.DEFAULT_SERVER_URL).orEmpty()) {
@@ -344,7 +345,10 @@ class MainActivity : Activity() {
             else -> "동선 확인하기"
         }, true) {
             when {
-                requiresParse && pendingParse != null -> submitParse(JSONObject(pendingParse.toString()), pendingPrior)
+                requiresParse && pendingParse != null -> {
+                    val payload = pendingPrior?.retryPayload(requireNotNull(pendingParse), errands) ?: JSONObject(pendingParse.toString())
+                    submitParse(payload, pendingPrior)
+                }
                 requiresParse || reviewAction == ReviewAction.EDIT_REQUEST -> { flow.start(); render() }
                 reviewAction == ReviewAction.ANSWER -> intentReview?.let { answerQuestion(it, it.questions.first()) }
                 reviewAction == ReviewAction.HOME_TIME -> chooseHomeTime()
@@ -762,7 +766,7 @@ class MainActivity : Activity() {
         dialog(AlertDialog.Builder(this).setTitle("새 일정을 시작할까요?").setMessage("현재 일정과 완료 기록을 초기화합니다.").setNegativeButton("유지", null).setPositiveButton("새로 시작") { _, _ -> if (allowed() && !busy) {
             cancelOwnedNavigation()
             clearFixtureDrafts()
-            state.completed.clear(); state.routeFailed(); state.edited(); request = null; plan = null; errands = JSONArray(); fixture = false; requiresParse = false; voiceExample = false; intentReview = null
+            state.completed.clear(); state.routeFailed(); state.edited(); request = null; plan = null; errands = JSONArray(); fixture = false; requiresParse = false; voiceExample = false; intentReview = null; pendingParse = null; pendingPrior = null
             prefs.edit().putString("input", "").putBoolean("voice-example", false).putString("delay", "0").apply(); errorMessage = null; reviewNotes = null; simulate = false; computedElapsedMillis = null; flow.start(); persist(); render()
         } })
     }
