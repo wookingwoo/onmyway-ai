@@ -60,7 +60,7 @@ def validate_inputs(story, capture, root):
             raise ValueError("Actual capture hash mismatch")
 
 
-def captions(words, duration):
+def captions(words, duration, script=None):
     """Group provider word boundaries into readable, nonoverlapping subtitle cues."""
     if not words:
         raise ValueError("Missing spoken boundaries")
@@ -83,6 +83,27 @@ def captions(words, duration):
         cues.append([max(0, pending[0]["start"]-.05), min(duration, round(pending[-1]["end"]+.2, 3)), " ".join(w["text"] for w in pending)])
     for first, second in zip(cues, cues[1:]):
         first[1] = min(first[1], second[0])
+    if script is not None:
+        # Speech word events omit punctuation. Keep the author's complete Korean
+        # sentences while anchoring their first/last characters to real timings.
+        clean = lambda value: re.sub(r"[\W_]", "", html.unescape(value))
+        if clean("".join(w["text"] for w in words)) != clean(script):
+            raise ValueError("Spoken boundary text differs from narration")
+        positions, cursor = [], 0
+        for word in words:
+            size = len(clean(word["text"]))
+            positions.append((cursor, cursor+size, word))
+            cursor += size
+        cues, cursor = [], 0
+        for sentence in re.split(r"(?<=[.!?])\s+", script.strip()):
+            end = cursor + len(clean(sentence))
+            touched = [w for a, b, w in positions if b > cursor and a < end]
+            if not touched:
+                raise ValueError("Sentence has no spoken boundary")
+            cues.append([max(0,touched[0]["start"]-.05), min(duration,round(touched[-1]["end"]+.2,3)), sentence])
+            cursor = end
+        for first, second in zip(cues,cues[1:]):
+            first[1] = min(first[1],second[0])
     return cues
 
 
@@ -252,7 +273,7 @@ def build(root, story_path, font_dir):
             raise ValueError("Narration has no audio stream")
         audio_seconds = float(info["format"]["duration"])
         words = json.loads(audio.with_suffix(".json").read_text(encoding="utf-8"))
-        cues = captions(words, audio_seconds)
+        cues = captions(words, audio_seconds, ch["narration"])
         duration = max(12, math.ceil((audio_seconds + (5 if ch["kind"] == "closing" else 2.1))*30)/30)
         for a, b, text in cues:
             all_cues.append([cursor+.7+a, cursor+.7+b, text])

@@ -82,6 +82,14 @@ class StoryDemoBoundaries(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'narration'):
                 validate_inputs(good,capture,root)
 
+    def test_actual_word_timing_preserves_complete_korean_sentences(self):
+        words=[{"text":"귀가는", "start":0,"end":.4}, {"text":"여섯", "start":.5,"end":.8},
+               {"text":"시오십삼분예상", "start":.9,"end":2},
+               {"text":"바뀐순서를확인합니다", "start":2.6,"end":4}]
+        result=captions(words,5,"귀가는 여섯 시 오십삼 분 예상. 바뀐 순서를 확인합니다.")
+        self.assertEqual([c[2] for c in result],["귀가는 여섯 시 오십삼 분 예상.","바뀐 순서를 확인합니다."])
+        self.assertGreaterEqual(result[1][0],2.5)
+
 
 if __name__ == "__main__":
     unittest.main()
