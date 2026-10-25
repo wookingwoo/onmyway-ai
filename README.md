@@ -19,6 +19,8 @@ omission and separately approved home. See the [Korean scenario](docs/submission
 and [local production instructions](scripts/STORY_DEMO.md). Video/audio stay local;
 selected [actual film/native frames](docs/screenshots/story-demo/README.md) provide review evidence.
 The previous silent film and HTML pitch are historical; readiness records their scope.
+A separate [vertical motion Short](docs/submission/shortform-ko.md) remains available;
+it uses earlier footage and has its own verification scope.
 
 > **Current status:** The native app, deterministic planner and explicitly
 > labelled demo flow have been verified on the official Pleos emulator.

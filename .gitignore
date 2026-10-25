@@ -13,6 +13,7 @@ local.properties
 .tools/
 .worktrees/
 .superpowers/
+.playwright-mcp/
 *.jks
 *.keystore
 artifacts/private/
@@ -27,6 +28,7 @@ artifacts/evidence/intent-demo/
 artifacts/evidence/contest-core/
 artifacts/evidence/story-demo/
 artifacts/pitch/current/
+artifacts/shortform/
 
 # Generated deliverables stay local; keep their source and verification notes.
 /apk/

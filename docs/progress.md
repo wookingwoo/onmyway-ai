@@ -1,5 +1,130 @@
 # Delivery ledger
 
+## 2026-10-25 — reconcile the Short with latest main
+
+- Merged main `a4b24cd` (contest-core PR #7) into the existing Short branch at
+  remote `addfc6e`. Read verified Git objects through the connected GitHub API
+  because Git HTTP still returned 403. Reconstructed only SHA-identical commits,
+  reused existing local trees and preserved a local checkpoint before aligning
+  the feature branch with its remote history. No force push or main-branch write.
+- The only conflicted path was `docs/readiness.md`. Retained the latest main
+  app/test/venue/recovery evidence and its historical video/pitch status, then
+  included the separate Short. Auto-merged ignore rules, progress and application
+  changes were checked against main. Production code, contracts, screenshots,
+  application sections 1–7 and main's progress history remain intact.
+- Explicitly identified the Short as an edit of earlier intent-review footage,
+  not a demonstration of the new venue/automatic-preview/recovery UI. Current
+  core sharing requires fresh footage; no video was silently regenerated.
+  Existing MP4/SRT hashes remain unchanged; the provenance note is also in
+  `shortform-verification.json`. No binary deliverables were added to the PR.
+- Fresh merged-worktree checks: Short unittest **11 passed**, Python API pytest
+  **63 passed / 5.31s**, synthetic decision comparison **3/3 passed**. Android
+  demo/live unit tests each **80 passed**, with no failures/errors/skips; both
+  debug builds passed: **50s, 86 tasks: 16 executed / 70 up-to-date**. Existing
+  SDK XML/deprecated API warnings remain. Whitespace check against latest main
+  passed; pre-existing main plan/spec EOF whitespace was not rewritten.
+
+## 2026-10-25 — motion Short v2, faster quest-comedy revision
+
+- Continued the owner-requested revision in the same isolated feature worktree
+  and PR #6. Preserved the previous 54-second MP4/SRT/report locally under
+  `artifacts/shortform/archive-v1/`; no large media was added to Git.
+- Selected original workday/quest humor and a hand-drawn milk character after
+  researching official YouTube creator/trend guidance, linked in the design and
+  Korean storyboard. No claim that a specific joke is currently a top Korean
+  meme, or that reach/retention/awards are guaranteed.
+- New edit: **42.000 seconds / 18 scenes / 1,260 actually counted frames**,
+  1080×1920 / 30 fps / H.264/yuv420p / zero audio streams. About 22% shorter than
+  v1; mean scene length falls from 3.86 to 2.33 seconds. Staggered task cards,
+  title/stamp entrances, a wobbling milk character and its exit callback, plus
+  swipe/wipe/split/zoom cuts provide in-scene motion. Closing cards echo the hook.
+- `shortform_motion.py` streams deterministic original graphics with genuine
+  cropped footage through the builder. No fabricated native interaction or
+  silent source replacement. Caption/disclosure layers stay stationary through
+  transitions. A→B→A, mandatory errands, current approval, arrival/completion,
+  emulator-only driving evidence and separate home approval remain explicit.
+- Final canonical and friendly delivery-copy MP4 SHA-256:
+  `6eb92f83090280897b219f0583e9a6ddd30fe675e4df84f40aa1c59f379125d5`,
+  **2,701,260 bytes**. SRT SHA-256:
+  `90f4110cb289f17545114aa18c3c2a9e7ff4b4b3c065d9dcf23e7313c8b049d6`.
+  18 plain UTF-8 cues match the burned copy and exact scene boundaries, ending
+  at 42,000 ms. Future owner TTS synchronization remains pending.
+- Verification: FFmpeg `-xerror` full decode; FFprobe codec/rate/dimensions/audio,
+  actual decoded frame count and subtitle packets; 18 midpoint samples, 25
+  motion-beat samples, all 18 entries at 0/100/300 ms (54 frames), first/last
+  frames and 430-pixel browser preview. Continuous browser playback reached
+  42 seconds/ended with **1,260 decoded frames, zero dropped frames, no error**.
+  Metadata contains generic container/handler/encoder tags. No actual YouTube
+  overlay, physical device, TTS or physical-vehicle result is claimed.
+- Independent read-only review of `bdff612..1376478` found no Critical/Important
+  issue and confirmed the file hash, actual 1,260 frames and every SRT boundary.
+  Fixed the minor duration-derived frame report: the verifier now counts frames;
+  a mismatched 1,259-frame case went RED→GREEN. Regeneration retained identical
+  MP4/SRT hashes. The reviewer's test rerun hit a sandbox TEMP error; it is not
+  represented as green. Author's separate full run passed all **11 tests**.
+- Actual commands: `python -X utf8 -m unittest discover -s scripts/tests -p
+  test_shortform.py -v`: **11 passed**; existing virtualenv `python -m pytest
+  services/api/tests -q`: **30 passed / 1.19s**. Android offline
+  `testDemoDebugUnitTest testLiveDebugUnitTest assembleDemoDebug assembleLiveDebug`:
+  **BUILD SUCCESSFUL / 19s, 86 tasks up-to-date**. These reused the unchanged
+  app's existing 41-test results per variant; no fresh 82-test execution is claimed.
+- Friendly local delivery copies: `artifacts/shortform/OnMyWay_AI_Shorts_motion_v2.mp4`
+  and `OnMyWay_AI_Shorts_motion_v2_ko.srt`. Canonical names remain reproducible;
+  `docs/shortform-verification.json` identifies both. All media/scratch images
+  remain ignored. Public posting, TTS and final contest submission remain pending.
+
+## 2026-10-25 — silent YouTube Short and matching captions
+
+- Created a new managed `youtube-shorts/onmyway-ai` worktree and named
+  `feat/youtube-shorts` from main `53fcde9`. Connected GitHub confirmed the same
+  current main SHA. Local Git HTTP authentication returned 403, so publishing
+  uses the connected GitHub API; each remote tree is compared with its local
+  checkpoint tree. No repository visibility or access grants changed.
+- User delegated research, concept, production, incremental commits and PR.
+  Selected a 54-second portrait mini-story: three errands and home by 19:00,
+  clarification, calculated completion, a separately labeled 18:20 conflict,
+  approved +11 minutes with optional milk excluded, return to the first example,
+  separate completion, emulator driving restriction and separate home approval.
+- Official contest and YouTube sources are linked in the design and Korean
+  `submission/shortform-ko.md`. No award, reach or retention is guaranteed.
+- `scripts/build-shortform.py` and `assets/shortform/timeline-ko.json` reproduce
+  the original graphics, exact subtitles and editorial crops of three approved
+  actual raw captures. Missing/changed raw sources fail closed by hash. Large
+  media and all rendered frames are ignored under `artifacts/shortform/`.
+- Final local MP4: **54.000 seconds, 1080×1920, 30 fps, H.264/yuv420p, zero audio
+  streams, 1,252,032 bytes**. SHA-256
+  `f1ff16c79799f25bd4d7d44f7721fe11a26dc70157f65fdfa08bfcd4f0222ffe`.
+  Source excerpts are 1× and labeled editorial crops. Persistent Korean copy
+  states fixture interpretation/place/time and simulated guidance/arrival.
+- Small versioned UTF-8 SRT: 14 ordered cues from 0 to 54 seconds, no BOM or
+  style tags; byte-identical local delivery copy. SHA-256
+  `0ae051725ff25c1985503716c3451028d580ddb717543949a2568099ce0ffba4`.
+  FFprobe parsed all 14 subtitle packets; the final cue ends at 54 seconds.
+  Removed the redundant final blank line after a focused RED→GREEN assertion;
+  regenerated output has the same MP4 hash and passes Git whitespace checking.
+  It matches burned captions; synchronization to future owner TTS is pending.
+- Full FFmpeg `-xerror` decode passed. FFprobe checked codec/dimensions/frame
+  rate/audio/duration; metadata contains only generic container/encoder tags.
+  Inspected every scene midpoint, full-size critical UI crops, first/last frames
+  and 430-CSS-pixel browser preview. Corrected two raw trim/crop choices and made
+  the A→B→A example transition explicit. No physical-phone/YouTube-overlay test.
+- Fresh independent read-only review inspected code, docs, exact SRT and all 14
+  samples: zero Critical/Important issues. Removed one skipped chapter number.
+  Reviewer independently confirmed SRT/timeline and MP4 hash; its temp-file test
+  hit a sandbox permission limit. Author's full test command passed all 6.
+- Actual fresh regression commands/results in this worktree:
+  - `python -m unittest discover -s scripts/tests -p test_shortform.py -v`:
+    **6 passed**, after observing the initial missing-builder RED run.
+  - Existing virtualenv `python -m pytest services/api/tests -q`: **30 passed**.
+  - Gradle 8.9/JDK 17, offline: `testDemoDebugUnitTest testLiveDebugUnitTest
+    assembleDemoDebug assembleLiveDebug`: **BUILD SUCCESSFUL, 86 tasks executed**,
+    **41 tests per variant / 82 executions**, no failures/errors/skips. Existing
+    SDK XML/deprecated Android API/native-library stripping warnings remain.
+- Generated APKs stay local. App/API production behavior did not change.
+  Continuous browser playback evidence and delivery checks are recorded in
+  `shortform-verification.json`. Public upload, final TTS, participant identity,
+  consent/signature and final entry submission remain owner actions.
+
 Plan: docs/superpowers/plans/2026-10-23-onmyway.md
 
 - 2026-10-23: Empty repository verified. No existing code or tests. Python 3.13, Node, gh and ffmpeg present; Android SDK/JDK not found in conventional locations.
@@ -529,3 +654,5 @@ Final audio uses ko-KR-SunHiNeural through optional edge-tts 7.3.1 in a separate
 Selected evidence: docs/screenshots/story-demo/ contains four unedited 2560x1440 app/vehicle PNGs and two clearly labelled 1920x1080 final-film frames. They are byte-identical to local sources, with hashes in the README. Video, audio, raw clips/XML, player and reports remain ignored under artifacts/evidence/story-demo/. No MP4/MP3/WAV, APK, office file or archive is added to Git. Current media references point to the story film; old silent video, pitch and office files remain historical.
 
 Live STT/LLM/Kakao, actual navigation acceptance/arrival, physical-vehicle use, measured user benefit and contest ranking remain unverified. No publication, reviewer grant, identity, consent/signature or final email submission occurred. The PR reports remote CI after publication.
+
+Integration follow-up: while PR #8 was being prepared, main advanced to 6762f2f6 through the separate motion-Short work. GitHub comparison confirmed local e361e52 and that main merge have identical file contents. Merged that snapshot into this feature branch, preserving all Short assets/scripts/captions and both verification histories. Resolved only shared documentation/ignore rules, retaining the new story as the current full demo and the Short as a separate earlier-footage edit. No app/server source changed. The combined production suite passes: 22 tests in 0.278 seconds; the Short's existing Pillow deprecation warning is non-fatal. Final story-film bytes/hash and completed playback evidence are unchanged. The remote merge commit includes current main as its second parent so PR review/CI can run without conflicts.

@@ -1,8 +1,9 @@
 # Submission readiness
 
 **Status: KEY-FREE DEMO READY; LIVE LAUNCH AND SUBMISSION PENDING.**
-Checked 2026-10-25. This is a functioning native demo, not a verified live service
-or a submitted entry.
+Checked 2026-10-25. The separate motion Short uses earlier intent-review footage
+and is not evidence of the current venue/automatic-preview flow. This is a
+functioning native demo, not a verified live service or a submitted entry.
 
 | Requirement | Actual evidence |
 | --- | --- |
@@ -15,9 +16,10 @@ or a submitted entry.
 | SDK scope | Earlier STT initialization/listening/cancellation and NaviHelper binding checks are recorded; new lifecycle policies have JVM tests. Final Korean transcription, real route acceptance/arrival and SDK release/replay effects remain unverified |
 | Missing providers | Actual missing-key 503 without fixture fallback. All provider health booleans false; no external key provisioned |
 | Screenshots | Six selected story-film/native PNGs in docs/screenshots/story-demo, with exact source hashes; historical core/intent-review captures remain |
-| Current story film | 183.3 seconds, 1920x1080 H.264/AAC, Korean editorial narration with word-timed subtitles; actual footage at 1x with labelled cuts/held states; one consultation-correction journey ending at home18:53 |
+| Current story film | 183.3 seconds, 1920x1080 H.264/AAC, Korean editorial narration with word-timed subtitles; actual footage at 1x with labelled cuts/held states; one consultation-correction journey ending at home at 18:53 |
 | Film checks | Full decode, all 11 chapter frames and uninterrupted browser playback to 183.3/183.3 verified; 11 media-boundary tests pass; independent review findings fixed |
 | Historical video | 107.667 seconds, 1920x1080, silent, explicitly 2x; full home journey, adjustment, actual driving lock; permanent Korean disclosure, full decode and visual/playback verification |
+| YouTube Short | Separate 42-second, 18-scene animated 1080×1920 silent edit and Korean SRT, based on earlier intent-review footage. Regenerate for the current core UI before contest sharing; owner TTS/public posting pending. Storyboard: docs/submission/shortform-ko.md |
 | Historical pitch | Seven previously checked Korean HTML slides; regenerate to reflect the new venue/automatic-preview flow before contest sharing |
 | Application | Current anonymous Korean section 02 source updated. Old local DOCX/PPTX/ZIP predate this flow and must not be submitted as current |
 | GitHub/CI | Private repository. Core PR #7 merged; Verify run 40162905821 passed on its head. The story-film PR reports its own remote checks separately |
@@ -33,7 +35,9 @@ The example uses fixed 2026-10-23 18:00 data; it is not today's live recommendat
 The new story film supersedes the previous silent recording. Its single journey
 and actual captures are documented in docs/submission/story-demo-ko.md and
 docs/screenshots/story-demo/README.md. The historical pitch and official office
-files still need regeneration before contest sharing. Synthetic comparisons and
+files still need regeneration before contest sharing. The separate vertical Short
+also needs current-core footage before contest sharing, as documented in
+docs/submission/shortform-ko.md. Synthetic comparisons and
 the unperformed user protocol are in docs/evaluation-guide.md and
 docs/submission/user-study-ko.md. Real provider/navigation/user benefit remains unverified.
 
@@ -45,6 +49,8 @@ Local deliverables:
 - `artifacts/evidence/story-demo/index.html` (local player)
 - `artifacts/evidence/story-demo/media-verification.json`
 - `artifacts/pitch/current/index.html` (generate with `scripts/build-pitch.py`)
+- `artifacts/shortform/OnMyWay_AI_Shorts_silent.mp4` (generate with `scripts/build-shortform.py`; requires approved local raw footage)
+- `artifacts/evidence/OnMyWay_AI_Shorts_ko.srt` (versioned small caption file)
 
 ## Remaining launch and submission work
 
@@ -69,8 +75,11 @@ certification is claimed. Business numbers are explicitly hypothetical in
 alternatives and launch gates.
 
 APKs, video, HTML pitch, raw captures/logs, office files and archives stay local.
-Only selected authorized actual screenshots are committed; the historical allowed
-SRT remains. Current story-film captions stay local alongside the film. The older review ZIP and old office/video files are superseded.
+Only selected authorized actual screenshots and small caption/source files are
+committed. The historical allowed SRT remains. Current story-film captions stay
+local alongside the film. The vertical Short is a separate edit of the earlier
+intent-review flow, not evidence of the new core UI. Older review ZIP and
+office/video files are superseded.
 Repository visibility is unchanged. Owner identity in GitHub/Git history has not
 been made anonymous; public release and reviewer grants require user action.
 Historical remote Git objects may persist; cache erasure is not established.
