@@ -13,8 +13,15 @@ deadline for getting home.
 Current contest positioning and honest differentiation:
 [Korean strategy](docs/contest-strategy-ko.md). Presenter/recovery instructions:
 [demo guide](docs/demo-guide-ko.md), [five-minute pitch and Q&A](docs/submission/pitch-and-demo-ko.md).
-The previous 107.667-second video and seven-slide HTML pitch are listed in
-[readiness](docs/readiness.md); generated deliverables are excluded from Git.
+The current story film follows one natural-language request, automatic route
+preparation and a spoken 30-minute pharmacy refinement, preserving mandatory
+pickup, optional milk omission and separately approved home. Every native chapter
+shows the **full Pleos surface including the left vehicle panel**. See the [Korean scenario](docs/submission/story-demo-ko.md)
+and [local production instructions](scripts/STORY_DEMO.md). Video/audio stay local;
+selected [actual service-cockpit frames](docs/screenshots/pleos-cockpit/README.md) provide review evidence.
+The previous silent film and HTML pitch are historical; readiness records their scope.
+A separate [vertical motion Short](docs/submission/shortform-ko.md) remains available;
+it uses earlier footage and has its own verification scope.
 
 > **Current status:** The native app, deterministic planner and explicitly
 > labelled demo flow have been verified on the official Pleos emulator.
@@ -230,18 +237,23 @@ plan explanations use the solver's actual times and uncertainty.
 Prepared interpretation and simulated navigation are labelled; no live model
 result is claimed by this example.
 
-While actually parked, **음성으로 말하기** starts Pleos on-device Korean speech
-recognition. A final transcript requires **이 내용 사용하기** before it replaces
-the editable input. Parsing and planning remain separate user actions. Cancel,
-background and driving restrictions stop the session and release the microphone.
+While actually parked, **말로 부탁하기** starts Pleos on-device Korean speech
+recognition. A final transcript automatically starts interpretation and route
+preparation. Missing conditions can be answered by speech; generic flexible shops
+are proposed automatically, while exact pickup venues require confirmation.
+The compact summary shows ordered venues, dwell/completion deadlines and home ETA. Original text, answers and detailed evidence stay under **요청 · 일정 자세히**. Live and sample use the same main labels/layout; only a small source badge distinguishes synthetic data. Simulation event utilities live in settings.
+**확인하고 출발** approves only the current fresh destination; speech never
+starts navigation by itself. Cancel, background and driving restrictions stop the
+speech session and release the microphone.
 
-For a key-free presentation, choose **예시 음성 흐름 체험 → 이 내용 사용하기 →
-예시 할 일 확인하기**, then continue the existing fixture journey. This is prepared
-example text with simulated navigation, explicitly labelled throughout; it does
-not claim live STT or LLM interpretation. Actual SDK readiness is verified, while
-successful final Korean transcription remains unverified.
+For a key-free presentation, explicitly choose **설정 → 샘플로 둘러보기**, then use the same **말로 부탁하기** action.
+The real native orchestration and solver prepare the labelled fixture journey.
+**말로 조건 바꾸기** applies a clearly identified saved refinement in sample mode
+and recalculates automatically. These are prepared texts with simulated navigation,
+not live STT or LLM interpretation. Successful final Korean transcription remains
+unverified. Exact location setup is still required before a live journey.
 
-![Actual native example transcript confirmation, explicitly labelled as prepared text](docs/screenshots/voice-input/example-review.png)
+![Actual native prepared conversation before automatic route preparation](docs/screenshots/pleos-cockpit/voice-request.png)
 
 [Voice verification and reproduction](apps/automotive/README.md#voice-input-demo)
 · [Actual day/night and driving-lock captures](docs/screenshots/voice-input/README.md)
@@ -272,8 +284,8 @@ validation. Exact commands, revisions and caveats are in the
 
 | Check | Recorded evidence |
 | --- | --- |
-| Backend | 63 Python tests passed; provider HTTP mocked, including venue identity, availability evidence and conditional proposals |
-| Android | 80 unit tests per variant passed, including venue review, elapsed deadline slack, request ownership/timeout and approval/completion boundaries |
+| Backend | 67 Python tests passed; provider HTTP mocked, including venue identity, availability evidence and conditional proposals |
+| Android | 101 unit tests per variant passed, including venue review, elapsed deadline slack, request ownership/timeout and approval/completion boundaries |
 | Builds | Demo/live debug and signed release builds passed; release v3 signatures verified |
 | Actual Pleos demo | Pinned example pickup → HTTP plan → arrival stays incomplete → three explicit completions with automatic previews → separately approved simulated home |
 | Actual vehicle restrictions | Drive / 30 km/h locked actions and dismissed an open editor; Park / 0 restored |
@@ -293,20 +305,29 @@ Live OpenAI/Kakao authentication, real place/road results, actual Pleos route
 acceptance and arrival, and physical-vehicle usability remain unverified.
 Current Kakao keyword results do not establish opening hours or service
 availability; current-traffic durations are snapshots rather than forecasts.
-Pleos ON_DEVICE voice input is implemented, with explicit transcript confirmation
-and an independent, labelled example-text demo. Actual SDK initialization,
+Pleos ON_DEVICE voice input is implemented, with automatic final-transcript
+submission and an independent, labelled example-conversation demo. Actual SDK initialization,
 listening readiness, cancellation, background cleanup and bounded no-audio failure
 have been checked on the emulator. Successful final Korean transcription remains
-unverified. TTS and automatic location acquisition are not implemented.
+unverified. Pleos ON_DEVICE Korean plan output has been implemented and actually
+recorded on the official AVD. Spoken refinement and explicit departure/home
+approval use the same guarded native flow. Successful real Korean recognition
+and live provider/navigation results still require validation. Automatic location
+acquisition is not implemented. See [spoken conversation](docs/spoken-conversation.md).
 
 No measured time savings, current users or retention results are claimed.
 [Current readiness and next verification steps](docs/readiness.md).
 
 ## Evidence and contest materials
 
-The current local recording is a **135.7-second, FHD, silent** capture of the
-new UI with 18 Korean subtitle cues. Videos, raw captures, APKs, office documents
-and archives stay local; authorized screenshots and the small
+The current local film is **164.36 seconds, FHD, constant30fps**, with actual
+Pleos ON_DEVICE plan speech and offline prepared user dialogue. It shows spoken
+refinement, guarded spoken departure and separately approved home navigation.
+Every native scene includes the full Pleos vehicle/app surface. Captions are
+authored summaries and prepared-dialogue sentence cues. See [current evidence](docs/screenshots/spoken-plan/README.md)
+and [local production](scripts/SPOKEN_DEMO.md). Earlier editorial-narration and silent
+captures are historical. Videos, raw captures, APKs, office documents and
+archives stay local; authorized screenshots and the historical small
 [Korean SRT](artifacts/evidence/OnMyWay_AI_Pleos_new_ui_demo.srt) are versioned.
 [Recording provenance and local file names](artifacts/evidence/README.md).
 

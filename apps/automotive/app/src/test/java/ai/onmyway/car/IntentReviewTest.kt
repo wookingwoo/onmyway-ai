@@ -6,6 +6,33 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class IntentReviewTest {
+    @Test fun retryRebasesOntoNewerEditorConstraintsWithoutLosingSpokenAnswerOrLeakingPlaces() {
+        val value = review()
+        val pending = value.refinementPayload("약국은 30분", value.response.getJSONArray("errands"))
+        val current = JSONArray(value.response.getJSONArray("errands").toString())
+        current.getJSONObject(0).put("dwell_seconds", 2400).put("latest_finish", "2026-10-23T18:40:00+09:00")
+            .put("selected_place", JSONObject().put("id", "private-pin")).put("candidates", JSONArray())
+        value.selectDeadline("2026-10-23T18:50:00+09:00")
+        val next = value.retryPayload(pending, current)
+        val item = next.getJSONArray("previous_errands").getJSONObject(0)
+        assertEquals(2400, item.getInt("dwell_seconds"))
+        assertEquals("2026-10-23T18:40:00+09:00", item.getString("latest_finish"))
+        assertFalse(item.has("selected_place"))
+        assertFalse(item.has("candidates"))
+        assertEquals(value.deadline, next.getString("previous_deadline"))
+        assertEquals("약국은 30분", next.getJSONArray("answers").getJSONObject(0).getString("answer"))
+        assertEquals(600, pending.getJSONArray("previous_errands").getJSONObject(0).getInt("dwell_seconds"))
+    }
+
+    @Test fun earlierSpokenDeadlineOverridesAnEarlierPickerSelectionAndSurvivesRestore() {
+        val value = review()
+        value.selectDeadline("2026-10-23T19:00:00+09:00")
+        val payload = value.refinementPayload("18시45분까지 집에 도착해야 해", value.response.getJSONArray("errands"))
+        val next = value.acceptAnswer(response("2026-10-23T18:45:00+09:00"), payload)
+        assertEquals("2026-10-23T18:45:00+09:00", next.deadline)
+        assertEquals(next.deadline, IntentReview.restore(next.toJson()).deadline)
+    }
+
     private fun response(deadline: String? = "2026-10-23T19:00:00+09:00", questions: List<String> = emptyList()) = JSONObject()
         .put("errands", JSONArray("""[{"id":"medicine","label":"약 구매","query":"약국","mandatory":true,"dwell_seconds":600}]"""))
         .put("deadline", deadline ?: JSONObject.NULL).put("clarification_questions", JSONArray(questions)).put("warnings", JSONArray())

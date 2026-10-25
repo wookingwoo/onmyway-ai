@@ -49,7 +49,8 @@ The default /v1/demo and `scenario=basic` retain the original basic example.
 `POST /v1/parse` accepts natural language plus an offset-aware reference time.
 It uses the OpenAI Responses API with strict JSON schema and returns editable
 errands, optional `latest_finish` constraints, a nullable home deadline, questions
-and warnings. The frontend must review and edit this draft before discovery.
+and warnings. The frontend may prepare a route proposal automatically; the user
+reviews its complete summary before approving navigation.
 `OPENAI_API_KEY` and `OPENAI_MODEL` are both required; no model is silently chosen.
 Refusal, incomplete output, invalid output, HTTP failures and timeouts produce
 explicit errors and never synthetic results.
@@ -66,8 +67,9 @@ departure time and deadline. Set `KAKAO_REST_API_KEY` and
 preserves the chosen identity, coordinates, source, address and availability
 evidence, bypasses keyword search and becomes its sole candidate. Live discovery
 rejects a selected fixture with 422 `fixture_place_not_allowed`, before reading
-provider configuration. Pinned-only requests need no Local key. Legacy errands
-without selection still search for one candidate. Discovery always obtains the
+provider configuration. Pinned-only requests need no Local key. Unselected fixed
+errands require exact venue confirmation; flexible errands search up to three
+candidates. Discovery always obtains the
 directed road matrix and returns a `PlanRequest` for review and `POST /v1/plan`.
 Maximum five Local calls and 31 Mobility calls per discovery.
 These calls can consume provider quota; no live call was made during development.
@@ -148,3 +150,26 @@ are retained conservatively if a clarification weakens them, with an explicit
 Korean warning to use the manual editor for relaxation. No provider failure falls
 back to an example. Credentials remain server-only and are not required for the
 independently requested fixture endpoints.
+
+## Voice-first proposals
+
+`ErrandInput.place_mode` defaults conservatively to `fixed`. The live extractor
+marks generic replaceable purchases/services `flexible`; existing pickups,
+reservations and designated venues remain `fixed`. `/v1/discover` rejects an
+unselected fixed venue with `fixed_place_required` before any provider call.
+Flexible errands search up to three candidates and the solver compares them;
+selected fixed venues remain authoritative. The upper bound is five searches and
+241 directed road requests, concurrency four. Provider errors never select fixtures.
+The sample discover request remains a draft: confirm its exact pickup before live
+use. Generic search still supplies unknown hours/service and cannot prove feasibility.
+
+Clarification/refinement retains all previous ids, mandatory flags and conservative
+time constraints. A supplied venue name can refine a query, invalidating its native
+pin. Fixed cannot become flexible through a follow-up. Spoken dwell increases and
+earlier deadlines work; explicit editor changes are required to relax constraints.
+The native app can calculate a proposal automatically, but navigation always
+requires the user's approval of the current fresh summary.
+
+Strict schema integration remains server-only and `store: false`; see the
+[official Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
+Tests mock provider HTTP; no live authentication or extraction quality is claimed.

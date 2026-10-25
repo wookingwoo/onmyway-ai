@@ -632,3 +632,197 @@ Korean study cards are an unperformed exploratory protocol; no user contacted,
 recruited or measured. The prior107.667-second video, HTML pitch and older office
 files predate this flow and need regeneration before contest sharing. No contest
 submission, identity/consent/signature, public publication or access grant occurred.
+
+## 2026-10-25 — One narrated dinner-deadline story film
+
+Branch: feature/immersive-demo-video. The user approved the life-situation plus actual-app approach and requested autonomous production, incremental commits and a screenshot-rich PR. Product Kotlin/FastAPI behavior is unchanged.
+
+The new anonymous story follows one independently selected synthetic journey: 18:00 departure, laundry pickup completion by 18:30, mandatory medicine, optional milk and a 19:00 home deadline. Clarification and exact laundry selection precede a baseline 18:40 home estimate. Before departure the user changes pharmacy dwell from 10 to 30 minutes. The existing HTTP planner puts laundry first (arrival 18:06, completion 18:11), medicine second (18:16, 18:46), excludes optional milk and predicts home at 18:53. The deadline and both mandatory errands remain. This is a user correction, not detected live delay or traffic. Two explicit completions, automatic remaining preview and separately approved simulated home arrival were freshly recorded.
+
+Official Pleos Connect 2.1.0 / API 34 AVD capture verified actual Drive / 30 km/h restriction and Park / 0 restoration. The first recorder assertion expected the wrong literal; actual XML established the native wording, then a bounded resume required the same pending labelled synthetic journey. No live journey or app data was cleared. All nine raw hashes and final-state markers fit independently probed media durations.
+
+Final local film: artifacts/evidence/story-demo/OnMyWay_AI_story_demo.mp4 — 183.3 seconds, 1920x1080, 30 fps H.264/AAC stereo, 7,050,518 bytes. SHA-256: e1b3935b41dbb98339bb773ef896aa5bd3508eae613701e8dd15f4ca43aae2b8. Actual footage remains at 1x; waiting cuts and held states are visibly labelled. Editorial graphics remain outside the native viewport. Korean AI narration is separate from app STT/voice output. Complete sentences are anchored to actual returned word timings. Local SRT/ASS and an original quiet synthesized music bed accompany the film.
+
+Media checks: ffprobe dimensions/streams and matching chapter frame/timebases pass; full video/audio decode passes. All 11 final chapter frames and key full-size native/approval frames were inspected. Actual in-app browser playback advanced from 0 to 183.3/183.3, ended=true, muted=false, readyState=4, without a media error. Technical audio analysis: integrated -16.42 LUFS, true peak -4.37 dBTP. This does not claim subjective listening certification. An intermediate rebuild encountered a Windows file lock from the owned review player; closing that tab allowed final staged replacement. Failed builds invalidate stale success reports and retain the previous film.
+
+Production checks: 11 unittest cases pass (0.046 seconds, final scoped run). RED→GREEN evidence covers missing narration, path escape, spoken timing, mixed 25/30 fps timebase drift, stale narration/boundary provenance, empty cues, truncated final-state markers and Korean sentence continuity. Initial visual QA caught concat drift; all chapters now use 30 fps and timebase 1/90000. Independent review found two P2 provenance/truncation gaps; both were reproduced, repaired and cleared. Final caption re-review checked all 35 cues across 11 actual audio chapters: complete authored sentences, positive duration, valid bounds, no overlaps and at most two wrapped lines. The CI API job now includes the dependency-free media checks.
+
+Application checks: 63 Python tests passed in 1.31 seconds. Native testDemoDebugUnitTest, testLiveDebugUnitTest, assembleDemoDebug and assembleLiveDebug succeeded in 28 seconds, with 86 tasks UP-TO-DATE and matching 80-test reports per variant. These cached checks are not presented as 160 fresh executions. Fresh AVD behavior is separate evidence. No new product dependency, app key or live app-provider call was introduced.
+
+Final audio uses ko-KR-SunHiNeural through optional edge-tts 7.3.1 in a separate ignored production environment (Pillow 13.0.0). Connected ElevenLabs quota and Artlist download entitlement prevented final use; restricted previews were not downloaded or incorporated. No billing, credential or access change was made. Anonymous text was sent for editorial speech only; source, audio and boundary hashes are bound at assembly.
+
+Selected evidence: docs/screenshots/story-demo/ contains four unedited 2560x1440 app/vehicle PNGs and two clearly labelled 1920x1080 final-film frames. They are byte-identical to local sources, with hashes in the README. Video, audio, raw clips/XML, player and reports remain ignored under artifacts/evidence/story-demo/. No MP4/MP3/WAV, APK, office file or archive is added to Git. Current media references point to the story film; old silent video, pitch and office files remain historical.
+
+Live STT/LLM/Kakao, actual navigation acceptance/arrival, physical-vehicle use, measured user benefit and contest ranking remain unverified. No publication, reviewer grant, identity, consent/signature or final email submission occurred. The PR reports remote CI after publication.
+
+Integration follow-up: while PR #8 was being prepared, main advanced to 6762f2f6 through the separate motion-Short work. GitHub comparison confirmed local e361e52 and that main merge have identical file contents. Merged that snapshot into this feature branch, preserving all Short assets/scripts/captions and both verification histories. Resolved only shared documentation/ignore rules, retaining the new story as the current full demo and the Short as a separate earlier-footage edit. No app/server source changed. The combined production suite passes: 22 tests in 0.278 seconds; the Short's existing Pillow deprecation warning is non-fatal. Final story-film bytes/hash and completed playback evidence are unchanged. The remote merge commit includes current main as its second parent so PR review/CI can run without conflicts.
+# Voice-first app and full-Pleos film revision — 2026-10-25
+
+Owner scope: actual app and film together; keys supplied later. Work continues in
+the existing isolated `feature/immersive-demo-video` worktree and open PR #8.
+
+- Final parked speech is consumed once and starts interpretation, necessary
+  clarification, flexible venue discovery and planning automatically. Spoken
+  answers/refinements retain the original request, required errands and deadlines.
+  The summary includes the latest answer, ordered venues, dwell/completion times,
+  home deadline and omitted optional errands. One explicit current-summary action
+  approves departure; final home approval remains separate.
+- `place_mode` defaults to fixed. Existing pickups cannot use nearest-shop
+  substitution. Flexible purchases search up to three candidates; source hours
+  and service remain unknown. Failed live operations never select examples.
+- New constraints immediately invalidate old approval, including parse failures.
+  A fresh reviewer found two P1 boundary cases: an earlier spoken home deadline
+  after picker use, and retrying a failed refinement after newer editor changes.
+  Both were fixed; targeted re-review is clean. The first regression was observed
+  failing before the fix. Retry context is rebased, and new input/reset clear it.
+- Actual backend verification: **67 passed in 1.12 s**, provider HTTP mocked.
+  Actual Android verification: demo/live **86 unit tests each**, zero failures,
+  errors or skips; both debug and release builds and release lint-vital checks
+  succeeded in **1m 5s**, 182 tasks (32 executed,150 up-to-date). JDK17 short TEMP
+  and WindowsSelector setup used; existing SDK XML/deprecation warnings remain.
+- Current local release APKs were signed with the existing ignored development
+  keystore, signatures verified, compatible demo update installed on the isolated
+  official AVD. Demo SHA256 `73f0364be81208faba400b6dc6c675dc7bd8af4ee905218d72ec70b9fe2921bc`;
+  live `d474954aba98786c0063d8c05f98b564845c6dd0882afaa5f9fd8529dac17640`.
+- Owner additionally requires the left Pleos surface in the movie. Every native
+  chapter now fits the entire 16:9 vehicle/app/bottom-control surface in1568×882,
+  with separate chapter and subtitle bands. Framing regression observed RED then
+  GREEN; **12 film-boundary tests passed in0.018s**. Final movie verification is recorded below.
+- Live Korean final ASR, OpenAI/Kakao authentication/results, actual native route
+  acceptance/arrival and physical-vehicle usability remain unverified. Locations
+  still need setup; spoken removal/relaxation of required constraints is not
+  supported in this iteration. No real time-savings or guaranteed contest result.
+
+## Final full-Pleos film verification
+
+- New film: ignored `artifacts/evidence/voice-first-demo/OnMyWay_AI_story_demo.mp4`,
+  **173.966666 s (2:54), 1920×1080, H.264/AAC stereo, 6,595,516 bytes**.
+  SHA256 `10c7582610cde433a0f22ccf4534c6983ad8e801e559d817edbddda648599d92`.
+- Nine actual capture chapters complete the same prepared evening journey. First
+  four chapters were retained with matching hashes after a recorder selector
+  expected an old offscreen optional-row label; the revised preview was explicitly
+  verified before resuming. APK update correctly restored simulation off; the
+  labelled fixture mode was explicitly re-enabled. No alternate scenario or live
+  fallback was substituted. Final AVD state is Park/0.
+- Reviewed all11 final chapter frames/contact sheet, full-size revised film frame
+  and actual request/refinement/plan captures. Every native movie chapter shows
+  the complete Pleos left vehicle surface, app and bottom bar; header/subtitles
+  stay outside. Source windows remain1x with cuts/holds disclosed.
+- Full decode passed. Actual IAB playback from0 to173.966666 ended=true,
+  muted=false,error=null, without seeking. This is playback/technical verification,
+  not subjective narration listening certification.31 subtitle cues retain every
+  authored sentence, no more than2 lines (actual maximum1); caption boundaries
+  and complete text checked. Audio integrated−16.4LUFS, true peak−4.1dBFS.
+- Final editorial audio uses the existing Microsoft Edge/SunHi workflow, not
+  Artlist. App/request/refinement audio is clearly identified as prepared editorial
+  speech, not measured real ASR/LLM success. Raw/audio/manifests/movie remain local.
+  Five selected actual screenshots are permitted under `docs/screenshots/voice-first/`.
+
+## Unified Pleos service cockpit — owner steering
+
+Live/sample main surfaces now share service language, input, compact summary,
+spoken refinement, approval and explicit completion. Source is selected separately
+in settings; a small truthful badge remains. Simulation arrival utilities moved
+to settings and require demo+fixture+simulation+parked/current-active-leg gates.
+Raw sample venue names are plausible fictional names with fixture provenance.
+Long original/answer/evidence text lives behind the details action; mandatory
+flags, dwell/completion deadlines, omitted optional work and home ETA remain in
+view. No new API credentials or live provider calls.
+
+Design skills used: frontend-design, design-system and ui-ux-pro-max. Reviewed
+[official Pleos UI principles](https://document.pleos.ai/docs/connect/guide/docs-design/Introduction/intro)
+and [display layout](https://document.pleos.ai/en/docs/connect/guide/docs-design/getting-started/layout).
+Shared semantic day/night tokens, native Korean type and≥80dp touch targets;
+all normal/secondary/warning text surface pairs are unit-tested at≥4.5:1.
+This is implementation guidance, not platform certification or physical-user proof.
+
+Actual final checks: backend67 pass1.47s; Android demo/live90 tests each, zero
+failures/errors, both debug/release builds and lint-vital pass in1m5s,182 tasks
+(30 executed,152 up-to-date).14 media boundary tests pass0.020s. A fresh reviewer
+found speech missing on infeasible plans and recorder source/heading issues;
+all fixed and targeted re-review clean. Source controls and fresh completion
+boundaries tested. Final signed APKs verified and updated on official isolated AVD.
+
+OnMyWay_AI_demo_release.apk SHA256 `470d785c149175ff4abbeefccc5838f08ea446849a3bb457973b57f59847f0f9`.
+
+OnMyWay_AI_live_release.apk SHA256 `54ce6334cf1d775230123eb301fbb04bf403f921643860adfdf921e4d651d28c`.
+
+### Final shared-cockpit media and visual evidence
+
+New local film `artifacts/evidence/pleos-service-demo/OnMyWay_AI_story_demo.mp4`:
+**158.045333s (2:38),1920×1080,H.264/AAC stereo,5,332,388bytes**;
+SHA256 `0e17bc0427a9e1dca19b76749e1cd2891281bc31bf219ac02a81f1e67fd53ff2`.
+Ten narrative chapters use actual independently selected sample UI and the same
+one evening journey; required stops and18:53/19:00 home remain. Native captures
+complete; actual Drive30 lock and Park0 restore. Day/night input/request/plan
+inspection passed on the official AVD and original night mode `no` was restored.
+
+All10 final chapter frames reviewed plus full native day/night plan and input.
+Prepared quote scenes hold their actual recorded request state (disclosed),
+then show actual automatic results. The full left Pleos panel/bottom bar remain
+in every native chapter. Final encode fixes observed concat timestamp gaps:
+r_frame_rate=avg_frame_rate=30/1,start_time=0,4741frames. Complete decode passes.
+Actual browser playback0→158.045333 ended=true,muted=false,error=null,no seeking.
+
+29 caption cues retain every authored word; max1 lines, timing boundary checks pass. Audio−16.3LUFS, true peak−4.2dBFS; no
+subjective listening certification. Six owner-authorized actual images are in
+`docs/screenshots/pleos-cockpit/`. Earlier movie revisions above are historical;
+no MP4/audio/APK/raw/XML/report is committed. Final live ASR/LLM/Kakao/native
+navigation and physical-vehicle validation remain outstanding; keys are added
+later only on the server. Public video upload/final contest submission not done.
+## 2026-10-25 — spoken plan conversation and actual native-audio film
+
+The actual Android app now reads the solver's ordered plan with Pleos
+TextToSpeech 3.3.1 in explicit ON_DEVICE mode. No speech key, app registration,
+cloud fallback or provider credential was read. Speech states uncertainty,
+required completion deadlines, dwell, omitted optional errands and home ETA.
+Explicit voice turns can refine conditions or approve only the current next
+destination/home. Bare assent, questions, negation, mixed commands, duplicate or
+stale turns cannot grant departure authority. Arrival still requires separate
+completion. Remaining-plan refinement preserves completed ids and current origin.
+
+Cancellation, leaving the screen, backgrounding and vehicle restriction cancel
+output/listening continuation. Replaying a plan cannot enable the microphone.
+Automatic reply listening begins only after confirmed output completion in an
+explicit conversation. A fresh review identified two continuation/recovery issues;
+both were fixed and the review found no remaining material issue.
+
+Actual checks: demo/live 101 unit tests each, zero failures/errors; both debug
+and release builds including release lint-vital succeeded (Gradle 182 tasks,
+1m10s). Official OnMyWay_Pleos AVD emitted actual ON_DEVICE tts-start/tts-done;
+authenticated local emulator speaker capture produced 1,532,102 bytes of PCM
+across 2,909 packets in the preliminary output probe. Final actual native flow
+passed saved request/refinement/three guarded voice approvals, two separate
+completions and home arrival. Actual Drive30 interrupted TTS/input; the final
+one-second captured PCM peak was4/32768. Park0 did not reopen the mic. Explicit
+cancel and background/return also left the reply dialog closed.
+
+Python API67 passed/1.70s; full media suite30 passed/0.223s. Earlier broad media
+run under the Windows sandbox temp path hit cleanup permission errors; a rerun
+with the permitted short CreatorTemp path passed. Existing SDK XML/deprecation
+warnings remain; no product-test failure was suppressed. Both fresh source
+reviews found no remaining material app or media issue.
+
+Current film:164.355542s,1920x1080,constant30fps,H.264/AAC stereo,5,780,474bytes.
+SHA256 `640ae133e5900c4bac60b9efc54c0a4a9b72954f3dc43e7e40f0303721034580`.
+Actual ON_DEVICE output and offline Windows Heami prepared-user speech share
+1x source windows. No external speech generation was performed for this film;
+an online-generation attempt was rejected by automatic approval review and was
+replaced with offline SAPI. All prepared intervals have native PCM RMS below1,
+so user/app speech do not overlap. Captions are authored scene summaries and
+proportional prepared-dialogue sentences, not recognition word boundaries.
+Full FFmpeg decode and five representative frames passed. Actual IAB playback
+ran0→164.355542 without seeking; ended=true,muted=false,error=null. No subjective
+listening certification is claimed. Selected actual PNGs preserve source pixels
+under docs/screenshots/spoken-plan; large audio/video/APK/raw/report files remain
+ignored. Earlier editorial-narration films above are historical.
+
+Signed local APK SHA256:
+- demo: `793339cc096c3686052f7be82e98fd76ee2b09b341d33b585460403d730c53cb`
+- live: `aa2a75f1bfd68244f0c68211fe48e5ecedf95b726494685b10dd1aa2b8a2c5ca`
+
+Core update was published as remote0e029c0; Verify34/40200933102 passed. The
+final media/evidence head is reported in PR8. Keys remain deferred/server-only;
+no publication/access grant or final contest submission was performed.
+Real Korean ASR/provider/navigation and physical vehicle success are not claimed.
+

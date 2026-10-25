@@ -35,29 +35,48 @@ class IntentReview(
     }
 
     fun answerPayload(question: String, answer: String, currentErrands: JSONArray): JSONObject {
+        require(question in questions || question == HOME_QUESTION && deadline == null)
+        return continuationPayload(question, answer, currentErrands)
+    }
+
+    fun refinementPayload(answer: String, currentErrands: JSONArray): JSONObject = continuationPayload(REFINEMENT_QUESTION, answer, currentErrands)
+
+    private fun continuationPayload(question: String, answer: String, currentErrands: JSONArray): JSONObject {
         require(!example) { "예시 질문은 실제 AI 서버로 전송하지 않습니다." }
-        require(question in questions && answer.isNotBlank() && answer.length <= 1000)
+        require(answer.isNotBlank() && answer.length <= 1000)
         val next = JSONArray(answers.toString())
         putAnswer(next, question, answer.trim())
         require(next.length() <= 10) { "확인 답변이 많아졌어요. 요청 문장을 정리해 다시 입력해 주세요." }
         // Candidate/provider data are deliberately excluded from extraction context.
+        val previous = requirements(currentErrands)
+        return JSONObject().put("text", originalText).put("reference_time", referenceTime)
+            .put("answers", next).put("previous_errands", previous).put("previous_deadline", deadline ?: JSONObject.NULL)
+    }
+
+    fun retryPayload(pending: JSONObject, currentErrands: JSONArray): JSONObject {
+        require(!example && pending.getString("text") == originalText && pending.getString("reference_time") == referenceTime)
+        return JSONObject(pending.toString()).put("previous_errands", requirements(currentErrands))
+            .put("previous_deadline", deadline ?: JSONObject.NULL)
+    }
+
+    private fun requirements(currentErrands: JSONArray): JSONArray {
         val previous = JSONArray()
         for (i in 0 until currentErrands.length()) {
             val old = currentErrands.getJSONObject(i)
             val item = JSONObject()
-            for (key in listOf("id", "label", "query", "mandatory", "dwell_seconds", "latest_finish")) if (old.has(key)) item.put(key, old.get(key))
+            for (key in listOf("id", "label", "query", "place_mode", "mandatory", "dwell_seconds", "latest_finish")) if (old.has(key)) item.put(key, old.get(key))
             previous.put(item)
         }
-        return JSONObject().put("text", originalText).put("reference_time", referenceTime)
-            .put("answers", next).put("previous_errands", previous).put("previous_deadline", deadline ?: JSONObject.NULL)
+        return previous
     }
 
     fun acceptAnswer(result: JSONObject, payload: JSONObject): IntentReview {
         val returned = result.optString("deadline").takeUnless { it.isBlank() || it == "null" }
         val previous = deadline
-        val retained = selectedDeadline ?: previous?.takeIf { returned == null || OffsetDateTime.parse(returned).isAfter(OffsetDateTime.parse(it)) }
+        val retained = previous?.takeIf { returned == null || OffsetDateTime.parse(returned).isAfter(OffsetDateTime.parse(it)) }
         if (retained != null) result.put("deadline", retained)
-        return IntentReview(originalText, referenceTime, false, result, JSONArray(payload.getJSONArray("answers").toString()), selectedDeadline)
+        val nextSelected = if (selectedDeadline != null) retained ?: returned else null
+        return IntentReview(originalText, referenceTime, false, result, JSONArray(payload.getJSONArray("answers").toString()), nextSelected)
     }
 
     fun toJson(): String = JSONObject().put("original", originalText).put("reference", referenceTime)
@@ -66,6 +85,7 @@ class IntentReview(
 
     companion object {
         const val HOME_QUESTION = "집에 몇 시까지 도착해야 하나요?"
+        const val REFINEMENT_QUESTION = "기존 조건을 유지하며 무엇을 더 반영할까요? 마감 완화나 필수 일정 삭제는 세부 수정에서 확인해 주세요."
         const val EXAMPLE_TEXT = "약국은 꼭 들르고 세탁물도 찾아줘. 우유는 시간 되면 사고, 세탁소는 6시 반 전이야."
         const val EXAMPLE_QUESTION = "세탁소는 18시 30분 전에 도착해야 하나요, 수령을 마쳐야 하나요?"
         fun restore(value: String): IntentReview {

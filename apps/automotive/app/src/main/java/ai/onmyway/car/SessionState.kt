@@ -10,6 +10,7 @@ class SessionState {
     var navigationError: String? = null; private set
     private var approval: Pair<Long, String>? = null
     private var accepted = false
+    val guidanceAccepted: Boolean get() = accepted
     fun canInteract(state: VehicleState, demoBuild: Boolean, fixtureOverride: Boolean = false) =
         state == VehicleState.PARKED || (state == VehicleState.UNKNOWN && demoBuild && fixtureOverride)
     fun approve(id: String) { approval = revision to id }
@@ -24,6 +25,16 @@ class SessionState {
     fun complete(id: String) {
         if (id != arrivedId) return
         completed.add(id); activeId = null; arrivedId = null; accepted = false; edited()
+    }
+    fun completeForRevision(id: String, displayedRevision: Long): Boolean {
+        if (revision != displayedRevision || arrivedId != id || id in completed) return false
+        complete(id)
+        return id in completed
+    }
+    fun interpreted(newJourney: Boolean) {
+        routeFailed()
+        if (newJourney) completed.clear()
+        edited()
     }
     fun routeFailed(reason: String? = null) { activeId = null; arrivedId = null; accepted = false; approval = null; navigationError = reason }
     fun acceptsResponse(requestRevision: Long) = revision == requestRevision

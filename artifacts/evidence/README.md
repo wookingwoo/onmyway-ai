@@ -1,3 +1,15 @@
+# Current spoken-plan evidence — 2026-10-25
+
+Current local/ignored `spoken-plan/OnMyWay_AI_spoken_demo.mp4`:164.355542s,
+FHD constant30fps, H.264/AAC stereo. It contains actual Pleos ON_DEVICE output,
+offline prepared sample-user dialogue, saved refinement/guarded departure,
+separate completion and home approval, and actual AVD Drive restriction.
+All native scenes retain left Pleos and bottom controls. Audio/video share1x
+cut windows; authored captions do not claim word-level recognition alignment.
+Native/lifecycle results, hashes and playback state are in the ignored local
+verification files and docs/progress.md. [Selected evidence](../../docs/screenshots/spoken-plan/README.md),
+[production](../../scripts/SPOKEN_DEMO.md). Older recordings below are historical.
+
 # Verification evidence
 
 ## Current intent-review recording — 2026-10-24

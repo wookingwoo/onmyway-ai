@@ -12,6 +12,7 @@
       "id": "medicine",
       "label": "약 구매",
       "query": "약국",
+      "place_mode": "flexible",
       "mandatory": true,
       "dwell_seconds": 600,
       "latest_finish": null
@@ -20,6 +21,7 @@
       "id": "laundry",
       "label": "세탁물 찾기",
       "query": "세탁소",
+      "place_mode": "fixed",
       "mandatory": true,
       "dwell_seconds": 300,
       "latest_finish": null

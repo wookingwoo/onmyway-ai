@@ -1,43 +1,48 @@
 # Submission readiness
 
 **Status: KEY-FREE DEMO READY; LIVE LAUNCH AND SUBMISSION PENDING.**
-Core app and motion Short checked 2026-10-25. The Short uses earlier intent-review
-footage and does not verify the current venue/automatic-preview flow.
-This is a functioning native demo, not a verified live service
-or a submitted entry.
+Checked 2026-10-25. The separate motion Short uses earlier intent-review footage
+and is not evidence of the current venue/automatic-preview flow. This is a
+functioning native demo, not a verified live service or a submitted entry.
 
 | Requirement | Actual evidence |
 | --- | --- |
-| Planner/API | 63 Python tests pass: exact venues, provenance/freshness, supplied windows, conditional proposals and existing constraints |
-| Native policies | 80 tests per demo/live variant, 160 executions; venue edits, elapsed slack, owned navigation recovery and existing boundaries |
-| Builds | Demo/live debug and release builds plus both debug lint checks pass; two local signed release APKs pass v3 verification |
-| Current AVD flow | Actual pinned example pickup, three explicit completions with automatic previews, separately approved simulated home, conditional proposal, zero-margin caution and night mode |
-| Tight deadline | 18:20 infeasible; explicit 11-minute extension to 18:31 preserves mandatory errands, names excluded milk, updates reviewed conditions |
-| Vehicle restriction | Actual CarUxRestrictions; question dialog closes/locks at Drive 30 km/h, restored Park 0; unknown state fails closed |
-| SDK scope | Earlier STT initialization/listening/cancellation and NaviHelper binding checks are recorded; new lifecycle policies have JVM tests. Final Korean transcription, real route acceptance/arrival and SDK release/replay effects remain unverified |
-| Missing providers | Actual missing-key 503 without fixture fallback. All provider health booleans false; no external key provisioned |
-| Screenshots | Six actual unedited captures in docs/screenshots/intent-review; PR #4's six images render at 2560x1440 |
-| Historical video | 107.667 seconds, 1920x1080, silent, explicitly 2x; full home journey, adjustment, actual driving lock; permanent Korean disclosure, full decode and visual/playback verification |
-| YouTube Short | Separate 42-second, 18-scene animated 1080×1920 silent edit and Korean SRT, based on earlier intent-review footage. Regenerate for the current core UI before contest sharing; owner TTS/public posting pending. Storyboard: docs/submission/shortform-ko.md |
-| Historical pitch | Seven previously checked Korean HTML slides; regenerate to reflect the new venue/automatic-preview flow before contest sharing |
-| Application | Current anonymous Korean section 02 source updated. Old local DOCX/PPTX/ZIP predate this flow and must not be submitted as current |
-| GitHub/CI | Private repository. PRs #1–#4 merged incrementally. PR #4 head 4776e081 passed Verify run 40055113629; preparation PR evidence recorded in progress and GitHub |
+| Planner/API | 67 Python tests pass; provider HTTP mocked, no live-result claim |
+| Native policies | 101 tests each demo/live; spoken revision/destination/freshness, mandatory/home, cancellation, completion and existing boundaries |
+| Builds | Both debug/release variants and release lint-vital pass; local signed releases verified and demo installed |
+| Current official AVD flow | One saved request → actual ON_DEVICE plan explanation → saved refinement → revised spoken plan → guarded saved voice approval → two explicit completions → separately approved simulated home |
+| Vehicle/lifecycle | Actual Drive30 stops output/input; final quiet PCM peak4/32768. Park0 does not reopen input; cancel and background/return leave it closed |
+| SDK scope | Actual native Korean TTS start/done and output capture verified. Real final Korean ASR, provider authentication, actual navigation acceptance/arrival and physical usability remain unverified |
+| Missing providers | Key-free API health flags all false; fixtures independently selected, never live-failure fallback. No key provisioned |
+| Screenshots | Current actual spoken-plan/full-Pleos PNGs in docs/screenshots/spoken-plan; earlier cockpit/day-night evidence remains |
+| Current film | 164.355542 seconds, FHD, constant30fps; actual device output + offline prepared user speech. Matching1x audio/video cuts, truthful sample/native disclosure, full decode |
+| Film review | Representative frames and uninterrupted unmuted browser playback recorded separately in docs/progress.md |
+| Historical media | Earlier editorial-narration films, silent captures and motion Short are historical and do not demonstrate the new spoken output/approval |
+| Contest materials | Anonymous source remains a draft; old DOCX/PPTX/ZIP/pitch must be regenerated before submission. No public video posting, access grant or final submission performed |
+| GitHub/CI | PR8 on feature/immersive-demo-video contains this work; its final head checks are reported in the PR |
 
 ## Run the current demo
 
 Start the official OnMyWay_Pleos AVD in Park / 0, then run
 `scripts/start-demo.ps1 -Serial emulator-5556`.
-Select **질문과 답변 체험 · 예시 해석**. Follow `docs/demo-guide-ko.md` and
-`docs/submission/pitch-and-demo-ko.md`.
+Select **샘플로 둘러보기** independently in Settings on a new journey, return,
+then **말로 부탁하기**. Follow [spoken scenario](submission/spoken-demo-ko.md)
+and [production/evidence](../scripts/SPOKEN_DEMO.md).
 The example uses fixed 2026-10-23 18:00 data; it is not today's live recommendation.
 
-Current APKs and screenshots supersede the previous recording/pitch flow. Regenerate videos (including the Short), pitch and official office files before contest sharing. Synthetic comparison results and the unperformed user protocol are in docs/evaluation-guide.md and docs/submission/user-study-ko.md.
+The spoken-plan film supersedes the earlier editorial-narration/silent films.
+The original pitch, office files and vertical Short still need regeneration before
+sharing as current submission materials. Synthetic comparisons and
+the unperformed user protocol are in docs/evaluation-guide.md and
+docs/submission/user-study-ko.md. Real provider/navigation/user benefit remains unverified.
 
 Local deliverables:
 
 - `apk/OnMyWay_AI_demo_release.apk`, `apk/OnMyWay_AI_live_release.apk`
-- `artifacts/evidence/intent-demo/OnMyWay_AI_intent_demo.mp4`
-- `artifacts/evidence/intent-demo/media-verification.json`
+- `artifacts/evidence/spoken-plan/OnMyWay_AI_spoken_demo.mp4`
+- `artifacts/evidence/spoken-plan/OnMyWay_AI_spoken_demo.srt`
+- `artifacts/evidence/spoken-plan/index.html` (local player)
+- `artifacts/evidence/spoken-plan/media-verification.json`
 - `artifacts/pitch/current/index.html` (generate with `scripts/build-pitch.py`)
 - `artifacts/shortform/OnMyWay_AI_Shorts_silent.mp4` (generate with `scripts/build-shortform.py`; requires approved local raw footage)
 - `artifacts/evidence/OnMyWay_AI_Shorts_ko.srt` (versioned small caption file)
@@ -66,9 +71,19 @@ alternatives and launch gates.
 
 APKs, video, HTML pitch, raw captures/logs, office files and archives stay local.
 Only selected authorized actual screenshots and small caption/source files are
-committed. The historical allowed SRT remains. The older review ZIP and old
-office/video files are superseded; the vertical Short is a separate edit of the
-earlier intent-review flow and is not evidence of the new core UI.
+committed. The historical allowed SRT remains. Current story-film captions stay
+local alongside the film. The vertical Short is a separate edit of the earlier
+intent-review flow, not evidence of the new core UI. Older review ZIP and
+office/video files are superseded.
 Repository visibility is unchanged. Owner identity in GitHub/Git history has not
 been made anonymous; public release and reviewer grants require user action.
 Historical remote Git objects may persist; cache erasure is not established.
+# Latest shared-cockpit revision
+
+The current feature work uses one shared native service UI for live/sample,
+voice-first automatic proposal preparation, compact day/night summaries and
+explicit fresh departure/completion/home actions. See the [actual current images](screenshots/pleos-cockpit/README.md)
+and [recorded verification](progress.md). Older transcript-confirmation and silent-film
+records below are historical. API credentials remain server-only and are supplied
+later; live provider and physical-vehicle results are still unverified.
+

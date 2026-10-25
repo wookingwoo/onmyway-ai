@@ -26,6 +26,7 @@ artifacts/evidence/automotive-ux/
 artifacts/evidence/voice-demo/
 artifacts/evidence/intent-demo/
 artifacts/evidence/contest-core/
+artifacts/evidence/story-demo/
 artifacts/pitch/current/
 artifacts/shortform/
 
@@ -39,3 +40,6 @@ artifacts/shortform/
 /artifacts/**/*.pptx
 /artifacts/**/*.pdf
 /artifacts/**/*.zip
+artifacts/evidence/voice-first-demo/
+artifacts/evidence/pleos-service-demo/
+artifacts/evidence/spoken-plan/
