@@ -71,6 +71,12 @@ class DiscoveryErrand(ErrandInput):
 class Errand(DiscoveryErrand):
     candidates: list[Place] = Field(default_factory=list, max_length=3)
 
+    @model_validator(mode="after")
+    def selected_place_is_authoritative(self):
+        if self.selected_place is not None and self.candidates != [self.selected_place]:
+            raise ValueError("candidates must contain exactly the selected place, including its evidence")
+        return self
+
 
 class TravelEdge(Model):
     from_id: Identifier

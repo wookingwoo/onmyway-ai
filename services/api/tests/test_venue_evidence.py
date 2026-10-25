@@ -181,3 +181,64 @@ def test_relaxation_never_invents_road_or_ignores_other_constraints(constraint):
         raw["errands"][0]["candidates"] = []
     result = plan(PlanRequest.model_validate(raw))
     assert result.relaxation is None
+
+
+@pytest.mark.parametrize("change", ["identity", "coordinates", "evidence", "source", "missing", "multiple"])
+def test_plan_rejects_candidates_that_differ_from_selected_place(change):
+    from copy import deepcopy
+    raw = request()
+    errand = raw["errands"][0]
+    errand["selected_place"] = deepcopy(errand["candidates"][0])
+    if change == "identity":
+        errand["candidates"][0].update(id="q", name="Different branch")
+    elif change == "coordinates":
+        errand["candidates"][0]["latitude"] = 37.6
+    elif change == "evidence":
+        errand["candidates"][0]["availability_evidence"]["basis"] = "Different confirmation"
+    elif change == "source":
+        errand["candidates"][0]["source"]["provider"] = "Different source"
+    elif change == "missing":
+        errand["candidates"] = []
+    else:
+        other = deepcopy(errand["candidates"][0])
+        other["id"] = "q"
+        errand["candidates"].append(other)
+    response = call("POST", "/v1/plan", json=raw)
+    assert response.status_code == 422
+
+
+def test_plan_accepts_exact_selected_place_and_legacy_unselected_candidates():
+    from copy import deepcopy
+    for selected in (False, True):
+        raw = request()
+        if selected:
+            raw["errands"][0]["selected_place"] = deepcopy(raw["errands"][0]["candidates"][0])
+        response = call("POST", "/v1/plan", json=raw)
+        assert response.status_code == 200
+        assert response.json()["status"] == "feasible"
+        assert response.json()["stops"][0]["place"]["id"] == "p"
+
+
+def test_unknown_hours_closing_interval_still_prevents_impossible_deadline_proposal():
+    raw = request()
+    raw["deadline"] = "2026-10-23T18:19:00+09:00"
+    place = raw["errands"][0]["candidates"][0]
+    place["hours_status"] = "unknown"
+    place["opening_intervals"][0]["end"] = "2026-10-23T18:10:00+09:00"
+    result = plan(PlanRequest.model_validate(raw))
+    assert result.status == "infeasible"
+    assert result.relaxation is None and not result.stops
+
+
+def test_unknown_hours_opening_wait_is_included_in_conditional_deadline_proposal():
+    raw = request()
+    raw["deadline"] = "2026-10-23T18:19:00+09:00"
+    place = raw["errands"][0]["candidates"][0]
+    place["hours_status"] = "unknown"
+    place["opening_intervals"][0]["start"] = "2026-10-23T18:20:00+09:00"
+    result = plan(PlanRequest.model_validate(raw))
+    assert result.status == "infeasible"
+    assert result.relaxation.required_deadline.isoformat() == "2026-10-23T18:35:00+09:00"
+    assert result.relaxation.extension_seconds == 960
+    assert result.relaxation.requires_verification
+    assert any("opening hours" in warning for warning in result.relaxation.warnings)

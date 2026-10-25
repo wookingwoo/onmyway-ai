@@ -92,11 +92,16 @@ hours/service yield `needs_verification`. Live `verified` flags also require
 characters and an aware confirmation time no later than departure and no more
 than 24 hours before it. Missing, future or older evidence adds verification
 warnings; it cannot establish feasibility. Stated opening intervals and dwell
-are still enforced. Evidence never upgrades unknown hours or service status.
+are still enforced, including intervals supplied with unknown hours. Those intervals
+retain their uncertainty warning and all opening waits. Evidence never upgrades
+unknown hours or service status.
 Explicit fixture places remain labelled and exempt from this live evidence rule.
 A missing candidate or required road edge with no complete route also yields `needs_verification`, with no invented
 timeline. Proven timing failure with complete evidence yields `infeasible`.
-Mandatory tasks are never silently dropped. An input location id must always
+Mandatory tasks are never silently dropped. A selected place must be the exact
+sole candidate, including coordinates, source and evidence; /v1/plan rejects a
+mismatch with 422. Legacy requests without selection remain supported. An input
+location id must always
 refer to the same coordinates; duplicate errands and directed edges are rejected.
 Matrix supersets are accepted so completed candidates can be removed while
 retaining the old matrix; unreferenced pairs never create stops.

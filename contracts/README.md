@@ -46,11 +46,13 @@ Search results retain unknown hours and service. `AvailabilityEvidence.basis`
 must be nonblank and at most 500 characters; `confirmed_at` must have an offset.
 Live verified flags require confirmation from departure minus 24 hours through
 departure, inclusive; otherwise the planner adds verification warnings while
-still enforcing supplied opening intervals. Fixture places remain labelled.
+still enforcing supplied opening intervals, even when hours are unknown. Opening
+waits and the full dwell remain binding. Fixture places remain labelled.
 
 `DiscoveryErrand` adds optional `selected_place` to unchanged `ErrandInput`;
 `Errand` extends it with candidates. Discovery retains a selected place as its
 sole candidate without searching again, rejects selected fixtures, and refreshes
-road data. Parse requests, responses and the LLM extraction schema continue to
+road data. /v1/plan rejects a selected-place/candidates mismatch with 422,
+including changes to coordinates, source or availability evidence. Parse requests, responses and the LLM extraction schema continue to
 use unchanged `ErrandInput`. New relaxation fields default to false/empty for
 compatibility. No credentials were provisioned or used for these contracts.

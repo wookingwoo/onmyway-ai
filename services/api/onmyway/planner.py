@@ -91,13 +91,13 @@ def _solve(request: PlanRequest) -> PlanResponse:
                 arrival = time + timedelta(seconds=seconds)
                 start = arrival
                 extra_warnings = road_warnings(location_id, place.id)
-                if place.hours_status == "verified":
+                if place.opening_intervals or place.hours_status == "verified":
                     fits = [max(arrival, i.start) for i in place.opening_intervals
                             if max(arrival, i.start) + timedelta(seconds=errand.dwell_seconds) <= i.end]
                     if not fits:
                         continue
                     start = min(fits)
-                else:
+                if place.hours_status != "verified":
                     extra_warnings.append(f"{errand.id}/{place.id}: opening hours need verification")
                 if place.service_status != "verified":
                     extra_warnings.append(f"{errand.id}/{place.id}: requested service needs verification")
