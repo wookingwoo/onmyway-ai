@@ -59,6 +59,7 @@ class ErrandInput(Model):
     id: Identifier
     label: Annotated[str, Field(min_length=1, max_length=200)]
     query: Annotated[str, Field(min_length=1, max_length=200)]
+    place_mode: Literal["fixed", "flexible"] = "fixed"
     mandatory: bool = True
     dwell_seconds: Seconds = 600
     latest_finish: AwareDatetime | None = None

@@ -133,6 +133,7 @@ def test_discovery_uses_road_seconds_but_never_invents_hours_or_service(monkeypa
     raw.pop("travel_edges")
     for e in raw["errands"]:
         e.pop("candidates")
+        e["place_mode"] = "flexible"
     def handler(req):
         if req.url.host == "dapi.kakao.com":
             assert req.url.params["x"] == "127.0"
