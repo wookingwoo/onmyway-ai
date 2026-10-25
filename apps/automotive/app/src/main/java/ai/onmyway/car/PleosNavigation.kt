@@ -149,5 +149,5 @@ class PleosNavigation(private val context: Context, private val event: (String) 
         if (cancelRoute) runCatching { sdk?.cancelRoute() }
         runCatching { sdk?.release() }
     }
-    fun close() { disconnect(cancelRoute = true) }
+    fun close() { disconnect(cancelRoute = requests.teardown()) }
 }

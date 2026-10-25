@@ -59,24 +59,24 @@ object PlanTiming {
                 margin = minOf(margin, Math.subtractExact(instant(errand, "latest_finish"), end))
             }
             val place = stop.getJSONObject("place")
-            when (place.getString("hours_status")) {
-                "verified" -> {
-                    val intervals = place.getJSONArray("opening_intervals")
-                    var closingMargin: Long? = null
-                    for (j in 0 until intervals.length()) {
-                        val interval = intervals.getJSONObject(j)
-                        val opens = instant(interval, "start")
-                        val closes = instant(interval, "end")
-                        require(closes > opens)
-                        if (opens <= start && closes >= end) {
-                            val slack = Math.subtractExact(closes, end)
-                            closingMargin = closingMargin?.let { minOf(it, slack) } ?: slack
-                        }
+            val hours = place.getString("hours_status")
+            require(hours in setOf("verified", "unknown"))
+            val intervals = if (place.has("opening_intervals")) place.getJSONArray("opening_intervals") else null
+            // Known windows still constrain timing while their provenance remains unverified.
+            if (hours == "verified" || (intervals != null && intervals.length() > 0)) {
+                val windows = requireNotNull(intervals)
+                var closingMargin: Long? = null
+                for (j in 0 until windows.length()) {
+                    val interval = windows.getJSONObject(j)
+                    val opens = instant(interval, "start")
+                    val closes = instant(interval, "end")
+                    require(closes > opens)
+                    if (opens <= start && closes >= end) {
+                        val slack = Math.subtractExact(closes, end)
+                        closingMargin = closingMargin?.let { minOf(it, slack) } ?: slack
                     }
-                    margin = minOf(margin, requireNotNull(closingMargin))
                 }
-                "unknown" -> Unit
-                else -> error("Unavailable or malformed opening hours")
+                margin = minOf(margin, requireNotNull(closingMargin))
             }
             precedingEnd = end
         }

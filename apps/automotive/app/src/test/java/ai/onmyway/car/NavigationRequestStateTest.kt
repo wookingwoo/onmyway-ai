@@ -78,6 +78,25 @@ class NavigationRequestStateTest {
         s.resetConnection()
         assertNotNull(s.begin("집"))
     }
+    @Test fun teardownCancelsUnresolvedRouteAndRejectsItsLaterCallbacks() {
+        val s = state(); val token = s.begin("약국")!!
+        s.routeStarted(token, "약국")
+        assertTrue(s.teardown())
+        assertFalse(s.routingCompleted(token))
+        assertFalse(s.routeStarted(token, "약국"))
+        assertFalse(s.arrived(token, "약국"))
+        assertNull(s.begin("약국"))
+    }
+    @Test fun teardownPreservesAcceptedGuidanceButInvalidatesLocalArrival() {
+        val s = state(); val token = s.begin("집")!!
+        s.routeStarted(token, "집"); assertTrue(s.routingCompleted(token))
+        assertFalse(s.teardown())
+        assertFalse(s.arrived(token, "집"))
+        assertFalse(s.routingCompleted(token))
+        assertFalse(s.routeStarted(token, "집"))
+        s.resetConnection()
+        assertNotEquals(token, s.begin("집"))
+    }
     @Test fun monotonicRollbackCannotExtendAcceptanceWait() {
         val s = state(); val token = s.begin("약국")!!
         now--

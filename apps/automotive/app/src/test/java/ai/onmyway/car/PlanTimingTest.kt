@@ -71,6 +71,35 @@ class PlanTimingTest {
         assertTrue(approve(result = r))
         assertEquals("needs_verification", r.getString("status"))
     }
+    @Test fun unknownHoursStillRespectSuppliedClosingMargin() {
+        val r = result().put("status", "needs_verification").apply {
+            getJSONArray("stops").getJSONObject(0).getJSONObject("place").apply {
+                put("hours_status", "unknown")
+                getJSONArray("opening_intervals").getJSONObject(0).put("end", "2026-10-25T09:20:01Z")
+            }
+        }
+        assertEquals(1000L, PlanTiming.remainingMarginMillis(request(), r))
+        assertTrue(approve(result = r, elapsed = 2000))
+        assertFalse(approve(result = r, elapsed = 2001))
+        assertEquals("needs_verification", r.getString("status"))
+    }
+    @Test fun unknownHoursSuppliedWindowMustContainCompleteDwell() {
+        val r = result().put("status", "needs_verification").apply {
+            getJSONArray("stops").getJSONObject(0).getJSONObject("place").apply {
+                put("hours_status", "unknown")
+                getJSONArray("opening_intervals").getJSONObject(0).put("start", "2026-10-25T09:15:00Z")
+            }
+        }
+        assertNull(PlanTiming.remainingMarginMillis(request(), r))
+        assertFalse(approve(result = r))
+    }
+    @Test fun unknownHoursEmptyIntervalsRetainWarningBasedApproval() {
+        val r = result().put("status", "needs_verification").apply {
+            getJSONArray("stops").getJSONObject(0).getJSONObject("place").put("hours_status", "unknown").put("opening_intervals", org.json.JSONArray())
+        }
+        assertEquals(600_000L, PlanTiming.remainingMarginMillis(request(), r))
+        assertTrue(approve(result = r))
+    }
     @Test fun noMandatoryStopCanDisappearAndUnknownStopCannotAcquireBounds() {
         assertFalse(approve(result = result().put("stops", org.json.JSONArray())))
         assertFalse(approve(result = result().apply { getJSONArray("stops").getJSONObject(0).put("errand_id", "another") }))

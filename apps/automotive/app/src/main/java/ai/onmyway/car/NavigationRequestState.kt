@@ -62,6 +62,12 @@ class NavigationRequestState(private val clock: () -> Long) {
         invalidate()
         return active
     }
+    /** Resource teardown cancels unresolved work, but does not revoke already accepted vehicle guidance. */
+    fun teardown(): Boolean {
+        val cancelUnresolvedRoute = phase == Phase.WAITING
+        invalidate()
+        return cancelUnresolvedRoute
+    }
     private fun invalidate() {
         generation++
         phase = Phase.IDLE
