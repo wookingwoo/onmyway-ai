@@ -40,10 +40,11 @@ class VoiceInputDialog(
     }
     private var connection = "차량 음성 서비스에 연결하고 있어요"
     private val dark = owner.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK == android.content.res.Configuration.UI_MODE_NIGHT_YES
-    private val surface = Color.parseColor(if (dark) "#222426" else "#FFFFFF")
-    private val ink = Color.parseColor(if (dark) "#F2F3F4" else "#202124")
-    private val muted = Color.parseColor(if (dark) "#B4B8BC" else "#62676C")
-    private val soft = Color.parseColor(if (dark) "#303336" else "#F2F4F5")
+    private val palette = CockpitTheme.forNight(dark)
+    private val surface = Color.parseColor(palette.surface)
+    private val ink = Color.parseColor(palette.ink)
+    private val muted = Color.parseColor(palette.muted)
+    private val soft = Color.parseColor(palette.secondary)
     private val mint = Color.parseColor(if (dark) "#9BE4CA" else "#216A53")
     private lateinit var title: TextView
     private lateinit var transcript: TextView
@@ -74,7 +75,7 @@ class VoiceInputDialog(
             orientation = LinearLayout.VERTICAL; setPadding(dp(40), dp(32), dp(40), dp(32))
             background = shape(surface)
         }
-        body.add(label(if (source == VoiceSource.EXAMPLE) "예시 문장 체험 · 실제 음성 인식 아님" else "PLEOS · 온디바이스 음성 입력", 19f, mint, true), 24)
+        body.add(label(if (source == VoiceSource.EXAMPLE) "샘플 요청 · 저장된 문장" else "음성으로 요청", 19f, muted), 24)
         val heading = LinearLayout(owner).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         orb = object : View(owner) {
             private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -107,7 +108,7 @@ class VoiceInputDialog(
         val actions = LinearLayout(owner).apply { orientation = LinearLayout.HORIZONTAL }
         val cancel = action("취소") { dismiss() }
         retry = action("다시 말하기") { begin() }
-        confirm = action("예시 요청으로 진행", true) { deliver() }
+        confirm = action("계획 준비하기", true) { deliver() }
         actions.addView(cancel, LinearLayout.LayoutParams(0, -2, .65f).apply { rightMargin = dp(12) })
         actions.addView(retry, LinearLayout.LayoutParams(0, -2, .9f).apply { rightMargin = dp(12) })
         actions.addView(confirm, LinearLayout.LayoutParams(0, -2, 1.35f))
@@ -131,7 +132,7 @@ class VoiceInputDialog(
     private fun refresh() {
         val phase = session.phase
         title.text = when (phase) {
-            VoicePhase.REVIEW -> if (source == VoiceSource.EXAMPLE) "예시 요청을 확인해 주세요" else "말씀하신 조건으로 정리할게요"
+            VoicePhase.REVIEW -> "이 요청으로 준비할게요"
             VoicePhase.ERROR -> "음성 입력을 마치지 못했어요"
             VoicePhase.LISTENING -> "듣고 있어요"
             else -> connection
@@ -142,7 +143,7 @@ class VoiceInputDialog(
         }
         transcript.setTextColor(if (session.transcript.isBlank()) muted else ink)
         detail.text = when {
-            source == VoiceSource.EXAMPLE -> "준비된 예시 대화입니다. 선택하면 예시 데이터로 장소·순서·시간을 자동 계산해요. 실제 STT·AI 호출은 없습니다."
+            source == VoiceSource.EXAMPLE -> "장소와 순서를 정리할게요. 준비된 계획을 보고 출발을 확인해 주세요."
             phase == VoicePhase.ERROR -> session.error
             phase == VoicePhase.REVIEW -> "계획 요약에서 내용을 확인하고 고칠 수 있어요. 출발은 별도로 승인해 주세요."
             else -> "최대 30초 동안 입력해요. 말을 마치면 자동으로 계획을 준비합니다. 출발 전 요약을 확인해 주세요."

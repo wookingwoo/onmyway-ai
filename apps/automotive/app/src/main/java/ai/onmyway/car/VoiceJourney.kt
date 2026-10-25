@@ -20,6 +20,6 @@ object VoiceJourney {
         return result
     }
 
-    const val EXAMPLE_REQUEST = "약국은 꼭 들러서 10분 정도 걸릴 것 같아. 맡긴 세탁물은 데모 세탁소에서 6시 반 전에 수령을 마쳐야 해. 우유는 시간 되면 사고, 7시까지 집에 가게 적절한 순서로 짜줘."
+    const val EXAMPLE_REQUEST = "약국은 꼭 들러서 10분 정도 걸릴 것 같아. 맡긴 세탁물은 한결세탁소에서 6시 반 전에 수령을 마쳐야 해. 우유는 시간 되면 사고, 7시까지 집에 가게 적절한 순서로 짜줘."
     const val EXAMPLE_REFINEMENT = "약국에서 상담도 해야 해서 30분은 걸릴 것 같아. 나머지 조건은 그대로 두고 다시 맞춰줘."
 }

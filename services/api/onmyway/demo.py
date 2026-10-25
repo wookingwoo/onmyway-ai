@@ -10,9 +10,9 @@ def demo_request(scenario: Literal["basic", "deadline_conflict"] = "basic") -> P
         return {"id": id, "name": name, "latitude": lat, "longitude": lng}
     origin = location("origin", "데모 출발지", 37.5000, 127.0000)
     home = location("home", "데모 집", 37.5100, 127.0200)
-    places = [location("pharmacy", "데모 약국", 37.503, 127.004),
-              location("laundry", "데모 세탁소", 37.506, 127.012),
-              location("grocery", "데모 마트", 37.509, 127.017)]
+    places = [location("pharmacy", "온유약국", 37.503, 127.004),
+              location("laundry", "한결세탁소", 37.506, 127.012),
+              location("grocery", "봄날마트", 37.509, 127.017)]
     errands = []
     for id, label, query, dwell, place in zip(
         ["medicine", "laundry", "groceries"], ["약 구매", "세탁물 찾기", "우유 구매"],

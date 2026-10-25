@@ -26,7 +26,7 @@
       "candidates": [
         {
           "id": "pharmacy",
-          "name": "데모 약국",
+          "name": "온유약국",
           "latitude": 37.503,
           "longitude": 127.004,
           "address": "",
@@ -59,7 +59,7 @@
       "candidates": [
         {
           "id": "laundry",
-          "name": "데모 세탁소",
+          "name": "한결세탁소",
           "latitude": 37.506,
           "longitude": 127.012,
           "address": "",
@@ -92,7 +92,7 @@
       "candidates": [
         {
           "id": "grocery",
-          "name": "데모 마트",
+          "name": "봄날마트",
           "latitude": 37.509,
           "longitude": 127.017,
           "address": "",
