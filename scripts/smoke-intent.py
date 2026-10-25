@@ -162,7 +162,7 @@ def main():
     for index in range(3):
         click('이곳으로 안내'); click('목적지 승인'); click('도착 체험 · 모의 이벤트')
         wait('할 일을 마쳤나요?')
-        click('할 일 완료'); click('완료했어요'); click('동선 확인하기')
+        click('할 일 완료'); click('완료했어요')
         wait('다음은 이곳이에요' if index < 2 else '이제 집으로 가요')
     click('집으로 안내'); click('목적지 승인'); click('도착 체험 · 모의 이벤트')
     wait('집에 도착했어요')

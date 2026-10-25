@@ -142,6 +142,9 @@ class MainActivity : Activity() {
         val result = builder.create()
         trackDialog(result)
         result.setOnShowListener {
+            result.findViewById<TextView>(android.R.id.message)?.apply {
+                textSize = 24f; setTextColor(ink); setLineSpacing(dp(4).toFloat(), 1f)
+            }
             for (id in listOf(AlertDialog.BUTTON_POSITIVE, AlertDialog.BUTTON_NEGATIVE, AlertDialog.BUTTON_NEUTRAL)) {
                 result.getButton(id)?.apply { textSize = 24f; minHeight = dp(76); minWidth = dp(120); setTextColor(ink) }
             }
@@ -398,6 +401,7 @@ class MainActivity : Activity() {
     private fun renderSettings(body: LinearLayout) {
         heading(body, "설정", "정차 중에만 변경할 수 있어요.")
         if (BuildConfig.DEMO) button(body, if (simulate) "모의 안내 끄기" else "모의 안내 켜기") {
+            cancelOwnedNavigation()
             simulate = !simulate; state.routeFailed(); state.edited(); flow.edited(); plan = null; persist(); render()
         }
         button(body, "새 일정 시작") { resetJourney() }
@@ -679,6 +683,7 @@ class MainActivity : Activity() {
     }
     private fun resetJourney() {
         dialog(AlertDialog.Builder(this).setTitle("새 일정을 시작할까요?").setMessage("현재 일정과 완료 기록을 초기화합니다.").setNegativeButton("유지", null).setPositiveButton("새로 시작") { _, _ -> if (allowed() && !busy) {
+            cancelOwnedNavigation()
             clearFixtureDrafts()
             state.completed.clear(); state.routeFailed(); state.edited(); request = null; plan = null; errands = JSONArray(); fixture = false; requiresParse = false; voiceExample = false; intentReview = null
             prefs.edit().putString("input", "").putBoolean("voice-example", false).putString("delay", "0").apply(); errorMessage = null; reviewNotes = null; simulate = false; computedElapsedMillis = null; flow.start(); persist(); render()
@@ -742,6 +747,7 @@ class MainActivity : Activity() {
     private fun submitParse(payload: JSONObject, prior: IntentReview?) {
         val client = api()
         async({ client.call("/v1/parse", payload) }) { result ->
+            cancelOwnedNavigation()
             clearFixtureDrafts()
             fixture = false; request = null; plan = null; state.routeFailed(); state.completed.clear(); state.edited()
             requiresParse = false
@@ -760,6 +766,7 @@ class MainActivity : Activity() {
         check(BuildConfig.DEMO)
         val client = api()
         async({ client.call("/v1/demo?scenario=$scenario") }) { result ->
+            cancelOwnedNavigation()
             request = result; errands = result.getJSONArray("errands"); fixture = true; plan = null
             intentReview = null
             voiceExample = false
@@ -786,6 +793,14 @@ class MainActivity : Activity() {
     }
     private fun calculate() {
         check(allowed())
+        if (navigation.hasActiveRequest) {
+            dialog(AlertDialog.Builder(this).setTitle("현재 안내를 취소하고 다시 계산할까요?")
+                .setMessage("이미 승인한 안내가 진행 중입니다. 취소한 뒤 새 동선을 확인하고 목적지를 다시 승인해야 해요.")
+                .setNegativeButton("안내 유지", null).setPositiveButton("취소하고 다시 계산") { _, _ -> if (allowed() && !busy) {
+                    cancelOwnedNavigation(); state.routeFailed(); navigation.connect(); calculate()
+                } })
+            return
+        }
         require(!requiresParse) { "입력 문장이 바뀌었습니다. 먼저 할 일을 다시 정리하세요." }
         require(intentReview?.ready != false) { "확인 질문과 귀가 시간에 먼저 답해 주세요." }
         val remaining = if (fixture) PlaceReview.fixtureErrands(errands, state.completed) else PlaceReview.discoveryErrands(errands, state.completed)
@@ -881,6 +896,9 @@ class MainActivity : Activity() {
             event.startsWith("error:") -> { navStatus = event.removePrefix("error:"); state.routeFailed(navStatus) }
         }
         renderPlan(); persist()
+    }
+    private fun cancelOwnedNavigation() {
+        if (::navigation.isInitialized && allowed() && navigation.hasActiveRequest) navigation.cancelPending()
     }
     private fun persist() {
         prefs.edit().putString("request", request?.toString()).putString("plan", plan?.toString()).putString("errands", errands.toString())
