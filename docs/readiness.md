@@ -8,11 +8,11 @@ functioning native demo, not a verified live service or a submitted entry.
 | Requirement | Actual evidence |
 | --- | --- |
 | Planner/API | 67 Python tests pass; provider HTTP mocked, no live-result claim |
-| Native policies | 101 tests each demo/live; spoken revision/destination/freshness, mandatory/home, cancellation, completion and existing boundaries |
+| Native policies | 106 tests each demo/live; spoken revision/destination/freshness, mandatory/home, cancellation, completion and existing boundaries |
 | Builds | Both debug/release variants and release lint-vital pass; local signed releases verified and demo installed |
 | Current official AVD flow | One saved request → actual ON_DEVICE plan explanation → saved refinement → revised spoken plan → guarded saved voice approval → two explicit completions → separately approved simulated home |
 | Vehicle/lifecycle | Actual Drive30 stops output/input; final quiet PCM peak4/32768. Park0 does not reopen input; cancel and background/return leave it closed |
-| SDK scope | Actual native Korean TTS start/done and output capture verified. Real final Korean ASR, provider authentication, actual navigation acceptance/arrival and physical usability remain unverified |
+| SDK scope | Actual native map-screen foreground and recovery-button dispatch plus Korean TTS start/done verified. Native map tile requests returned HTTP401 and the canvas stayed blank. Real final Korean ASR, provider authentication, actual navigation acceptance/arrival and physical usability remain unverified |
 | Missing providers | Key-free API health flags all false; fixtures independently selected, never live-failure fallback. No key provisioned |
 | Screenshots | Current actual spoken-plan/full-Pleos PNGs in docs/screenshots/spoken-plan; earlier cockpit/day-night evidence remains |
 | Current film | 164.355542 seconds, FHD, constant30fps; actual device output + offline prepared user speech. Matching1x audio/video cuts, truthful sample/native disclosure, full decode |
@@ -87,3 +87,5 @@ and [recorded verification](progress.md). Older transcript-confirmation and sile
 records below are historical. API credentials remain server-only and are supplied
 later; live provider and physical-vehicle results are still unverified.
 
+
+Current native map handoff: [behavior and limits](navigation-handoff.md). No real planned-route acceptance/arrival result is implied by screen dispatch.

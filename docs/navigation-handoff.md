@@ -51,6 +51,8 @@ native SDK and requests a screen without a destination. The official AVD brought
 three requested navigation permissions. Its installed Navigation version is
 3.3.2-rc5-hotfix.3. **The captured map canvas is blank**, so tile rendering,
 actual route acceptance and driving/arrival are not established by this result.
+Sanitized diagnostics observed three native tile HTTP401 responses from
+`a.tile.static.maps-stage.umos.ai`; no URLs, tokens or raw native logs were saved.
 Do not present the screenshot as a successful road route.
 
 The device smoke has explicit seed-recovery/restore-sample modes, restricted to

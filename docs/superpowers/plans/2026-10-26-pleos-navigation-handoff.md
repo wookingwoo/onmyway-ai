@@ -39,33 +39,35 @@ and authorized feature branch, incremental commits and screenshot-bearing PR.
 ## Task1 — guarded handoff policy
 
 Files: create NavigationHandoff.kt and NavigationHandoffTest.kt.
-- [ ] Write RED tests: live current accepted next stop/home once; fixture, stale,
+- [x] Write RED tests: live current accepted next stop/home once; fixture, stale,
   background, non-Park, canceled/arrived and duplicates denied; manual retry gated.
-- [ ] Implement minimal gate; run native unit suite; commit policy.
+- [x] Implement minimal gate; run native unit suite; commit policy.
 
 ## Task2 — actual SDK screen connection and native recovery
 
 Files: PleosNavigation.kt, MainActivity.kt, AndroidManifest.xml; focused policy tests.
-- [ ] Inspect installed Foreground signature and official permissions.
-- [ ] Add NAVI_CUSTOM_MAP; expose screen request separately from route request,
+- [x] Inspect installed Foreground signature and official permissions.
+- [x] Add NAVI_CUSTOM_MAP; expose screen request separately from route request,
   return errors without route cancellation and never label dispatch as visible.
-- [ ] Arm after current approval, consume after actual accepted callback, persist
+- [x] Arm after current approval, consume after actual accepted callback, persist
   before switching and stop app speech/input. Add explicit map/retry action.
-- [ ] Invalidate pending automatic launch on background/edits/cancel/restriction.
-- [ ] Preserve normal background callbacks; add conservative persisted interrupted
+- [x] Invalidate pending automatic launch on background/edits/cancel/restriction.
+- [x] Preserve normal background callbacks; add conservative persisted interrupted
   guidance hint on recreation, explicit map-only recovery and acknowledged reset.
-- [ ] Unit/debug/release and Python checks; commit native integration.
+- [x] Unit/debug/release and Python checks; commit native integration.
 
 ## Task3 — official AVD evidence, review and PR
 
-- [ ] Inspect actual installed navigation availability and exercise real SDK screen
+- [x] Inspect actual installed navigation availability and exercise real SDK screen
   dispatch without sending synthetic destinations. Keep actual accepted-route tests
   distinct from mocked tests; record limitations if platform prevents real routing.
-- [ ] Exercise selected sample full errand/home flow and actual Drive restriction;
+- [x] Exercise selected sample full errand/home flow and actual Drive restriction;
   verify sample never calls native map handoff. Capture truthful actual screenshots.
-- [ ] Fresh branch review; fix material findings; record actual evidence/progress.
-- [ ] Publish incremental feature commits; create PR against main, attach it,
+- [x] Fresh branch review; fix material findings; record actual evidence/progress.
+- [x] Publish incremental feature commits; create PR against main, attach it,
   include actual screenshot images and verified CI. Keep APK/raw media local.
 
 References: https://document.pleos.ai/api-reference/connect-sdk-pleos/NaviHelper/intro
 and https://document.pleos.ai/api-reference/connect-sdk-pleos/NaviHelper/declaring-permissions
+
+Completed implementation, device evidence and review. Native tile HTTP401/live-route limits are explicit in docs/navigation-handoff.md. Final PR/CI record is maintained in its description.
