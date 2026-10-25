@@ -101,7 +101,6 @@ def main():
             assert find("도착과 할 일 완료는 달라요.", nodes(), True) is not None
             if i==0: shot("ux-arrival-not-complete.png")
             click("할 일 완료"); click("완료했어요")
-            click("동선 확인하기")
             if i<2: wait("다음은 이곳이에요")
         print("PASS: approved simulated arrival, explicit completion, remaining-task replan",flush=True)
     if a.full_journey:

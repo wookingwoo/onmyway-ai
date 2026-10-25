@@ -107,5 +107,23 @@
     "video": "OnMyWay_AI_Shorts_motion_v2.mp4",
     "srt": "OnMyWay_AI_Shorts_motion_v2_ko.srt",
     "relationship": "byte-identical copies of the verified canonical outputs"
+  },
+  "capture_scope_note": "The verified Short uses earlier intent-review footage; it does not demonstrate the newer main venue/automatic-preview/recovery UI. Regenerate before current-core contest sharing.",
+  "merge_validation": {
+    "date_korea": "2026-10-25",
+    "main": "a4b24cd2e96f9d25ba24de09594d88dce0d4f416",
+    "feature_parent": "addfc6ed8e72e90840715c2c29e91c493630ed51",
+    "conflicted_file": "docs/readiness.md",
+    "main_production_code_contracts_screenshots": "unchanged",
+    "video_and_srt_hashes": "unchanged",
+    "shortform_tests": 11,
+    "api_tests": 63,
+    "synthetic_comparison_cases": 3,
+    "android_unit_tests": {
+      "demo": 80,
+      "live": 80,
+      "failures": 0
+    },
+    "android_build": "both debug variants passed; 50 seconds, 16 executed and 70 up-to-date tasks"
   }
 }

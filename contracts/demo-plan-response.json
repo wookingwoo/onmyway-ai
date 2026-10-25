@@ -10,6 +10,8 @@
         "name": "데모 약국",
         "latitude": 37.503,
         "longitude": 127.004,
+        "address": "",
+        "availability_evidence": null,
         "opening_intervals": [
           {
             "start": "2026-10-23T17:00:00+09:00",
@@ -38,6 +40,8 @@
         "name": "데모 세탁소",
         "latitude": 37.506,
         "longitude": 127.012,
+        "address": "",
+        "availability_evidence": null,
         "opening_intervals": [
           {
             "start": "2026-10-23T17:00:00+09:00",
@@ -66,6 +70,8 @@
         "name": "데모 마트",
         "latitude": 37.509,
         "longitude": 127.017,
+        "address": "",
+        "availability_evidence": null,
         "opening_intervals": [
           {
             "start": "2026-10-23T17:00:00+09:00",

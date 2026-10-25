@@ -41,7 +41,10 @@ object PlanExplanation {
         }
         result.optJSONObject("relaxation")?.let {
             val proposed = date(it.optString("required_deadline"))
-            if (proposed != null) lines += "귀가 마감을 ${clock(proposed)}까지 ${minutes(it.optLong("extension_seconds"))}분 늘리는 제안이 있어요. 선택 항목은 제외한 제안이며, 승인 후 다시 계산해야 합니다."
+            if (proposed != null) {
+                val qualifier = if (it.optBoolean("requires_verification")) "조건부 예상 제안이에요. 영업·수령 또는 이동 정보가 미확인이므로 가능 여부를 확정할 수 없어요. " else ""
+                lines += qualifier + "귀가 마감을 ${clock(proposed)}까지 ${minutes(it.optLong("extension_seconds"))}분 늘리는 제안이 있어요. 선택 항목은 제외한 제안이며, 승인 후 다시 계산해야 합니다."
+            }
         }
         return lines
     }

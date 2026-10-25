@@ -156,7 +156,6 @@ def main():
         assert find('도착과 할 일 완료는 달라요.', nodes(), True) is not None
         click('할 일 완료')
         click('완료했어요')
-        click('동선 확인하기')
         wait('다음은 이곳이에요' if index < 2 else '이제 집으로 가요')
     click('집으로 안내')
     click('목적지 승인')

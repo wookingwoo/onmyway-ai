@@ -8,7 +8,7 @@ import os
 import httpx
 from pydantic import ValidationError
 
-from .models import DiscoverRequest, Errand, ParseRequest, ParseResponse, Place, PlanRequest, Source, TravelEdge
+from .models import DiscoverRequest, Errand, ParseRequest, ParseResponse, Place, PlaceSearchRequest, PlaceSearchResponse, PlanRequest, Source, TravelEdge
 
 
 class ProviderError(Exception):
@@ -130,29 +130,42 @@ async def parse_text(request: ParseRequest, client: httpx.AsyncClient) -> ParseR
         raise ProviderError("llm_invalid_output", "Model output did not match the requirements schema; retry or enter errands manually.") from None
 
 
-async def discover(request: DiscoverRequest, client: httpx.AsyncClient) -> PlanRequest:
+async def _search_places(query, origin, client: httpx.AsyncClient, limit: int) -> list[Place]:
     local_key = credential("KAKAO_REST_API_KEY")
+    data = await request_json(client, "GET", "https://dapi.kakao.com/v2/local/search/keyword.json",
+        headers={"Authorization": f"KakaoAK {local_key}"}, timeout=10,
+        params={"query": query, "x": origin.longitude, "y": origin.latitude,
+                "radius": 20000, "sort": "distance", "size": limit})
+    try:
+        return [Place(id=f"kakao:{p['id']}", name=p["place_name"], latitude=p["y"], longitude=p["x"],
+                      address=p.get("road_address_name") or p.get("address_name") or "",
+                      opening_intervals=[], hours_status="unknown", service_status="unknown",
+                      source=Source(provider="kakao-local", retrieved_at=datetime.now(timezone.utc), is_fixture=False))
+                for p in data["documents"][:limit]]
+    except (KeyError, TypeError, ValueError):
+        raise ProviderError("provider_invalid_response", "Place provider returned invalid candidate data.") from None
+
+
+async def search_places(request: PlaceSearchRequest, client: httpx.AsyncClient) -> PlaceSearchResponse:
+    return PlaceSearchResponse(places=await _search_places(request.query, request.origin, client, 3))
+
+
+async def discover(request: DiscoverRequest, client: httpx.AsyncClient) -> PlanRequest:
+    if any(e.selected_place is not None and e.selected_place.source.is_fixture for e in request.errands):
+        raise ProviderError("fixture_place_not_allowed", "Live discovery cannot use a fixture selected place.", 422)
     mobility_key = credential("KAKAO_MOBILITY_REST_API_KEY")
     semaphore = asyncio.Semaphore(4)
 
     async def candidates(errand):
+        if errand.selected_place is not None:
+            return Errand(**errand.model_dump(), candidates=[errand.selected_place])
         async with semaphore:
-            data = await request_json(client, "GET", "https://dapi.kakao.com/v2/local/search/keyword.json",
-                headers={"Authorization": f"KakaoAK {local_key}"}, timeout=10,
-                params={"query": errand.query, "x": request.origin.longitude, "y": request.origin.latitude,
-                        "radius": 20000, "sort": "distance", "size": 1})
-        try:
-            places = [Place(id=f"kakao:{p['id']}", name=p["place_name"], latitude=p["y"], longitude=p["x"],
-                            opening_intervals=[], hours_status="unknown", service_status="unknown",
-                            source=Source(provider="kakao-local", retrieved_at=datetime.now(timezone.utc), is_fixture=False))
-                      for p in data["documents"][:1]]
-            return Errand(**errand.model_dump(), candidates=places)
-        except (KeyError, TypeError, ValueError):
-            raise ProviderError("provider_invalid_response", "Place provider returned invalid candidate data.") from None
+            places = await _search_places(errand.query, request.origin, client, 1)
+        return Errand(**errand.model_dump(), candidates=places)
 
     errands = await asyncio.gather(*(candidates(e) for e in request.errands))
-    # One nearby candidate per errand limits a live discovery to five searches
-    # and at most 31 directed road calls. User may edit/add up to three candidates.
+    # Selected venues skip search; legacy requests use one nearby candidate.
+    # At most five searches and 31 directed road calls are needed.
     places = {p.id: p for e in errands for p in e.candidates}
     starts = {request.origin.id: request.origin, **places}
     ends = {**places, request.home.id: request.home}
