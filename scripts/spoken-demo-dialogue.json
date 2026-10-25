@@ -1,0 +1,17 @@
+{
+  "purpose": "Prepared user utterances, editorial speech only; not real ASR",
+  "chapters": [
+    {
+      "id": "request",
+      "narration": "약국은 꼭 들러서 십 분 정도 걸릴 것 같아. 맡긴 세탁물은 한결세탁소에서 여섯 시 반 전에 수령을 마쳐야 해. 우유는 시간 되면 사고, 일곱 시까지 집에 가게 적절한 순서로 짜줘."
+    },
+    {
+      "id": "refinement",
+      "narration": "약국에서 상담도 해야 해서 삼십 분은 걸릴 것 같아. 나머지 조건은 그대로 두고 다시 맞춰줘."
+    },
+    {
+      "id": "approval",
+      "narration": "이 계획대로 출발해."
+    }
+  ]
+}
