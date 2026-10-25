@@ -25,33 +25,33 @@
 ### Task 1: Exact venue discovery and honest evidence contracts
 **Files:** services/api/onmyway/{models,providers,planner,main}.py; services/api/tests; contracts.
 **Interfaces:** DiscoveryErrand.selected_place, Place.address/availability_evidence, POST /v1/places, conditional DeadlineRelaxation.
-- [ ] Add failing tests for top-three search, pinned ID retention/search bypass, fixture rejection, stale/future/missing evidence and conditional extension.
-- [ ] Implement the contracts and provider/solver changes; keep parse schema unchanged.
-- [ ] Run the complete Python suite and regenerate OpenAPI/examples.
-- [ ] Commit the independently reviewable backend change.
+- [x] Add failing tests for top-three search, pinned ID retention/search bypass, fixture rejection, stale/future/missing evidence and conditional extension.
+- [x] Implement the contracts and provider/solver changes; keep parse schema unchanged.
+- [x] Run the complete Python suite and regenerate OpenAPI/examples.
+- [x] Commit the independently reviewable backend change.
 
 ### Task 2: Venue selection and availability review in the native app
 **Files:** new PlaceReview.kt / native dialog helper; MainActivity.kt; pure unit tests.
 **Consumes:** Task 1 contracts.
-- [ ] Add failing pure tests for selection/provenance isolation, query invalidation, remaining discovery payload and persistence.
-- [ ] Add explicit place selection and basis/time/service review; preserve picked places over replanning.
-- [ ] Gate live planning until each remaining venue is explicitly selected; keep existing labelled example route working.
-- [ ] Run both Android unit variants and build; commit.
+- [x] Add failing pure tests for selection/provenance isolation, query invalidation, remaining discovery payload and persistence.
+- [x] Add explicit place selection and basis/time/service review; preserve picked places over replanning.
+- [x] Gate live planning until each remaining venue is explicitly selected; keep existing labelled example route working.
+- [x] Run both Android unit variants and build; commit.
 
 ### Task 3: Time-aware approval and recoverable navigation
 **Files:** NavigationPolicy.kt; new PlanTiming.kt / NavigationRequestState.kt; PleosNavigation.kt; MainActivity.kt; tests.
 **Interfaces:** Pure timing bounds from request/result and pure request lifecycle with generation/timeout/cancel.
-- [ ] Write and observe failing tests for computation/review delay, tight home/errand/closing slack and unknown timestamps.
-- [ ] Implement conservative current-time approval and clear margin/recalculate UX.
-- [ ] Write and observe lifecycle timeout/cancellation/stale-callback tests; implement explicit recovery.
-- [ ] Auto-refresh after explicit completion without auto-approval; retain completed state on failure.
-- [ ] Run both unit variants and builds; commit.
+- [x] Write and observe failing tests for computation/review delay, tight home/errand/closing slack and unknown timestamps.
+- [x] Implement conservative current-time approval and clear margin/recalculate UX.
+- [x] Write and observe lifecycle timeout/cancellation/stale-callback tests; implement explicit recovery.
+- [x] Auto-refresh after explicit completion without auto-approval; retain completed state on failure.
+- [x] Run both unit variants and builds; commit.
 
 ### Task 4: Actual UI evidence and reviewable delivery
 **Files:** scripts smoke checks; docs/progress.md/readiness.md; docs/screenshots/contest-core; relevant README/demo instructions.
-- [ ] Run full Python tests and both Android unit/build/lint checks on final code.
-- [ ] Install/run only on the isolated official AVD, capture changed review/uncertainty/recovery screens and verify full example home flow and actual driving lock.
-- [ ] Record actual evidence and deferred live-provider/STT/physical-vehicle/user-study scope; no unperformed claims.
-- [ ] Obtain fresh whole-branch code review, fix actionable findings, commit.
+- [x] Run full Python tests and both Android unit/build/lint checks on final code.
+- [x] Install/run only on the isolated official AVD, capture changed review/uncertainty/recovery screens and verify full example home flow and actual driving lock.
+- [x] Record actual evidence and deferred live-provider/STT/physical-vehicle/user-study scope; no unperformed claims.
+- [x] Obtain fresh whole-branch code review, fix actionable findings, commit.
 - [ ] Push the feature branch and create/attach PR with clear problem/behavior/validation, limitations and rendered actual screenshot links.
 

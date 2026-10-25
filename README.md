@@ -13,7 +13,7 @@ deadline for getting home.
 Current contest positioning and honest differentiation:
 [Korean strategy](docs/contest-strategy-ko.md). Presenter/recovery instructions:
 [demo guide](docs/demo-guide-ko.md), [five-minute pitch and Q&A](docs/submission/pitch-and-demo-ko.md).
-The latest local 107.667-second video and seven-slide HTML pitch are listed in
+The previous 107.667-second video and seven-slide HTML pitch are listed in
 [readiness](docs/readiness.md); generated deliverables are excluded from Git.
 
 > **Current status:** The native app, deterministic planner and explicitly
@@ -21,10 +21,9 @@ The latest local 107.667-second video and seven-slide HTML pitch are listed in
 > Live OpenAI/Kakao calls and actual navigation acceptance/arrival still require
 > separate verification. Screens below use **example data and simulated guidance**.
 
-![Actual Pleos native interpretation review with explicitly prepared example text](docs/screenshots/intent-review/confirmed.png)
+![Actual Pleos native interpretation review with explicitly prepared example text](docs/screenshots/contest-core/review-pinned.png)
 
-*Actual signed-demo capture on Pleos Connect 2.1.0, API 34. Interpretation is
-prepared example text; places, opening windows and road times are fixtures.*
+*Actual signed-demo capture on Pleos Connect 2.1.0, API 34. Errands, selected venues, opening windows and road times are explicit synthetic fixtures; guidance is simulated.*
 
 ## The problem
 
@@ -104,11 +103,27 @@ makes no network calls and never delegates route arithmetic to the language mode
 | Storage | Stateless API; local Android drafts and completed task IDs; no database |
 
 The planner accepts up to five errands and three supplied candidates per errand.
-The current live discovery adapter supplies **one nearby candidate per errand**.
+The native live flow first searches up to **three nearby places** and requires
+the user to select the exact venue for each errand. Selected venues remain fixed
+through discovery and replanning; legacy API requests without a selection still
+use one nearby result. Search results do not establish availability.
 Unknown opening hours, service availability or required road data cannot establish
 feasibility. Results distinguish `feasible`, `needs_verification` and
 `infeasible`; optional omissions and mandatory failures have explicit reasons.
 A deadline-extension suggestion never changes the user's input automatically.
+
+The venue editor records an explicitly entered availability window, confirmation
+basis and time. Missing, future or older-than-24-hour live confirmation remains
+unverified. Current-traffic snapshots remain warnings even after venue review.
+An uncertain deadline proposal stays conditional and never upgrades feasibility.
+Android counts computation and review time against the tightest known deadline
+before destination approval. After explicit completion it automatically refreshes
+the preview, retaining the selected venues and requiring a new destination approval.
+
+Navigation requests have a bounded acceptance wait and explicit cancellation/
+reconnection recovery. Local teardown invalidates callbacks without explicitly
+cancelling accepted guidance; actual SDK route preservation and same-name callback
+behavior still need live verification.
 
 ### Repository layout
 
@@ -188,11 +203,21 @@ With the API running and the demo app open while parked:
    its **19:00** deadline.
 4. Tap **이곳으로 안내 → 목적지 승인**, then send **도착 체험 · 모의 이벤트**.
    Arrival leaves the errand unfinished.
-5. Use **할 일 완료 → 완료했어요**, then recalculate the remaining errands.
+5. Use **할 일 완료 → 완료했어요**. The remaining preview refreshes automatically;
+   approve its next destination separately.
 6. Finish the remaining stops and approve **집으로 안내** separately.
 
 The repeatable fixture uses **2026-10-23**. Its dates, places and timings are
 demonstration inputs, not a current driving recommendation.
+
+**마감·미확인 정보 체험 · 예시** independently requests an uncertain, synthetic
+deadline-conflict case. Its 18:31/+11-minute proposal remains conditional, and the
+updated route shows unknown availability, zero margin and the omitted optional
+purchase. No failed live request selects this example.
+
+Reproducible synthetic comparisons and the unperformed user-observation protocol:
+[evaluation guide](docs/evaluation-guide.md) ·
+[Korean study cards](docs/submission/user-study-ko.md).
 
 ### Voice input
 
@@ -241,19 +266,19 @@ The development API has no user authentication and binds only to localhost.
 
 ## Verification
 
-The following are **recorded results from 2026-10-24**, not claims of live service
+The following are **recorded results from 2026-10-25**, not claims of live service
 validation. Exact commands, revisions and caveats are in the
 [delivery ledger](docs/progress.md).
 
 | Check | Recorded evidence |
 | --- | --- |
-| Backend | 30 Python tests passed; provider HTTP tested through mocks, including clarification constraint preservation |
-| Android | 41 unit tests per variant passed, including clarification, explicit home deadlines, grounded explanation, voice sessions and journey approval boundaries |
+| Backend | 63 Python tests passed; provider HTTP mocked, including venue identity, availability evidence and conditional proposals |
+| Android | 80 unit tests per variant passed, including venue review, elapsed deadline slack, request ownership/timeout and approval/completion boundaries |
 | Builds | Demo/live debug and signed release builds passed; release v3 signatures verified |
-| Actual Pleos demo | HTTP fixture → edit → plan → three explicitly completed simulated stops → separately approved simulated home |
+| Actual Pleos demo | Pinned example pickup → HTTP plan → arrival stays incomplete → three explicit completions with automatic previews → separately approved simulated home |
 | Actual vehicle restrictions | Drive / 30 km/h locked actions and dismissed an open editor; Park / 0 restored |
 | UI | Actual day/night captures and native date/reset checks |
-| CI | [Verify run 39996479748](https://github.com/wookingwoo/onmyway-ai/actions/runs/39996479748) passed on the documentation/subtitle head; [workflow](.github/workflows/verify.yml) |
+| CI | The current PR reports its remote checks separately; local final commands include both variants and lint. [Workflow](.github/workflows/verify.yml) |
 
 Reproduce application checks after toolchain setup:
 

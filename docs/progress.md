@@ -421,3 +421,89 @@ physical vehicle usability, measured demand/retention/economics. Coordinates
 are manual, current live candidate hours/service are unknown. Public hosting
 requires authentication/privacy/operations work. No visibility change, grants,
 publication, identity, consent, signature or email submission performed.
+
+## 2026-10-25 — exact venues, current-time approval and recoverable continuation
+
+Scope: improve the already reviewed contest-critical errand flow in an isolated
+managed worktree, commit incrementally and prepare a private review PR. Provider
+keys remain deferred by the owner's explicit instruction. No key/environment file
+was inspected, copied or provisioned; the isolated evidence API had all provider
+configuration booleans false and never silently substituted fixtures.
+
+Implemented:
+- Search up to three places through POST /v1/places; the driver explicitly selects
+  the exact pickup venue. Discovery preserves identity/coordinates/evidence and
+  bypasses repeated keyword selection. The plan boundary rejects conflicting
+  selected-place/candidate data; legacy unselected API requests remain compatible.
+- Native availability review records an explicit window, service confirmation,
+  basis and timestamp. Changed query clears selection; changed service description
+  clears prior availability evidence. Missing/future/>24-hour live evidence
+  withholds feasibility. Supplied opening windows bind even when unverified.
+- Current-traffic warnings remain. A complete hypothetical route may carry a
+  conditional deadline proposal with warnings; it never upgrades feasibility,
+  relaxes another supplied constraint or changes the user's deadline automatically.
+- Approval counts computation and parked review time against the minimum home,
+  completion and supplied closing slack. Missing/malformed bounds, stale clocks
+  and expired margins fail closed. Zero margin has an explicit caution.
+- Request acceptance expires after 15 seconds, invalidates local generations and
+  requires reconnection/new approval. Only app-owned active guidance is cancelled.
+  Ordinary replanning asks to cancel owned guidance after validating the draft.
+  Teardown cancels unresolved requests without explicitly cancelling accepted
+  guidance. SDK release effects and same-name remote events remain unverified.
+- Explicit completion persists IDs, retains selected venues and automatically
+  refreshes the remaining preview. Errors retain completion and show recovery;
+  the next destination and final home always require separate approval.
+- Enlarged native confirmation message text after actual screenshot inspection.
+  Added independently selected uncertain/deadline example; no live error fallback.
+
+Review and regression evidence:
+- Backend review found selected-place/candidate conflicts and ignored unverified
+  opening windows; both reproduced RED and fixed. Scoped re-review clean.
+- Whole-branch review found SDK ownership stranded by ordinary replanning, then
+  unhandled draft validation in the cancellation callback; both fixed. Validation
+  now precedes cancellation and dialog/auto-refresh callbacks catch errors.
+  Final independent code-review verdict: ready to merge, no remaining blocker.
+- TDD reports and RED/GREEN logs remain under ignored .superpowers. Tests exercise
+  venue identity, provenance age, opening/wait constraints, conditional labels,
+  elapsed/wall-clock boundaries, mandatory preservation and request ownership.
+
+Actual final verification:
+- python -m pytest services/api/tests -q: **63 passed in 1.17s**. Provider HTTP is
+  mocked. Eight contract JSON examples validate; OpenAPI matches the application.
+- Android: testDemoDebugUnitTest, testLiveDebugUnitTest, assembleDemoDebug,
+  assembleLiveDebug, assembleDemoRelease, assembleLiveRelease, lintDemoDebug and
+  lintLiveDebug: **BUILD SUCCESSFUL in 1m18s /200 tasks**, **80 tests per variant**
+  (160 executions), zero failures/errors. Final callback correction included.
+- SDK-independent safety-tests project: **BUILD SUCCESSFUL in 29s**, the same 80
+  pure tests. Existing SDK XML/deprecation/native-library strip warnings remain;
+  no dependency or SDK-version change was introduced.
+- Both local release APKs passed v3 signature verification. Final source build:
+  local commit b338e55. Demo SHA256 ee3d62e4067568222ffe54a9ef9e931072b48f8fce65cd56f6e188856300ecea;
+  live c1c3789a1c478f4c76458cfd656a78a20e22bf1cf3a360b308e979b9331d1938.
+  APKs/aligned intermediates remain local; small checksum metadata updated.
+- Final signed demo installed without data wipe on the existing isolated official
+  Pleos Connect2.1.0/API34 AVD. scripts/smoke-contest-core.py --port8001 --lock-ready
+  passed exact example pickup selection, arrival-not-completion, three explicit
+  completions with automatic previews, separately approved simulated home,
+  conditional +11-minute proposal, retained uncertainty/optional omission and
+  zero-margin caution, and actual system night mode. Earlier run also passed.
+- scripts/smoke-pleos-lock.py passed actual Drive/30 km/h venue-dialog restriction
+  with no enabled unsafe controls; cleanup recorded Park/0. Theme restored to day.
+  Selected seven PNGs in docs/screenshots/contest-core are unedited, byte-identical
+  copies of actual final-APK captures. Raw XML/JSON/logs remain ignored.
+- scripts/evaluate-errand-decisions.py --check: **3/3 hand-calculated synthetic
+  examples pass**. Nearest-first misses the pickup completion deadline; the solver
+  visits pickup first with the same home ETA. A tighter case explicitly omits an
+  optional purchase; unknown availability remains conditional. This is a chosen
+  counterexample demonstration, not a real-provider or user/time-saving benchmark.
+- Updated existing smoke scripts for automatic previews; syntax checked. Their
+  extended historical voice/restoration modes were not all rerun in this session.
+
+Delivery limits:
+Final Korean STT, live OpenAI/Kakao authentication/data/latency, actual NaviHelper
+route acceptance/arrival, same-name SDK replay, physical-vehicle usability and
+observed user benefit remain unverified. Coordinates are still manual. The new
+Korean study cards are an unperformed exploratory protocol; no user contacted,
+recruited or measured. The prior107.667-second video, HTML pitch and older office
+files predate this flow and need regeneration before contest sharing. No contest
+submission, identity/consent/signature, public publication or access grant occurred.
