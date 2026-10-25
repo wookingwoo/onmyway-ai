@@ -63,6 +63,9 @@
 
 ## 파일
 
+새 이름의 전달용 복사본은 `artifacts/shortform/OnMyWay_AI_Shorts_motion_v2.mp4`와
+`artifacts/shortform/OnMyWay_AI_Shorts_motion_v2_ko.srt`이며 아래 검수 원본과 바이트가 같습니다.
+
 - 개선 무음 영상: `artifacts/shortform/OnMyWay_AI_Shorts_silent.mp4`
 - 일치하는 자막: `artifacts/evidence/OnMyWay_AI_Shorts_ko.srt`
 - 같은 자막의 로컬 전달 사본: `artifacts/shortform/OnMyWay_AI_Shorts_ko.srt`

@@ -1,5 +1,54 @@
 # Delivery ledger
 
+## 2026-10-25 — motion Short v2, faster quest-comedy revision
+
+- Continued the owner-requested revision in the same isolated feature worktree
+  and PR #6. Preserved the previous 54-second MP4/SRT/report locally under
+  `artifacts/shortform/archive-v1/`; no large media was added to Git.
+- Selected original workday/quest humor and a hand-drawn milk character after
+  researching official YouTube creator/trend guidance, linked in the design and
+  Korean storyboard. No claim that a specific joke is currently a top Korean
+  meme, or that reach/retention/awards are guaranteed.
+- New edit: **42.000 seconds / 18 scenes / 1,260 actually counted frames**,
+  1080×1920 / 30 fps / H.264/yuv420p / zero audio streams. About 22% shorter than
+  v1; mean scene length falls from 3.86 to 2.33 seconds. Staggered task cards,
+  title/stamp entrances, a wobbling milk character and its exit callback, plus
+  swipe/wipe/split/zoom cuts provide in-scene motion. Closing cards echo the hook.
+- `shortform_motion.py` streams deterministic original graphics with genuine
+  cropped footage through the builder. No fabricated native interaction or
+  silent source replacement. Caption/disclosure layers stay stationary through
+  transitions. A→B→A, mandatory errands, current approval, arrival/completion,
+  emulator-only driving evidence and separate home approval remain explicit.
+- Final canonical and friendly delivery-copy MP4 SHA-256:
+  `6eb92f83090280897b219f0583e9a6ddd30fe675e4df84f40aa1c59f379125d5`,
+  **2,701,260 bytes**. SRT SHA-256:
+  `90f4110cb289f17545114aa18c3c2a9e7ff4b4b3c065d9dcf23e7313c8b049d6`.
+  18 plain UTF-8 cues match the burned copy and exact scene boundaries, ending
+  at 42,000 ms. Future owner TTS synchronization remains pending.
+- Verification: FFmpeg `-xerror` full decode; FFprobe codec/rate/dimensions/audio,
+  actual decoded frame count and subtitle packets; 18 midpoint samples, 25
+  motion-beat samples, all 18 entries at 0/100/300 ms (54 frames), first/last
+  frames and 430-pixel browser preview. Continuous browser playback reached
+  42 seconds/ended with **1,260 decoded frames, zero dropped frames, no error**.
+  Metadata contains generic container/handler/encoder tags. No actual YouTube
+  overlay, physical device, TTS or physical-vehicle result is claimed.
+- Independent read-only review of `bdff612..1376478` found no Critical/Important
+  issue and confirmed the file hash, actual 1,260 frames and every SRT boundary.
+  Fixed the minor duration-derived frame report: the verifier now counts frames;
+  a mismatched 1,259-frame case went RED→GREEN. Regeneration retained identical
+  MP4/SRT hashes. The reviewer's test rerun hit a sandbox TEMP error; it is not
+  represented as green. Author's separate full run passed all **11 tests**.
+- Actual commands: `python -X utf8 -m unittest discover -s scripts/tests -p
+  test_shortform.py -v`: **11 passed**; existing virtualenv `python -m pytest
+  services/api/tests -q`: **30 passed / 1.19s**. Android offline
+  `testDemoDebugUnitTest testLiveDebugUnitTest assembleDemoDebug assembleLiveDebug`:
+  **BUILD SUCCESSFUL / 19s, 86 tasks up-to-date**. These reused the unchanged
+  app's existing 41-test results per variant; no fresh 82-test execution is claimed.
+- Friendly local delivery copies: `artifacts/shortform/OnMyWay_AI_Shorts_motion_v2.mp4`
+  and `OnMyWay_AI_Shorts_motion_v2_ko.srt`. Canonical names remain reproducible;
+  `docs/shortform-verification.json` identifies both. All media/scratch images
+  remain ignored. Public posting, TTS and final contest submission remain pending.
+
 ## 2026-10-25 — silent YouTube Short and matching captions
 
 - Created a new managed `youtube-shorts/onmyway-ai` worktree and named

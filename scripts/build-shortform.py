@@ -185,6 +185,11 @@ def verify_output(final, data, srt):
         raise ValueError("Unexpected output encoding")
     if abs(seconds - sum(s["duration"] for s in data["scenes"])) > 1 / FPS:
         raise ValueError("Encoded timeline length mismatch")
+    counts = json.loads(run("ffprobe", "-v", "error", "-select_streams", "v:0", "-count_frames",
+                            "-show_entries", "stream=nb_read_frames", "-of", "json", final))
+    decoded_frames = int(counts["streams"][0]["nb_read_frames"])
+    if decoded_frames != frame_bounds(data)[-1][1]:
+        raise ValueError("Decoded frame count does not match timeline")
     if srt.read_text(encoding="utf-8") != make_srt(data):
         raise ValueError("SRT does not match rendered timeline")
     run("ffmpeg", "-v", "error", "-xerror", "-i", final, "-f", "null", "-")
@@ -192,7 +197,7 @@ def verify_output(final, data, srt):
     return {"file": final.name, "sha256": digest(final), "bytes": final.stat().st_size,
             "width": W, "height": H, "fps": FPS, "seconds": seconds, "codec": "h264",
             "pixel_format": "yuv420p", "audio_streams": 0, "full_decode": "passed",
-            "srt_file": srt.name, "srt_sha256": digest(srt), "srt_cues": len(data["scenes"]), "rendered_frames": round(seconds * FPS),
+            "srt_file": srt.name, "srt_sha256": digest(srt), "srt_cues": len(data["scenes"]), "rendered_frames": decoded_frames,
             "motion": "original layered character/card animation; swipe, wipe, split and zoom cuts; stationary caption/disclosure",
             "source_hashes": {k: v["sha256"] for k, v in data["sources"].items()},
             "source_scope": "genuine Pleos emulator recordings; prepared interpretation and synthetic place/time; simulated navigation/arrival",

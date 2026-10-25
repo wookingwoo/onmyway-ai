@@ -5,6 +5,7 @@ from pathlib import Path
 import tempfile
 import sys
 import unittest
+from unittest.mock import patch
 
 from PIL import Image, ImageChops
 
@@ -133,6 +134,18 @@ class ShortformTests(unittest.TestCase):
         hook = module.render_frame(layout, 0).crop((72, 280, 900, 570))
         bright = sum(1 for r, g, b in hook.getdata() if min(r, g, b) > 200)
         self.assertGreater(bright, 1000)
+
+    def test_verifier_rejects_duration_with_wrong_decoded_frame_count(self):
+        module = self.builder()
+        info = {"streams": [{"codec_type": "video", "width": 1080, "height": 1920,
+                "codec_name": "h264", "pix_fmt": "yuv420p", "avg_frame_rate": "30/1"}],
+                "format": {"duration": "42"}}
+        with tempfile.TemporaryDirectory() as directory:
+            final = Path(directory) / "fake.mp4"
+            final.write_bytes(b"metadata test, not real media")
+            with patch.object(module, "probe", return_value=info), patch.object(module, "run", return_value='{"streams":[{"nb_read_frames":"1259"}]}'):
+                with self.assertRaisesRegex(ValueError, "frame count"):
+                    module.verify_output(final, self.timeline(), ROOT / "artifacts/evidence/OnMyWay_AI_Shorts_ko.srt")
 
 
 if __name__ == "__main__":

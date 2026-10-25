@@ -1,7 +1,8 @@
 # Submission readiness
 
 **Status: KEY-FREE DEMO READY; LIVE LAUNCH AND SUBMISSION PENDING.**
-Checked 2026-10-24. This is a functioning native demo, not a verified live service
+App baseline checked 2026-10-24; motion Short verified 2026-10-25.
+This is a functioning native demo, not a verified live service
 or a submitted entry.
 
 | Requirement | Actual evidence |

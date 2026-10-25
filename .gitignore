@@ -13,6 +13,7 @@ local.properties
 .tools/
 .worktrees/
 .superpowers/
+.playwright-mcp/
 *.jks
 *.keystore
 artifacts/private/
