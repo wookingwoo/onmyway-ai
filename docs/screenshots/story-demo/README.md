@@ -1,4 +1,4 @@
-# Story film and actual native captures
+# Historical story film and actual native captures
 
 Owner-authorized selected PNGs from the final local story film and fresh actual
 native recordings on official Pleos Connect 2.1.0 / API 34, 2026-10-25.
@@ -35,3 +35,5 @@ local in ignored artifacts/evidence/story-demo/. Reproduce with scripts/STORY_DE
 | automatic-next.png | captures/automatic-next.png | 036574e1e7894bfec3b73d038b1547a1ab2fad1551b647bbbee51d0428f4ac01 | 359287 |
 | driving-lock.png | captures/driving-lock.png | 1f390c8d1d6c78e1d879399ce786b9da0b455a8cb164e174dec33b302cd9aa36 | 180665 |
 | film-ending.png | frames/closing.png | e6b9d19b3063ae6a64369846f2cafda33a2ac1eb40487e4888cf8821ed338ace | 187417 |
+
+Historical film revision: current shared-service cockpit evidence is in [pleos-cockpit](../pleos-cockpit/README.md).

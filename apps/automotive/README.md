@@ -59,22 +59,28 @@ selection and approved deadline extensions update the same review state.
 The app uses `ai.pleos.playground:SpeechToText:3.3.1` in `ON_DEVICE` mode with
 `pleos.car.permission.STT_SERVICE`. There are no Android provider credentials or
 server registration calls. The actual vehicle must be PARKED to start the mic,
-including in the demo variant. The user taps **음성으로 말하기**, waits for
-**듣고 있어요**, speaks Korean, then explicitly confirms a final result with
-**이 내용 사용하기**. The result remains editable in the original input field;
-**할 일 확인하기** uses the existing server-side live parser and requires its
-configured provider. Speech alone never sends a destination or completes a task.
+including in the demo variant. **말로 부탁하기** starts recognition; a final
+result is consumed once and automatically starts server interpretation, discovery
+and planning. Speech answers missing conditions and **말로 조건 바꾸기** refines a
+proposal. Flexible generic shops are proposed automatically; exact pickup venues
+require confirmation. The route summary and its **확인하고 출발** action
+approve only the current fresh destination. Speech never starts navigation or
+completes an errand by itself. Direct text/editors remain recovery paths. A failed
+refinement invalidates the old proposal and retains an explicit retry.
 
 The SDK has an 8-second connection deadline and a 30-second recognition deadline.
 Cancel, restrictions and backgrounding discard the session. SDK `stop()` is
 asynchronous: the adapter retains its binding until the ended callback or a
 2-second cleanup grace before release, and serializes retries behind cleanup.
 
-For a key-free presentation, explicitly tap **예시 음성 흐름 체험**, confirm the
-prepared transcript, then select **예시 할 일 확인하기**. This requests the existing
-labelled fixture plan with simulated navigation. The UI says this is example text,
-not real speech recognition or LLM interpretation. Editing the sentence clears
-the example marker; a failed live recognition never selects this mode.
+For a key-free presentation explicitly choose **설정 → 샘플로 둘러보기**, then **말로 부탁하기 → 계획 준비하기**.
+The independently selected prepared request automatically reaches the real native
+route summary. **말로 조건 바꾸기** selects the prepared longer pharmacy
+dwell and recalculates. These use labelled synthetic data and simulated guidance;
+no live STT/LLM call is implied and failures never select this mode automatically.
+Current end-to-end reproduction is `scripts/record-story-demo.py` and
+`scripts/STORY_DEMO.md`; the older `smoke-voice.py --mode example` selectors refer
+to historical UI and must not be used as current-flow verification.
 
 Actual SDK initialization/listening and cancellation/no-audio failure are verified;
 successful final Korean transcription is not. A synthetic microphone injection
@@ -107,3 +113,19 @@ With the localhost API running and an explicitly selected parked Pleos emulator:
 an editor open for `scripts/smoke-pleos-lock.py`. The latter changes the isolated
 AVD to Drive / 30 km/h through the official Virtual Console and restores Park / 0.
 Do not run concurrent input drivers against that emulator.
+
+## Shared service cockpit
+
+Live and sample share the same native input/summary/approval/completion actions.
+Only the small source badge and source-specific settings distinguish prepared
+inputs and simulated navigation. The normal screen has no simulation event
+button; the demo+fixture+simulation+parked settings utility supplies test arrival
+signals. Native arrival still never completes an errand. **완료했어요** is the
+single explicit completion action, guarded by the revision displayed and current
+arrived stop. Required errands, dwell/finish deadlines and final home remain.
+
+Semantic day/night tokens are shared by input and voice surfaces. Important and
+secondary/warning text against the actual surfaces is tested at≥4.5:1 contrast.
+Touch actions remain≥80dp. The design follows the
+[Pleos consistency/glanceability guidance](https://document.pleos.ai/docs/connect/guide/docs-design/Introduction/intro)
+without claiming platform certification or physical-vehicle usability testing.

@@ -25,3 +25,4 @@ The independently selected example conversation runs the same native orchestrati
 - Keys are supplied later, as explicitly requested by the owner. Do not inspect/provision keys or make live OpenAI/Kakao calls. Mocked provider tests and labelled examples are the available evidence.
 - Proceed under the owner's explicit app-and-video selection and prior autonomous branch/commit/PR authorization; no additional design approval checkpoint is needed.
 - Use inline execution plus one fresh final reviewer. Keep the existing small architecture and avoid account services, memory infrastructure or a new voice provider.
+- The owner subsequently required the left Pleos vehicle panel to remain visible in the film. Every native chapter now fits the complete 16:9 surface without cropping, with chapter text above and captions below it.

@@ -83,3 +83,12 @@ office/video files are superseded.
 Repository visibility is unchanged. Owner identity in GitHub/Git history has not
 been made anonymous; public release and reviewer grants require user action.
 Historical remote Git objects may persist; cache erasure is not established.
+# Latest shared-cockpit revision
+
+The current feature work uses one shared native service UI for live/sample,
+voice-first automatic proposal preparation, compact day/night summaries and
+explicit fresh departure/completion/home actions. See the [actual current images](screenshots/pleos-cockpit/README.md)
+and [recorded verification](progress.md). Older transcript-confirmation and silent-film
+records below are historical. API credentials remain server-only and are supplied
+later; live provider and physical-vehicle results are still unverified.
+
