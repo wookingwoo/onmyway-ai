@@ -40,17 +40,19 @@ it explicitly and never represent it as captured device speech.
 
 ## Tasks
 
-- [ ]1. RED/GREEN pure narration and spoken command/turn tests: unknown/infeasible,
+- [x]1. RED/GREEN pure narration and spoken command/turn tests: unknown/infeasible,
   mandatory/home boundaries, negation/mixed/question, stale/duplicate approval.
-- [ ]2. Add native output adapter, lifecycle/audio-turn coordination and conversation
+- [x]2. Add native output adapter, lifecycle/audio-turn coordination and conversation
   UI. Preserve completed errands/origin on live refinement. Run all Python and
   Android unit/debug/release checks, commit intermediate changes.
-- [ ]3. Exercise actual official AVD output/errors/cancellation/Drive restriction,
+- [x]3. Exercise actual official AVD output/errors/cancellation/Drive restriction,
   record one voice explanation→refinement→voice departure→home journey. Generate
   local-only media, inspect frames/captions/provenance and actual full playback.
-- [ ]4. Fresh review, fix material findings, update progress/screenshots/PR description,
+- [x]4. Fresh review, fix material findings, update progress/screenshots/PR description,
   publish exact trees and verify final CI. Keep video/audio/APKs ignored.
 
 References: [Pleos modes](https://document.pleos.ai/docs/pleos-only/connect-sdk-pleos/TextToSpeech/intro),
 [lifecycle](https://document.pleos.ai/docs/pleos-only/connect-sdk-pleos/TextToSpeech/initialization-and-release),
 [events](https://document.pleos.ai/docs/pleos-only/connect-sdk-pleos/TextToSpeech/event-listeners).
+
+Local implementation/media review and playback are complete. Final remote head/CI evidence is maintained in PR8.

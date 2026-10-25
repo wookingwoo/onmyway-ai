@@ -7,47 +7,42 @@ functioning native demo, not a verified live service or a submitted entry.
 
 | Requirement | Actual evidence |
 | --- | --- |
-| Planner/API | 63 Python tests pass: exact venues, provenance/freshness, supplied windows, conditional proposals and existing constraints |
-| Native policies | 80 tests per demo/live variant, 160 executions; venue edits, elapsed slack, owned navigation recovery and existing boundaries |
-| Builds | Demo/live debug and release builds plus both debug lint checks pass; two local signed release APKs pass v3 verification |
-| Current AVD flow | Actual pinned example pickup, three explicit completions with automatic previews, separately approved simulated home, conditional proposal, zero-margin caution and night mode |
-| Tight deadline | 18:20 infeasible; explicit 11-minute extension to 18:31 preserves mandatory errands, names excluded milk, updates reviewed conditions |
-| Vehicle restriction | Actual CarUxRestrictions; question dialog closes/locks at Drive 30 km/h, restored Park 0; unknown state fails closed |
-| SDK scope | Earlier STT initialization/listening/cancellation and NaviHelper binding checks are recorded; new lifecycle policies have JVM tests. Final Korean transcription, real route acceptance/arrival and SDK release/replay effects remain unverified |
-| Missing providers | Actual missing-key 503 without fixture fallback. All provider health booleans false; no external key provisioned |
-| Screenshots | Six selected story-film/native PNGs in docs/screenshots/story-demo, with exact source hashes; historical core/intent-review captures remain |
-| Current story film | 183.3 seconds, 1920x1080 H.264/AAC, Korean editorial narration with word-timed subtitles; actual footage at 1x with labelled cuts/held states; one consultation-correction journey ending at home at 18:53 |
-| Film checks | Full decode, all 11 chapter frames and uninterrupted browser playback to 183.3/183.3 verified; 11 media-boundary tests pass; independent review findings fixed |
-| Historical video | 107.667 seconds, 1920x1080, silent, explicitly 2x; full home journey, adjustment, actual driving lock; permanent Korean disclosure, full decode and visual/playback verification |
-| YouTube Short | Separate 42-second, 18-scene animated 1080×1920 silent edit and Korean SRT, based on earlier intent-review footage. Regenerate for the current core UI before contest sharing; owner TTS/public posting pending. Storyboard: docs/submission/shortform-ko.md |
-| Historical pitch | Seven previously checked Korean HTML slides; regenerate to reflect the new venue/automatic-preview flow before contest sharing |
-| Application | Current anonymous Korean section 02 source updated. Old local DOCX/PPTX/ZIP predate this flow and must not be submitted as current |
-| GitHub/CI | Private repository. Core PR #7 merged; Verify run 40162905821 passed on its head. The story-film PR reports its own remote checks separately |
+| Planner/API | 67 Python tests pass; provider HTTP mocked, no live-result claim |
+| Native policies | 101 tests each demo/live; spoken revision/destination/freshness, mandatory/home, cancellation, completion and existing boundaries |
+| Builds | Both debug/release variants and release lint-vital pass; local signed releases verified and demo installed |
+| Current official AVD flow | One saved request → actual ON_DEVICE plan explanation → saved refinement → revised spoken plan → guarded saved voice approval → two explicit completions → separately approved simulated home |
+| Vehicle/lifecycle | Actual Drive30 stops output/input; final quiet PCM peak4/32768. Park0 does not reopen input; cancel and background/return leave it closed |
+| SDK scope | Actual native Korean TTS start/done and output capture verified. Real final Korean ASR, provider authentication, actual navigation acceptance/arrival and physical usability remain unverified |
+| Missing providers | Key-free API health flags all false; fixtures independently selected, never live-failure fallback. No key provisioned |
+| Screenshots | Current actual spoken-plan/full-Pleos PNGs in docs/screenshots/spoken-plan; earlier cockpit/day-night evidence remains |
+| Current film | 164.355542 seconds, FHD, constant30fps; actual device output + offline prepared user speech. Matching1x audio/video cuts, truthful sample/native disclosure, full decode |
+| Film review | Representative frames and uninterrupted unmuted browser playback recorded separately in docs/progress.md |
+| Historical media | Earlier editorial-narration films, silent captures and motion Short are historical and do not demonstrate the new spoken output/approval |
+| Contest materials | Anonymous source remains a draft; old DOCX/PPTX/ZIP/pitch must be regenerated before submission. No public video posting, access grant or final submission performed |
+| GitHub/CI | PR8 on feature/immersive-demo-video contains this work; its final head checks are reported in the PR |
 
 ## Run the current demo
 
 Start the official OnMyWay_Pleos AVD in Park / 0, then run
 `scripts/start-demo.ps1 -Serial emulator-5556`.
-Select **질문과 답변 체험 · 예시 해석**. Follow `docs/demo-guide-ko.md` and
-`docs/submission/pitch-and-demo-ko.md`.
+Select **샘플로 둘러보기** independently in Settings on a new journey, return,
+then **말로 부탁하기**. Follow [spoken scenario](submission/spoken-demo-ko.md)
+and [production/evidence](../scripts/SPOKEN_DEMO.md).
 The example uses fixed 2026-10-23 18:00 data; it is not today's live recommendation.
 
-The new story film supersedes the previous silent recording. Its single journey
-and actual captures are documented in docs/submission/story-demo-ko.md and
-docs/screenshots/story-demo/README.md. The historical pitch and official office
-files still need regeneration before contest sharing. The separate vertical Short
-also needs current-core footage before contest sharing, as documented in
-docs/submission/shortform-ko.md. Synthetic comparisons and
+The spoken-plan film supersedes the earlier editorial-narration/silent films.
+The original pitch, office files and vertical Short still need regeneration before
+sharing as current submission materials. Synthetic comparisons and
 the unperformed user protocol are in docs/evaluation-guide.md and
 docs/submission/user-study-ko.md. Real provider/navigation/user benefit remains unverified.
 
 Local deliverables:
 
 - `apk/OnMyWay_AI_demo_release.apk`, `apk/OnMyWay_AI_live_release.apk`
-- `artifacts/evidence/story-demo/OnMyWay_AI_story_demo.mp4`
-- `artifacts/evidence/story-demo/OnMyWay_AI_story_demo.srt`
-- `artifacts/evidence/story-demo/index.html` (local player)
-- `artifacts/evidence/story-demo/media-verification.json`
+- `artifacts/evidence/spoken-plan/OnMyWay_AI_spoken_demo.mp4`
+- `artifacts/evidence/spoken-plan/OnMyWay_AI_spoken_demo.srt`
+- `artifacts/evidence/spoken-plan/index.html` (local player)
+- `artifacts/evidence/spoken-plan/media-verification.json`
 - `artifacts/pitch/current/index.html` (generate with `scripts/build-pitch.py`)
 - `artifacts/shortform/OnMyWay_AI_Shorts_silent.mp4` (generate with `scripts/build-shortform.py`; requires approved local raw footage)
 - `artifacts/evidence/OnMyWay_AI_Shorts_ko.srt` (versioned small caption file)

@@ -1,3 +1,5 @@
+> Historical editorial-narration film. Current actual native speech film: [spoken-demo-ko.md](spoken-demo-ko.md).
+
 # 말 한마디로, 오늘의 약속까지
 
 한 사람의 퇴근길을 따라가는 공모전 검토용 시연입니다. 준비된 예시 대화와 합성 장소·시간, 모의 안내를 실제 앱에서 실행합니다. 실시간 STT·LLM 성공이나 실제 사용자 효과를 주장하지 않습니다.

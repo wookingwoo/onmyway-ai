@@ -770,7 +770,7 @@ subjective listening certification. Six owner-authorized actual images are in
 no MP4/audio/APK/raw/XML/report is committed. Final live ASR/LLM/Kakao/native
 navigation and physical-vehicle validation remain outstanding; keys are added
 later only on the server. Public video upload/final contest submission not done.
-# 2026-10-25 — spoken plan conversation (in progress)
+## 2026-10-25 — spoken plan conversation and actual native-audio film
 
 The actual Android app now reads the solver's ordered plan with Pleos
 TextToSpeech 3.3.1 in explicit ON_DEVICE mode. No speech key, app registration,
@@ -791,6 +791,38 @@ Actual checks: demo/live 101 unit tests each, zero failures/errors; both debug
 and release builds including release lint-vital succeeded (Gradle 182 tasks,
 1m10s). Official OnMyWay_Pleos AVD emitted actual ON_DEVICE tts-start/tts-done;
 authenticated local emulator speaker capture produced 1,532,102 bytes of PCM
-across 2,909 packets. Film and final lifecycle evidence are still being refreshed.
+across 2,909 packets in the preliminary output probe. Final actual native flow
+passed saved request/refinement/three guarded voice approvals, two separate
+completions and home arrival. Actual Drive30 interrupted TTS/input; the final
+one-second captured PCM peak was4/32768. Park0 did not reopen the mic. Explicit
+cancel and background/return also left the reply dialog closed.
+
+Python API67 passed/1.70s; full media suite30 passed/0.223s. Earlier broad media
+run under the Windows sandbox temp path hit cleanup permission errors; a rerun
+with the permitted short CreatorTemp path passed. Existing SDK XML/deprecation
+warnings remain; no product-test failure was suppressed. Both fresh source
+reviews found no remaining material app or media issue.
+
+Current film:164.355542s,1920x1080,constant30fps,H.264/AAC stereo,5,780,474bytes.
+SHA256 `640ae133e5900c4bac60b9efc54c0a4a9b72954f3dc43e7e40f0303721034580`.
+Actual ON_DEVICE output and offline Windows Heami prepared-user speech share
+1x source windows. No external speech generation was performed for this film;
+an online-generation attempt was rejected by automatic approval review and was
+replaced with offline SAPI. All prepared intervals have native PCM RMS below1,
+so user/app speech do not overlap. Captions are authored scene summaries and
+proportional prepared-dialogue sentences, not recognition word boundaries.
+Full FFmpeg decode and five representative frames passed. Actual IAB playback
+ran0→164.355542 without seeking; ended=true,muted=false,error=null. No subjective
+listening certification is claimed. Selected actual PNGs preserve source pixels
+under docs/screenshots/spoken-plan; large audio/video/APK/raw/report files remain
+ignored. Earlier editorial-narration films above are historical.
+
+Signed local APK SHA256:
+- demo: `793339cc096c3686052f7be82e98fd76ee2b09b341d33b585460403d730c53cb`
+- live: `aa2a75f1bfd68244f0c68211fe48e5ecedf95b726494685b10dd1aa2b8a2c5ca`
+
+Core update was published as remote0e029c0; Verify34/40200933102 passed. The
+final media/evidence head is reported in PR8. Keys remain deferred/server-only;
+no publication/access grant or final contest submission was performed.
 Real Korean ASR/provider/navigation and physical vehicle success are not claimed.
 

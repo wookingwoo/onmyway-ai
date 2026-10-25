@@ -284,8 +284,8 @@ validation. Exact commands, revisions and caveats are in the
 
 | Check | Recorded evidence |
 | --- | --- |
-| Backend | 63 Python tests passed; provider HTTP mocked, including venue identity, availability evidence and conditional proposals |
-| Android | 80 unit tests per variant passed, including venue review, elapsed deadline slack, request ownership/timeout and approval/completion boundaries |
+| Backend | 67 Python tests passed; provider HTTP mocked, including venue identity, availability evidence and conditional proposals |
+| Android | 101 unit tests per variant passed, including venue review, elapsed deadline slack, request ownership/timeout and approval/completion boundaries |
 | Builds | Demo/live debug and signed release builds passed; release v3 signatures verified |
 | Actual Pleos demo | Pinned example pickup → HTTP plan → arrival stays incomplete → three explicit completions with automatic previews → separately approved simulated home |
 | Actual vehicle restrictions | Drive / 30 km/h locked actions and dismissed an open editor; Park / 0 restored |
@@ -309,18 +309,24 @@ Pleos ON_DEVICE voice input is implemented, with automatic final-transcript
 submission and an independent, labelled example-conversation demo. Actual SDK initialization,
 listening readiness, cancellation, background cleanup and bounded no-audio failure
 have been checked on the emulator. Successful final Korean transcription remains
-unverified. TTS and automatic location acquisition are not implemented.
+unverified. Pleos ON_DEVICE Korean plan output has been implemented and actually
+recorded on the official AVD. Spoken refinement and explicit departure/home
+approval use the same guarded native flow. Successful real Korean recognition
+and live provider/navigation results still require validation. Automatic location
+acquisition is not implemented. See [spoken conversation](docs/spoken-conversation.md).
 
 No measured time savings, current users or retention results are claimed.
 [Current readiness and next verification steps](docs/readiness.md).
 
 ## Evidence and contest materials
 
-The current local film is **158.05 seconds, FHD, constant30fps**, with Korean AI
-editorial dialogue/narration and29 spoken-timing subtitles. Every native chapter
-shows the full Pleos vehicle/app surface. See [current evidence](docs/screenshots/pleos-cockpit/README.md)
-and [local production](scripts/STORY_DEMO.md). The previous135.7-second silent
-new-UI capture is historical. Videos, raw captures, APKs, office documents and
+The current local film is **164.36 seconds, FHD, constant30fps**, with actual
+Pleos ON_DEVICE plan speech and offline prepared user dialogue. It shows spoken
+refinement, guarded spoken departure and separately approved home navigation.
+Every native scene includes the full Pleos vehicle/app surface. Captions are
+authored summaries and prepared-dialogue sentence cues. See [current evidence](docs/screenshots/spoken-plan/README.md)
+and [local production](scripts/SPOKEN_DEMO.md). Earlier editorial-narration and silent
+captures are historical. Videos, raw captures, APKs, office documents and
 archives stay local; authorized screenshots and the historical small
 [Korean SRT](artifacts/evidence/OnMyWay_AI_Pleos_new_ui_demo.srt) are versioned.
 [Recording provenance and local file names](artifacts/evidence/README.md).

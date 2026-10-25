@@ -1,3 +1,5 @@
+> Historical editorial-narration film. Current actual native speech film: [SPOKEN_DEMO.md](SPOKEN_DEMO.md).
+
 # Local story-film production
 
 The Korean scenario is `docs/submission/story-demo-ko.md`; exact editorial copy
