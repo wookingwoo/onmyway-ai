@@ -16,6 +16,7 @@ or a submitted entry.
 | Missing providers | Actual missing-key 503 without fixture fallback. All provider health booleans false; no external key provisioned |
 | Screenshots | Six actual unedited captures in docs/screenshots/intent-review; PR #4's six images render at 2560x1440 |
 | Latest video | 107.667 seconds, 1920x1080, silent, explicitly 2x; full home journey, adjustment, actual driving lock; permanent Korean disclosure, full decode and visual/playback verification |
+| YouTube Short | Separate 54-second 1080×1920 silent edit and Korean SRT; owner TTS/public posting pending. Storyboard and production instructions: docs/submission/shortform-ko.md |
 | Current pitch | Seven Korean self-contained HTML slides generated locally with actual embedded screenshots; layout and navigation checked |
 | Application | Current anonymous Korean section 02 source updated. Old local DOCX/PPTX/ZIP predate this flow and must not be submitted as current |
 | GitHub/CI | Private repository. PRs #1–#4 merged incrementally. PR #4 head 4776e081 passed Verify run 40055113629; preparation PR evidence recorded in progress and GitHub |
@@ -34,6 +35,8 @@ Current local deliverables:
 - `artifacts/evidence/intent-demo/OnMyWay_AI_intent_demo.mp4`
 - `artifacts/evidence/intent-demo/media-verification.json`
 - `artifacts/pitch/current/index.html` (generate with `scripts/build-pitch.py`)
+- `artifacts/shortform/OnMyWay_AI_Shorts_silent.mp4` (generate with `scripts/build-shortform.py`; requires approved local raw footage)
+- `artifacts/evidence/OnMyWay_AI_Shorts_ko.srt` (versioned small caption file)
 
 ## Remaining launch and submission work
 
@@ -59,8 +62,9 @@ certification is claimed. Business numbers are explicitly hypothetical in
 alternatives and launch gates.
 
 APKs, video, HTML pitch, raw captures/logs, office files and archives stay local.
-Only selected authorized actual screenshots are committed; the historical allowed
-SRT remains. The older review ZIP and old office/video files are superseded.
+Only selected authorized actual screenshots and small caption/source files are
+committed. The historical allowed SRT remains. The older review ZIP and old
+office/video files are superseded; the vertical Short is a separate current edit.
 Repository visibility is unchanged. Owner identity in GitHub/Git history has not
 been made anonymous; public release and reviewer grants require user action.
 Historical remote Git objects may persist; cache erasure is not established.

@@ -1,0 +1,295 @@
+{
+  "width": 1080,
+  "height": 1920,
+  "fps": 30,
+  "sources": {
+    "normal": {
+      "file": "normal-raw.mp4",
+      "sha256": "b6aa904947f730ec4f296dfd26f8e860df0fd5e330c8436d446061abd57cc622"
+    },
+    "tight": {
+      "file": "tight-raw.mp4",
+      "sha256": "75f64e1120d58e26cf168dcfa3cc0f67c047690bc961d62102de24a7c0004be1"
+    },
+    "driving": {
+      "file": "driving-raw.mp4",
+      "sha256": "16e018e96a4ae31e0e29a18a353106d8abdea55692b53c6ee293a41887d76f40"
+    }
+  },
+  "scenes": [
+    {
+      "id": "hook",
+      "duration": 3,
+      "chapter": "퇴근길의 문제",
+      "headline": [
+        "집엔 7시까지.",
+        "할 일은 아직 3개."
+      ],
+      "accent_line": 1,
+      "art": "clock",
+      "caption": "집엔 일곱 시까지.\n할 일은 아직 세 개."
+    },
+    {
+      "id": "required",
+      "duration": 3,
+      "chapter": "꼭 해야 할 일",
+      "headline": [
+        "약은 꼭.",
+        "세탁물은 6시 반까지."
+      ],
+      "accent_line": 1,
+      "art": "required",
+      "caption": "약은 꼭 사고,\n세탁물도 찾아야 해요."
+    },
+    {
+      "id": "optional",
+      "duration": 3,
+      "chapter": "시간이 된다면",
+      "headline": [
+        "우유는…",
+        "시간이 되면."
+      ],
+      "accent_line": 1,
+      "art": "milk",
+      "caption": "우유는 시간이 되면\n사고 싶고요."
+    },
+    {
+      "id": "introduce",
+      "duration": 3,
+      "chapter": "퇴근길 완료 플래너",
+      "headline": [
+        "이 퇴근길,",
+        "어떻게 끝낼까요?"
+      ],
+      "accent_line": 1,
+      "art": "route",
+      "caption": "이 퇴근길,\n어떻게 끝내면 좋을까요?"
+    },
+    {
+      "id": "clarify",
+      "duration": 4,
+      "chapter": "01  먼저, 뜻을 확인",
+      "headline": [
+        "6시 반, 도착?",
+        "수령 완료?"
+      ],
+      "accent_line": 1,
+      "art": "footage",
+      "note": "도착 마감과 수령 완료 마감은 달라요",
+      "clip": {
+        "source": "normal",
+        "start": 14,
+        "rate": 1,
+        "crop": [
+          850,
+          425,
+          840,
+          200
+        ]
+      },
+      "caption": "여섯 시 반, 도착인가요?\n수령 완료인가요?",
+      "focus": "수령 완료 마감을 확인해요"
+    },
+    {
+      "id": "calculate",
+      "duration": 4,
+      "chapter": "02  끝나는 시간을 계산",
+      "headline": [
+        "이동부터 귀가까지.",
+        "빠짐없이 계산."
+      ],
+      "accent_line": 1,
+      "art": "footage",
+      "note": "도로 이동 + 영업 대기 + 머무름 + 귀가",
+      "clip": {
+        "source": "normal",
+        "start": 59,
+        "rate": 1,
+        "crop": [
+          850,
+          345,
+          840,
+          330
+        ]
+      },
+      "caption": "이동과 대기, 머무는 시간,\n귀가까지 계산해요.",
+      "focus": "귀가 예상 18:40 · 여유 20분"
+    },
+    {
+      "id": "normal-result",
+      "duration": 4,
+      "chapter": "예시 A  귀가 마감 19:00",
+      "headline": [
+        "할 일 세 개를 마치고",
+        "18:40, 집으로."
+      ],
+      "accent_line": 1,
+      "art": "footage",
+      "note": "준비된 예시 계획 · 실제 도착 결과 아님",
+      "clip": {
+        "source": "normal",
+        "start": 48,
+        "rate": 1,
+        "crop": [
+          660,
+          175,
+          1220,
+          690
+        ]
+      },
+      "caption": "이 예시 계획에선\n여섯 시 사십 분에 집에 도착해요.",
+      "focus": "약 → 세탁물 → 우유 → 집"
+    },
+    {
+      "id": "conflict",
+      "duration": 4,
+      "chapter": "예시 B  귀가 조건을 바꾸면?",
+      "headline": [
+        "그런데 집 마감이",
+        "6시 20분이라면?"
+      ],
+      "accent_line": 1,
+      "art": "deadline",
+      "warning": true,
+      "caption": "그런데 귀가 마감이\n여섯 시 이십 분이라면?"
+    },
+    {
+      "id": "propose",
+      "duration": 4,
+      "chapter": "03  필수를 지키는 변경 제안",
+      "headline": [
+        "필수는 그대로.",
+        "11분 연장을 제안."
+      ],
+      "accent_line": 1,
+      "art": "footage",
+      "note": "18:20 → 18:31 · 사용자 승인 필요",
+      "warning": true,
+      "clip": {
+        "source": "tight",
+        "start": 37,
+        "rate": 1,
+        "crop": [
+          850,
+          425,
+          840,
+          200
+        ]
+      },
+      "caption": "필수 용무는 유지하고,\n십일 분 연장을 제안해요.",
+      "focus": "18:20 → 18:31"
+    },
+    {
+      "id": "approve",
+      "duration": 4,
+      "chapter": "04  내가 승인한 뒤 재계산",
+      "headline": [
+        "내가 승인하면,",
+        "우유는 다음에."
+      ],
+      "accent_line": 1,
+      "art": "footage",
+      "note": "필수 2개 유지 · 선택 1개 제외",
+      "clip": {
+        "source": "tight",
+        "start": 67,
+        "rate": 1,
+        "crop": [
+          850,
+          345,
+          840,
+          340
+        ]
+      },
+      "caption": "내가 승인하면 다시 계산.\n우유는 다음으로 미뤄요.",
+      "focus": "우유 구매 · 이번 동선 제외"
+    },
+    {
+      "id": "complete",
+      "duration": 4,
+      "chapter": "예시 A로 복귀 · 정차 후 완료",
+      "headline": [
+        "도착과 완료는",
+        "따로 확인해요."
+      ],
+      "accent_line": 1,
+      "art": "footage",
+      "note": "마친 일 확인 → 남은 일정 다시 계산",
+      "clip": {
+        "source": "normal",
+        "start": 90,
+        "rate": 1,
+        "crop": [
+          660,
+          175,
+          1220,
+          780
+        ]
+      },
+      "caption": "첫 예시로 돌아와, 완료를 확인해요.\n도착과 완료는 따로예요.",
+      "focus": "도착 후, 용무 완료를 확인"
+    },
+    {
+      "id": "driving",
+      "duration": 4,
+      "chapter": "06  차량 상태에 맞춰",
+      "headline": [
+        "달릴 땐,",
+        "조작을 잠가요."
+      ],
+      "accent_line": 1,
+      "art": "footage",
+      "note": "Drive · 30 km/h / Pleos 에뮬레이터 검증",
+      "clip": {
+        "source": "driving",
+        "start": 3,
+        "rate": 1,
+        "crop": [
+          0,
+          0,
+          1920,
+          970
+        ]
+      },
+      "caption": "주행 상태에선\n조작을 잠가요.",
+      "focus": "Drive · 30 km/h"
+    },
+    {
+      "id": "home",
+      "duration": 4,
+      "chapter": "예시 A · 마지막은, 집으로",
+      "headline": [
+        "할 일의 마지막은",
+        "집으로 돌아가기."
+      ],
+      "accent_line": 1,
+      "art": "footage",
+      "note": "귀가 안내도 별도로 승인 · 모의 안내",
+      "clip": {
+        "source": "normal",
+        "start": 122,
+        "rate": 1,
+        "crop": [
+          660,
+          175,
+          1220,
+          780
+        ]
+      },
+      "caption": "마지막은 집으로.\n귀가 안내도 따로 승인해요.",
+      "focus": "집으로 가는 안내도 내가 승인"
+    },
+    {
+      "id": "close",
+      "duration": 6,
+      "chapter": "OnMyWay AI",
+      "headline": [
+        "가는 길에,",
+        "할 일까지."
+      ],
+      "accent_line": 1,
+      "art": "close",
+      "caption": "가는 길에, 할 일까지. OnMyWay AI.\n당신의 퇴근길엔 무슨 일이 남았나요?"
+    }
+  ]
+}
