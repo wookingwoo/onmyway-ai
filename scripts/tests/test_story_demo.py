@@ -13,6 +13,20 @@ from story_demo import inside, captions, validate_inputs, video_windows, validat
 
 
 class StoryDemoBoundaries(unittest.TestCase):
+    def test_prepared_request_can_hold_its_actual_frame_until_the_quote_finishes(self):
+        from story_demo import chapter_windows
+        source = {"capture_seconds": 20, "beats": [{"name": "request", "at": 5}, {"name": "plan", "at": 18}]}
+        self.assertEqual([(5, 6)], chapter_windows({"focus_beat": "request"}, source, 20, 15))
+        with self.assertRaisesRegex(ValueError, "focus"):
+            chapter_windows({"focus_beat": "missing"}, source, 20, 15)
+
+    def test_final_video_cannot_claim_constant_30fps_with_concat_timestamp_gaps(self):
+        from story_demo import validate_final_video
+        bad = {"r_frame_rate": "30/1", "avg_frame_rate": "78045/2609", "start_time": "0.033333", "duration": "173.933333", "nb_frames": "5203"}
+        with self.assertRaisesRegex(ValueError, "constant"):
+            validate_final_video(bad)
+        validate_final_video({"r_frame_rate": "30/1", "avg_frame_rate": "30/1", "start_time": "0", "duration": "10", "nb_frames": "300"})
+
     def test_full_pleos_frame_fits_without_cropping_or_caption_overlap(self):
         from story_demo import native_presentation
         x, y, width, height = native_presentation()

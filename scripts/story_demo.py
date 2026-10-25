@@ -179,6 +179,25 @@ def native_presentation():
     return 176, 88, 1568, 882
 
 
+def chapter_windows(chapter, source, raw_seconds, seconds):
+    beats = verified_beats(source, raw_seconds)
+    focus = chapter.get("focus_beat")
+    if focus:
+        beat = next((b for b in source["beats"] if b.get("name") == focus), None)
+        if beat is None:
+            raise ValueError("Missing requested actual focus beat")
+        start = beat["at"]
+        return [(start, min(start + 1, raw_seconds))]
+    return video_windows(raw_seconds, beats, seconds)
+
+
+def validate_final_video(video):
+    if video["r_frame_rate"] != "30/1" or video["avg_frame_rate"] != "30/1" or abs(float(video["start_time"])) > .001:
+        raise ValueError("Final video is not constant 30fps from timestamp zero")
+    if abs(int(video["nb_frames"]) - round(float(video["duration"]) * 30)) > 1:
+        raise ValueError("Final constant-rate frame count disagrees with duration")
+
+
 def background(chapter, index, total, target, font_dir):
     from PIL import Image, ImageDraw, ImageFont
     bg, panel, ink, muted, mint, gold = "#101C29", "#192A3B", "#F4F2EA", "#A8B9C7", "#8BE0CB", "#E8C88C"
@@ -195,8 +214,8 @@ def background(chapter, index, total, target, font_dir):
         draw.rectangle((0, 970, 1920, 1080), fill="#0B1420")
         text(32, 10, f"OnMyWay AI · {index+1:02d}/{total:02d} · {chapter['eyebrow']}", 21, mint)
         text(32, 42, chapter["title"].replace("\n", " "), 30, ink, True)
-        text(1370, 10, "준비된 대화 · 실제 STT·LLM 아님", 20, gold)
-        text(1370, 43, "Pleos 전체 화면 · 모의 안내 · 1×·일부 정지", 19, muted)
+        text(1370, 10, "샘플 데이터 · 모의 안내", 20, gold)
+        text(1370, 43, "Pleos 전체 화면 · 1× · 일부 정지", 19, muted)
         draw.rectangle((174, 86, 1746, 972), outline="#466276", width=2)
         image.save(target)
         return
@@ -321,8 +340,7 @@ def build(root, story_path, font_dir):
             source = sources[name]
             raw = root / source["raw"]
             raw_seconds = float(probe(raw)["format"]["duration"])
-            beats = verified_beats(source, raw_seconds)
-            windows = video_windows(raw_seconds, beats, duration-1)
+            windows = chapter_windows(ch, source, raw_seconds, duration-1)
             timing["source_windows"] = windows
             timing["raw_sha256"] = source["sha256"]
             command += ["-i", str(raw), "-loop", "1", "-i", str(bg), "-i", str(root/"audio"/(name+".mp3")), "-ss", str(timing["start"]), "-i", str(cuts/"original-bed.wav")]
@@ -349,9 +367,10 @@ def build(root, story_path, font_dir):
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-f", "concat", "-safe", "0", "-i", "concat.txt", "-c", "copy", str(intermediate)], cwd=cuts, check=True)
     final = root / "OnMyWay_AI_story_demo.mp4"
     pending = root / ".story-rendering.mp4"
-    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", "assembled.mp4", "-vf", "ass=captions.ass", "-c:v", "libx264", "-preset", "fast", "-crf", "20", "-c:a", "copy", "-map_metadata", "-1", "-movflags", "+faststart", str(pending)], cwd=cuts, check=True)
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", "assembled.mp4", "-vf", "fps=30:start_time=0,ass=captions.ass", "-r", "30", "-fps_mode", "cfr", "-t", str(cursor), "-c:v", "libx264", "-preset", "fast", "-crf", "20", "-c:a", "copy", "-map_metadata", "-1", "-movflags", "+faststart", str(pending)], cwd=cuts, check=True)
     data = probe(pending)
     video = next(s for s in data["streams"] if s["codec_type"] == "video")
+    validate_final_video(video)
     assert (video["width"], video["height"]) == (1920, 1080)
     assert any(s["codec_type"] == "audio" for s in data["streams"])
     assert abs(float(data["format"]["duration"])-cursor) < .1, "Chapter timeline drift"

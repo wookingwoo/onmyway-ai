@@ -16,7 +16,7 @@ import edge_tts
 async def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--story", default="scripts/story_demo.json")
-    parser.add_argument("--output", default="artifacts/evidence/voice-first-demo")
+    parser.add_argument("--output", default="artifacts/evidence/pleos-service-demo")
     parser.add_argument("--voice", default="ko-KR-SunHiNeural")
     args = parser.parse_args()
     story = json.loads(Path(args.story).read_text(encoding="utf-8"))
