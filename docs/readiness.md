@@ -16,7 +16,7 @@ or a submitted entry.
 | Missing providers | Actual missing-key 503 without fixture fallback. All provider health booleans false; no external key provisioned |
 | Screenshots | Six actual unedited captures in docs/screenshots/intent-review; PR #4's six images render at 2560x1440 |
 | Latest video | 107.667 seconds, 1920x1080, silent, explicitly 2x; full home journey, adjustment, actual driving lock; permanent Korean disclosure, full decode and visual/playback verification |
-| YouTube Short | Separate 54-second 1080×1920 silent edit and Korean SRT; owner TTS/public posting pending. Storyboard and production instructions: docs/submission/shortform-ko.md |
+| YouTube Short | Separate 42-second, 18-scene animated 1080×1920 silent edit and Korean SRT; owner TTS/public posting pending. Storyboard and production instructions: docs/submission/shortform-ko.md |
 | Current pitch | Seven Korean self-contained HTML slides generated locally with actual embedded screenshots; layout and navigation checked |
 | Application | Current anonymous Korean section 02 source updated. Old local DOCX/PPTX/ZIP predate this flow and must not be submitted as current |
 | GitHub/CI | Private repository. PRs #1–#4 merged incrementally. PR #4 head 4776e081 passed Verify run 40055113629; preparation PR evidence recorded in progress and GitHub |
