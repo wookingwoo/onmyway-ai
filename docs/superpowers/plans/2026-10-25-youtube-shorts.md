@@ -32,29 +32,31 @@ external input; generated media remains ignored and local.
 
 - [x] Confirm official contest/YouTube guidance and existing actual source material.
 - [x] Write the design and this plan; ignore generated shortform media.
-- [ ] Inspect diff and commit the research/production contract.
+- [x] Inspect diff and commit the research/production contract.
 
 ### Task 2: Timeline and reproducible production
 
 **Files:** `assets/shortform/timeline-ko.json`, `scripts/build-shortform.py`,
 `scripts/tests/test_shortform.py`, `artifacts/evidence/OnMyWay_AI_Shorts_ko.srt`.
 
-- [ ] Test timing, SRT encoding/cue boundaries, source checks and crop validation.
-- [ ] Run `python -m unittest discover -s scripts/tests -p test_shortform.py -v`;
+- [x] Test timing, SRT encoding/cue boundaries, source checks and crop validation.
+- [x] Run `python -m unittest discover -s scripts/tests -p test_shortform.py -v`;
   expected initial failure, then all tests passing after implementation.
-- [ ] Implement and render the 54-second video using explicit original footage.
-- [ ] Inspect scene frames; correct any visual or semantic defects and regenerate.
-- [ ] Commit source, timeline and captions after relevant checks pass.
+- [x] Implement and render the 54-second video using explicit original footage.
+- [x] Inspect scene frames; correct any visual or semantic defects and regenerate.
+- [x] Commit source, timeline and captions after relevant checks pass.
 
 ### Task 3: Verify, document and deliver
 
 **Files:** `docs/submission/shortform-ko.md`, `docs/shortform-verification.json`,
 `docs/progress.md`, `docs/submission/application-ko.md`, `docs/readiness.md`.
 
-- [ ] Full FFmpeg decode, FFprobe contract, SRT parser/timing and visual/phone QA.
-- [ ] Run Python suite and available Android unit/build checks; record actual results.
-- [ ] Browser playback to ended state with no media error; review the whole branch.
-- [ ] Update Korean storyboard, later-TTS guidance, upload metadata draft and evidence.
-- [ ] Commit small files, audit the entire main-to-head diff for binary deliverables.
-- [ ] Push through connected GitHub, create and attach a PR targeting main; preserve
+- [x] Full FFmpeg decode, FFprobe contract, SRT parser/timing and visual/phone QA.
+- [x] Run Python suite and available Android unit/build checks; record actual results.
+- [x] Browser playback to ended state with no media error; review the whole branch.
+- [x] Update Korean storyboard, later-TTS guidance, upload metadata draft and evidence.
+- [x] Commit small files, audit the entire main-to-head diff for binary deliverables.
+- [x] Push through connected GitHub, create and attach a PR targeting main; preserve
   local generated MP4/SRT and give the owner direct paths. Do not merge or publish.
+
+Delivery PR: https://github.com/wookingwoo/onmyway-ai/pull/6

@@ -1,0 +1,82 @@
+{
+  "file": "OnMyWay_AI_Shorts_silent.mp4",
+  "sha256": "f1ff16c79799f25bd4d7d44f7721fe11a26dc70157f65fdfa08bfcd4f0222ffe",
+  "bytes": 1252032,
+  "width": 1080,
+  "height": 1920,
+  "fps": 30,
+  "seconds": 54.0,
+  "codec": "h264",
+  "pixel_format": "yuv420p",
+  "audio_streams": 0,
+  "full_decode": "passed",
+  "srt_file": "OnMyWay_AI_Shorts_ko.srt",
+  "srt_sha256": "a2b789f5c99e6991b28831e96e368cae1f0e01a9ff87bcea54b446305b4c8369",
+  "srt_cues": 14,
+  "source_hashes": {
+    "normal": "b6aa904947f730ec4f296dfd26f8e860df0fd5e330c8436d446061abd57cc622",
+    "tight": "75f64e1120d58e26cf168dcfa3cc0f67c047690bc961d62102de24a7c0004be1",
+    "driving": "16e018e96a4ae31e0e29a18a353106d8abdea55692b53c6ee293a41887d76f40"
+  },
+  "source_scope": "genuine Pleos emulator recordings; prepared interpretation and synthetic place/time; simulated navigation/arrival",
+  "editorial_speed": "1x selected raw excerpts; crops and titles are editorial",
+  "visual_review": {
+    "result": "passed",
+    "scene_samples": 14,
+    "first_last_frames": true,
+    "phone_preview_css_width": 430,
+    "scope": "large Korean titles/captions and permanent disclosure readable; native footage is supporting detail; no real YouTube overlay or physical-device test"
+  },
+  "browser_playback": {
+    "result": "passed",
+    "duration": 54,
+    "current_time": 54,
+    "ended": true,
+    "paused": true,
+    "media_error": null,
+    "video_width": 1080,
+    "video_height": 1920,
+    "decoded_frames": 1620,
+    "dropped_frames": 0,
+    "viewport_css": [
+      430,
+      900
+    ],
+    "scope": "local browser playback; no YouTube publication"
+  },
+  "checked_date_korea": "2026-10-25",
+  "srt_packet_validation": {
+    "packets": 14,
+    "first_start_seconds": 0,
+    "last_end_seconds": 54,
+    "utf8": "plain, no BOM",
+    "matches_burned_copy": true
+  },
+  "metadata_review": "passed: generic MP4 format/video handler/encoder tags only; no identity or source paths",
+  "independent_review": {
+    "base": "53fcde9",
+    "reviewed_checkpoint": "df22b05",
+    "critical": 0,
+    "important": 0,
+    "minor": "removed a skipped chapter number; content/timing unchanged",
+    "continuous_playback": "checked separately by author"
+  },
+  "regression_checks": {
+    "builder_unittest": {
+      "passed": 6
+    },
+    "python_api_pytest": {
+      "passed": 30
+    },
+    "android_demo_unit": {
+      "passed": 41
+    },
+    "android_live_unit": {
+      "passed": 41
+    },
+    "android_debug_builds": [
+      "demo passed",
+      "live passed"
+    ]
+  }
+}

@@ -1,5 +1,55 @@
 # Delivery ledger
 
+## 2026-10-25 — silent YouTube Short and matching captions
+
+- Created a new managed `youtube-shorts/onmyway-ai` worktree and named
+  `feat/youtube-shorts` from main `53fcde9`. Connected GitHub confirmed the same
+  current main SHA. Local Git HTTP authentication returned 403, so publishing
+  uses the connected GitHub API; each remote tree is compared with its local
+  checkpoint tree. No repository visibility or access grants changed.
+- User delegated research, concept, production, incremental commits and PR.
+  Selected a 54-second portrait mini-story: three errands and home by 19:00,
+  clarification, calculated completion, a separately labeled 18:20 conflict,
+  approved +11 minutes with optional milk excluded, return to the first example,
+  separate completion, emulator driving restriction and separate home approval.
+- Official contest and YouTube sources are linked in the design and Korean
+  `submission/shortform-ko.md`. No award, reach or retention is guaranteed.
+- `scripts/build-shortform.py` and `assets/shortform/timeline-ko.json` reproduce
+  the original graphics, exact subtitles and editorial crops of three approved
+  actual raw captures. Missing/changed raw sources fail closed by hash. Large
+  media and all rendered frames are ignored under `artifacts/shortform/`.
+- Final local MP4: **54.000 seconds, 1080×1920, 30 fps, H.264/yuv420p, zero audio
+  streams, 1,252,032 bytes**. SHA-256
+  `f1ff16c79799f25bd4d7d44f7721fe11a26dc70157f65fdfa08bfcd4f0222ffe`.
+  Source excerpts are 1× and labeled editorial crops. Persistent Korean copy
+  states fixture interpretation/place/time and simulated guidance/arrival.
+- Small versioned UTF-8 SRT: 14 ordered cues from 0 to 54 seconds, no BOM or
+  style tags; byte-identical local delivery copy. SHA-256
+  `a2b789f5c99e6991b28831e96e368cae1f0e01a9ff87bcea54b446305b4c8369`.
+  FFprobe parsed all 14 subtitle packets; the final cue ends at 54 seconds.
+  It matches burned captions; synchronization to future owner TTS is pending.
+- Full FFmpeg `-xerror` decode passed. FFprobe checked codec/dimensions/frame
+  rate/audio/duration; metadata contains only generic container/encoder tags.
+  Inspected every scene midpoint, full-size critical UI crops, first/last frames
+  and 430-CSS-pixel browser preview. Corrected two raw trim/crop choices and made
+  the A→B→A example transition explicit. No physical-phone/YouTube-overlay test.
+- Fresh independent read-only review inspected code, docs, exact SRT and all 14
+  samples: zero Critical/Important issues. Removed one skipped chapter number.
+  Reviewer independently confirmed SRT/timeline and MP4 hash; its temp-file test
+  hit a sandbox permission limit. Author's full test command passed all 6.
+- Actual fresh regression commands/results in this worktree:
+  - `python -m unittest discover -s scripts/tests -p test_shortform.py -v`:
+    **6 passed**, after observing the initial missing-builder RED run.
+  - Existing virtualenv `python -m pytest services/api/tests -q`: **30 passed**.
+  - Gradle 8.9/JDK 17, offline: `testDemoDebugUnitTest testLiveDebugUnitTest
+    assembleDemoDebug assembleLiveDebug`: **BUILD SUCCESSFUL, 86 tasks executed**,
+    **41 tests per variant / 82 executions**, no failures/errors/skips. Existing
+    SDK XML/deprecated Android API/native-library stripping warnings remain.
+- Generated APKs stay local. App/API production behavior did not change.
+  Continuous browser playback evidence and delivery checks are recorded in
+  `shortform-verification.json`. Public upload, final TTS, participant identity,
+  consent/signature and final entry submission remain owner actions.
+
 Plan: docs/superpowers/plans/2026-10-23-onmyway.md
 
 - 2026-10-23: Empty repository verified. No existing code or tests. Python 3.13, Node, gh and ffmpeg present; Android SDK/JDK not found in conventional locations.
