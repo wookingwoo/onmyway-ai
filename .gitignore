@@ -25,6 +25,7 @@ artifacts/evidence/automotive-ux/
 artifacts/evidence/voice-demo/
 artifacts/evidence/intent-demo/
 artifacts/evidence/contest-core/
+artifacts/evidence/story-demo/
 artifacts/pitch/current/
 
 # Generated deliverables stay local; keep their source and verification notes.
