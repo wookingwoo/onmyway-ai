@@ -5,6 +5,7 @@ class NavigationHandoff {
     private var pending: Pair<Long,String>? = null
     fun arm(revision: Long, destinationId: String) { pending=revision to destinationId }
     fun cancel() { pending=null }
+    fun vehicleChanged(state: VehicleState) { if (state!=VehicleState.PARKED) cancel() }
     fun take(revision: Long, destinationId: String?, accepted: Boolean, foreground: Boolean,
              vehicle: VehicleState, fixture: Boolean): Boolean {
         if (!accepted) return false

@@ -8,6 +8,7 @@ import ai.pleos.playground.navi.constants.NaviErrorCode
 import ai.pleos.playground.navi.data.DestinationArrivedInfo
 import ai.pleos.playground.navi.data.RouteInfo
 import ai.pleos.playground.navi.data.RouteStartInfo
+import ai.pleos.playground.navi.data.NavigationScreenRequest
 import ai.pleos.playground.navi.helper.NaviHelper
 import ai.pleos.playground.navi.helper.listener.NaviHelperEventListener
 
@@ -136,6 +137,12 @@ class PleosNavigation(private val context: Context, private val event: (String) 
         val active = requests.cancel()
         disconnect(cancelRoute = active)
         if (active) event("error:경로 요청을 취소했습니다. 다시 연결하고 새 계획을 승인하세요.")
+    }
+    /** Screen dispatch is not route acceptance, and failure must not cancel guidance. */
+    fun showNavigationScreen(): Result<Unit> = runCatching {
+        check(connected) { "차량 내비 연결을 먼저 확인해 주세요." }
+        requireNotNull(helper).requestNavigationScreen(NavigationScreenRequest.Foreground)
+        android.util.Log.i("OnMyWayNavi", "screen-dispatched")
     }
     private fun disconnect(cancelRoute: Boolean) {
         // Invalidate before calling SDK: synchronous and queued old callbacks cannot mutate a retry.

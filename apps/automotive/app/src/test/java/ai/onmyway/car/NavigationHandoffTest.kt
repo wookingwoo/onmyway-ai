@@ -28,6 +28,13 @@ class NavigationHandoffTest {
         assertFalse(h.take(7,"laundry",true,false,VehicleState.PARKED,false))
         assertFalse(h.take(7,"laundry",true,true,VehicleState.PARKED,false))
     }
+    @Test fun driveOrUnknownThenParkCannotReviveTheApprovedAutomaticHandoff() {
+        for (restricted in listOf(VehicleState.RESTRICTED, VehicleState.UNKNOWN)) {
+            val h=NavigationHandoff();h.arm(7,"laundry")
+            h.vehicleChanged(restricted);h.vehicleChanged(VehicleState.PARKED)
+            assertFalse(h.take(7,"laundry",true,true,VehicleState.PARKED,false))
+        }
+    }
     @Test fun mapOnlyRecoveryDoesNotSupplyRouteAuthorityAndStillRequiresPark() {
         assertTrue(NavigationHandoff.canShow(true,false,true,false,VehicleState.PARKED,false))
         assertTrue(NavigationHandoff.canShow(true,false,false,true,VehicleState.PARKED,false))
