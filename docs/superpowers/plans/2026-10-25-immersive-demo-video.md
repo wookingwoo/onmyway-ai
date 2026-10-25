@@ -6,7 +6,7 @@
 
 **Architecture:** Record real actions on the isolated official Pleos AVD. Assemble labelled actual footage, editorial motion graphics, Korean narration and subtitles using local Python/Pillow/FFmpeg. Product behavior remains unchanged.
 
-**Tech Stack:** Python, Pillow, adb, FFmpeg/ffprobe, connected ElevenLabs narration.
+**Tech Stack:** Python, Pillow, adb, FFmpeg/ffprobe, optional edge-tts editorial narration.
 
 **Spec:** docs/superpowers/specs/2026-10-25-immersive-demo-video-design.md
 
@@ -30,26 +30,26 @@
 
 Files: docs/submission/story-demo-ko.md, scripts/record-story-demo.py, .gitignore.
 
-- [ ] Record the Korean shot/narration source and provenance rules.
-- [ ] Record fresh clarification, pinned venue, baseline, duration correction, revised route, real driving lock, two explicit completions and home approval/arrival.
-- [ ] Assert 18:53, mandatory order and optional exclusion, save local capture manifest and unedited screenshots.
-- [ ] Commit scenario and recorder.
+- [x] Record the Korean shot/narration source and provenance rules.
+- [x] Record fresh clarification, pinned venue, baseline, duration correction, revised route, real driving lock, two explicit completions and home approval/arrival.
+- [x] Assert 18:53, mandatory order and optional exclusion, save local capture manifest and unedited screenshots.
+- [x] Commit scenario and recorder.
 
 ## Task 2: Narration and local film
 
 Files: scripts/build-story-demo.py, scripts/story_demo.json, scripts/tests/test_story_demo.py.
 
-- [ ] Pin meaningful renderer boundaries with failing tests: missing audio, untrusted sources, invalid time maps, caption overflow.
-- [ ] Generate one Korean narration take per chapter, download outputs locally and record anonymous model/voice provenance without signed URLs.
-- [ ] Render a coherent 1080p film, SRT/ASS, chapter frames, a local player and machine-readable verification.
-- [ ] Run boundary checks, ffprobe, full decode, frame review and actual playback/audio review; repair material issues.
-- [ ] Commit reproducible renderer and story source.
+- [x] Pin meaningful renderer boundaries with failing tests: missing audio, untrusted sources, invalid time maps and mixed timebases.
+- [x] Generate one Korean narration take per chapter into local files and record anonymous model/voice provenance without signed URLs.
+- [x] Render a coherent 1080p film, SRT/ASS, chapter frames, a local player and machine-readable verification.
+- [x] Run boundary checks, ffprobe, full decode, all-chapter frame review and actual playback/technical audio checks; repair material issues.
+- [x] Commit reproducible renderer and story source.
 
 ## Task 3: Evidence and PR
 
 Files: README.md, docs/demo-guide-ko.md, docs/readiness.md, docs/progress.md, docs/screenshots/story-demo/.
 
-- [ ] Update authoritative current-media references and capture provenance; avoid changing historical records.
-- [ ] Run relevant Python and native checks and independent whole-branch review; resolve material findings.
-- [ ] Commit reviewed small PNG evidence and notes; verify no large video/audio or private files are staged.
+- [x] Update authoritative current-media references and capture provenance; avoid changing historical records.
+- [x] Run relevant Python and native checks and independent whole-branch review; resolve material findings.
+- [x] Commit reviewed small PNG evidence and notes; verify no large video/audio or private files are staged.
 - [ ] Publish incremental feature commits, create and attach PR with screenshots, verify CI and image rendering.

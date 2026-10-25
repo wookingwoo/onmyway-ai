@@ -15,21 +15,22 @@
 
 ## 개발 증거
 
-**최신 자료:** artifacts/evidence/intent-demo/OnMyWay_AI_intent_demo.mp4와 artifacts/pitch/current/index.html. 기존 DOCX·PPTX·ZIP은 새 UI 이전 자료이며 그대로 제출하지 않습니다.
+**최신 영상:** artifacts/evidence/story-demo/OnMyWay_AI_story_demo.mp4(183.3초, 한국어 설명 음성·자막). 대본은 docs/submission/story-demo-ko.md입니다. 기존 107.667초 무음 영상과 HTML 발표·DOCX·PPTX·ZIP은 현재 시나리오로 갱신 전이므로 그대로 최신 자료라고 제출하지 않습니다.
 
 아래 항목은 결과 파일·명령·환경·날짜가 확보된 경우에만 체크합니다. 다른 개발 작업의 진행 여부를 추정해서 체크하지 않습니다.
 
 - [x] 자동 검사: 시간 창, 이동·대기·체류, 필수 보존, 불가능, 정보 부족, 지연 재계획과 확인 질문 조건 보존. docs/progress.md 참조.
 - [x] Python 30개·Android 단위 테스트 변형당 41개 통과, demo·live debug·release 빌드 확인. 최종 테스트 환경·명령은 개발 증거 문서와 대조.
 - [x] v3 서명 release APK 두 종류와 SHA-256 기록: `artifacts/submission/apk-checksums.txt`.
-- [x] Pleos Connect 2.1.0·API 34 에뮬레이터 설치·실행, 최신 실제 화면 녹화 107.667초와 스크린샷 확보.
+- [x] Pleos Connect 2.1.0·API 34 에뮬레이터 설치·실행, 실제 화면 녹화와 스크린샷 확보. 과거 107.667초 영상은 이력으로 보관.
 - [x] 실제 CarUxRestrictions 읽기 및 Drive·30km/h 편집·승인 잠금 확인. Park·0km/h 복구. 차량 상태 미확인 시 제한 유지.
 - [ ] 사용자 승인 후 Pleos 다음 목적지 연결 검증. 실패·권한 거부·미지원도 구분.
 - [ ] API 키 설정 후 실제 AI·장소·도로 호출과 출처·오류 처리 검증.
 - [x] 고정 데이터 시연 모드와 실제 모드를 구분. live 모드의 키 누락 503에 고정 데이터 대체가 없음을 확인.
 - [x] HTTP 고정 데이터 계획 3개 → 승인 → 안내·도착 시뮬레이션 → 미완료 유지 → 명시적 첫 용무 완료 → 남은 2개 재계획을 실제 앱에서 확인.
-- [x] 최신 107.667초 영상의 예시·모의·2배속 고지와 장면 검수, 전체 디코딩·브라우저 재생 확인. 원본·검증 JSON은 artifacts/evidence/intent-demo/.
-- [x] 최신 질문·답변, 세 용무 완료·별도 귀가, 18:20 → 18:31 승인, 실제 주행 제한을 녹화. 발표 배분 시간은 연습용이며 실측 발표 시간이 아님.
+- [x] 과거 107.667초 영상의 예시·모의·2배속 고지와 장면 검수, 전체 디코딩·브라우저 재생 확인 이력은 artifacts/evidence/intent-demo/에 보관.
+- [x] 새 한 여정의 질문·점포 고정·약국 30분 수정·우유 제외·필수 두 용무 완료·별도 귀가·실제 AVD Drive/Park 복원을 녹화. 현재 원본·검증 JSON은 artifacts/evidence/story-demo/.
+- [x] 새 183.3초 영상 전체 디코딩, 11장별 화면 검수, 발화 시점의 문장 자막과 음량 검사, 플레이어 끝까지 재생을 확인. 실제 제공자·물리 차량 검증을 뜻하지 않음.
 - [x] 확인된 빌드·설치·고정 데이터 흐름과 실제 차량 제한 증거를 신청서 3~5·7번 및 발표 자료에 반영. 실호출·실경로 검증은 미완료 유지.
 
 ## 익명성과 비밀정보

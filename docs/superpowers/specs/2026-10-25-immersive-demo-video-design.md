@@ -12,11 +12,12 @@ Explicitly select the prepared clarification example, answer that 18:30 means pi
 
 ## Production boundaries
 
-- Target approximately 150–180 seconds, 1920x1080 H.264/AAC, Korean narration and readable captions. Length follows actual voice timing and footage readability.
+- Target approximately three minutes, 1920x1080 H.264/AAC, Korean narration and readable captions. Length follows actual voice timing and footage readability; the final edit is 183.3 seconds.
 - Real app captures are the sole source of UI. Editorial situation cards and route diagrams are clearly separate from the app viewport. No invented app screens, notifications, live speech recognition, successful real navigation or traffic claims.
 - Keep example/simulation disclosure readable throughout; identify narration as explanatory AI voice. Show missing/live-verification scope in the end card.
 - Preserve one coherent journey. Capture approval, arrival, completion and next preview as separate states. Count dwell and home travel; never remove a mandatory errand or silently change a deadline.
 - Screen recordings, generated audio, rendered video, frame sheets and raw verification files stay local in ignored artifacts/evidence/story-demo/. Track only scripts, prose and selected reviewed PNGs under docs/screenshots/story-demo/. No credentials, identity, access grants, publication or submission.
+- Final narration uses one available Korean Microsoft Edge speech voice via the optional edge-tts production client. Connected ElevenLabs quota and Artlist download entitlement prevented their use; restricted previews were not downloaded or incorporated. App STT/LLM/route providers remain untested.
 
 ## Acceptance
 

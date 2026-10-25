@@ -41,6 +41,20 @@ LLM 연결 경로는 별도로 구현되어 있습니다. 키는 나중에 서�
 
 ## 주 시나리오: 약 3분
 
+새 영상은 **“오늘의 약속을, 놓치지 않도록.”**라는 한 편의 퇴근길입니다.
+질문에 답하고 맡긴 세탁소를 고정한 뒤, 첫 18:40 귀가 계획을 봅니다. 출발 전
+약국 상담을 생각해 **수정 → 약 구매의 머무를 시간 10분에서 30분으로 변경 →
+저장 → 동선 확인하기**를 선택합니다. 세탁소를 먼저 방문하고 우유는 제외한
+**18:53 / 19:00** 예상을 확인합니다. 세탁물·약 두 필수 볼일을 각각 완료하고
+별도 귀가 승인으로 집까지 이어갑니다. 귀가 마감은 바꾸지 않습니다.
+
+이 수정은 사용자가 출발 전에 입력한 체류 시간입니다. 실제 지연을 자동 감지한
+결과가 아닙니다. 정확한 대본과 예시 시각은 [새 시나리오](submission/story-demo-ko.md),
+녹화·편집 재현은 [제작 안내](../scripts/STORY_DEMO.md)에 있습니다.
+
+아래 표는 세 용무를 모두 포함하는 **기본 예시 앱 체험**입니다. 새 영상의
+상담 시간 수정 전 상태와 같으며 추가 예시도 계속 사용할 수 있습니다.
+
 | 화면에서 할 일 | 설명할 핵심 |
 | --- | --- |
 | **질문과 답변 체험 · 예시 해석** | “퇴근길 약 구매와 세탁물 수령은 필수이고, 우유는 시간이 되면 사는 상황입니다. 준비된 예시로 흐름을 보여 드리겠습니다.” |
@@ -99,20 +113,25 @@ LLM 연결 경로는 별도로 구현되어 있습니다. 키는 나중에 서�
 
 ## 복구와 제한
 
-최신 실제 앱 영상은 로컬 `artifacts/evidence/intent-demo/OnMyWay_AI_intent_demo.mp4`
-(107.667초, 1920×1080, 무음)입니다. 정상·질문 답변·세 용무 완료·별도 귀가,
-촉박한 마감 조정, 실제 Drive 잠금을 담았습니다. 준비된 예시·모의 안내와
-실제 STT·LLM·실경로 미검증 고지를 상시 표시하고 2배속임을 밝힙니다.
-검증 내역은 같은 폴더 `media-verification.json`입니다.
+최신 영상은 로컬 `artifacts/evidence/story-demo/OnMyWay_AI_story_demo.mp4`
+(183.3초, 1920×1080, 한국어 설명 음성·자막)입니다. 정확한 세탁소 선택,
+약국 30분 수정으로 순서·선택을 바꾸는 판단, 두 필수 볼일 완료, 실제 AVD
+Drive 잠금과 별도 승인한 집 도착을 담았습니다. 실제 녹화 구간은 1배속이며
+대기 축약·일부 화면 정지를 고지합니다. 설명 음성은 앱의 STT나 음성 출력이
+아닙니다. 예시·모의 고지와 실제 제공자 미검증 범위를 표시합니다.
+검증 내역과 로컬 플레이어는 같은 폴더의 `media-verification.json`, `index.html`입니다.
 
 ```powershell
-.\.venv\Scripts\python.exe scripts/record-intent-demo.py --adb .tools/android-sdk/platform-tools/adb.exe --serial emulator-5556
-.\.venv\Scripts\python.exe scripts/build-pitch.py
+python scripts/record-story-demo.py --adb .tools/android-sdk/platform-tools/adb.exe --serial emulator-5556
+.tools/media-venv/Scripts/python.exe scripts/narrate-story-demo.py
+.tools/media-venv/Scripts/python.exe scripts/build-story-demo.py
 ```
 
-녹화에는 PATH의 ffmpeg·ffprobe와 Windows 맑은 고딕이 필요합니다. 격리된 공식
+녹화에는 현재 서명 demo APK와 키 없는 localhost:8001 API, PATH의 ffmpeg·ffprobe,
+Windows 맑은 고딕과 별도 제작용 Python 환경이 필요합니다. 격리된 공식
 AVD의 예시 일정만 사용합니다. 새 녹화 후 장면·고지·전체 재생을 다시 확인합니다.
-발표 파일은 `artifacts/pitch/current/index.html`, 대본·예상 질문은
+이전 107.667초 무음 영상과 `scripts/record-intent-demo.py`는 과거 자료입니다.
+기존 발표 파일 `artifacts/pitch/current/index.html`도 새 시나리오로 다시 제작해야 합니다. 대본·예상 질문은
 `submission/pitch-and-demo-ko.md`입니다. 이전 영상·DOCX·PPTX·ZIP은 최신 자료로
 사용하지 않습니다.
 

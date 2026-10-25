@@ -36,7 +36,7 @@ carefully bounded `--resume-driving` option retains only the first five recorded
 chapters and requires the same pending, labelled synthetic laundry journey with
 18:53/19:00 visible. It never substitutes another scenario after a failed check.
 
-Narration is explicitly selected editorial audio using the `edge-tts` client
+Narration is explicitly selected editorial audio using the [edge-tts client](https://github.com/rany2/edge-tts)
 and an available Korean voice, currently `ko-KR-SunHiNeural`. It sends only the
 anonymous Korean script to Microsoft's online speech service and reads no app
 key or env file. It fails on missing audio or word boundaries. Actual provider
@@ -57,7 +57,10 @@ before concatenation. A build invalidates stale reports and only atomically
 replaces the final file after decode/timeline checks. It keeps actual source windows at 1x, removes
 waiting and holds final states; the edit label is visible. It does not fabricate
 UI or suggest measured response latency. Editorial timeline cards are outside
-the native viewport. The raw source remains available to audit every cut.
+the native viewport. The raw source remains available to audit every cut. Keep
+the local player closed while rebuilding on Windows; an open video stream can
+lock the final MP4. A failed replacement leaves the previous film intact and the
+new report marked failed.
 
 Full decode and audio presence are necessary but insufficient. Inspect every
 chapter frame and actual playback, including captions, transitions, narration,
