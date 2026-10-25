@@ -6,7 +6,7 @@ import java.time.OffsetDateTime
 
 /** User-selected venue identity is separate from a search query or AI interpretation. */
 object PlaceReview {
-    private val inputKeys = listOf("id", "label", "query", "mandatory", "dwell_seconds", "latest_finish", "selected_place")
+    private val inputKeys = listOf("id", "label", "query", "place_mode", "mandatory", "dwell_seconds", "latest_finish", "selected_place")
 
     fun pin(errand: JSONObject, place: JSONObject, allowFixture: Boolean): JSONObject {
         require(place.optString("id").isNotBlank() && place.optString("name").isNotBlank()) { "방문할 장소를 선택해 주세요." }

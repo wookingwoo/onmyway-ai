@@ -14,11 +14,13 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 
-/** Native transcript review; microphone input never runs in the background. */
+/** Foreground speech creates a proposal automatically; navigation is approved separately. */
 class VoiceInputDialog(
     private val owner: Activity,
     private val source: VoiceSource,
     private val vehicle: () -> VehicleState,
+    private val exampleText: String = VoiceInputSession.EXAMPLE_TEXT,
+    private val prompt: String = "할 일과 집에 도착할 시간을 함께 말해 주세요.",
     private val applied: (VoiceDraft) -> Unit
 ) : AlertDialog(owner) {
     private val session = VoiceInputSession()
@@ -93,7 +95,7 @@ class VoiceInputDialog(
         val headings = LinearLayout(owner).apply { orientation = LinearLayout.VERTICAL }
         title = label("", 34f, ink, true).apply { accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_POLITE }
         headings.add(title, 10)
-        headings.add(label("할 일과 집에 도착할 시간을 함께 말해 주세요.", 22f, muted), 0)
+        headings.add(label(prompt, 22f, muted), 0)
         heading.addView(headings, LinearLayout.LayoutParams(0, -2, 1f)); body.add(heading, 28)
         transcript = label("", 28f).apply {
             setPadding(dp(26), dp(24), dp(26), dp(24)); background = shape(soft, 20)
@@ -105,11 +107,7 @@ class VoiceInputDialog(
         val actions = LinearLayout(owner).apply { orientation = LinearLayout.HORIZONTAL }
         val cancel = action("취소") { dismiss() }
         retry = action("다시 말하기") { begin() }
-        confirm = action("이 내용 사용하기", true) {
-            val result = token?.let { session.confirm(it, vehicle(), BuildConfig.DEMO) } ?: return@action
-            dismiss()
-            applied(result)
-        }
+        confirm = action("예시 요청으로 진행", true) { deliver() }
         actions.addView(cancel, LinearLayout.LayoutParams(0, -2, .65f).apply { rightMargin = dp(12) })
         actions.addView(retry, LinearLayout.LayoutParams(0, -2, .9f).apply { rightMargin = dp(12) })
         actions.addView(confirm, LinearLayout.LayoutParams(0, -2, 1.35f))
@@ -126,14 +124,14 @@ class VoiceInputDialog(
         token = session.start(source, vehicle(), BuildConfig.DEMO)
         if (token == null) { dismiss(); return }
         connection = "차량 음성 서비스에 연결하고 있어요"
-        if (source == VoiceSource.EXAMPLE) session.update(token!!, VoiceInputSession.EXAMPLE_TEXT, true)
+        if (source == VoiceSource.EXAMPLE) session.update(token!!, exampleText, true)
         refresh()
         if (source == VoiceSource.PLEOS) sdk.start()
     }
     private fun refresh() {
         val phase = session.phase
         title.text = when (phase) {
-            VoicePhase.REVIEW -> "이렇게 말씀하셨나요?"
+            VoicePhase.REVIEW -> if (source == VoiceSource.EXAMPLE) "예시 요청을 확인해 주세요" else "말씀하신 조건으로 정리할게요"
             VoicePhase.ERROR -> "음성 입력을 마치지 못했어요"
             VoicePhase.LISTENING -> "듣고 있어요"
             else -> connection
@@ -144,16 +142,23 @@ class VoiceInputDialog(
         }
         transcript.setTextColor(if (session.transcript.isBlank()) muted else ink)
         detail.text = when {
-            source == VoiceSource.EXAMPLE -> "준비된 예시 문장입니다. 적용 후 ‘예시 할 일 확인하기’를 누르면 시연용 동선을 확인해요."
+            source == VoiceSource.EXAMPLE -> "준비된 예시 대화입니다. 선택하면 예시 데이터로 장소·순서·시간을 자동 계산해요. 실제 STT·AI 호출은 없습니다."
             phase == VoicePhase.ERROR -> session.error
-            phase == VoicePhase.REVIEW -> "내용을 사용한 뒤 입력란에서 고칠 수 있어요. 확인 전에는 일정에 반영하지 않아요."
-            else -> "최대 30초 동안 입력해요. 인식 결과를 확인한 뒤 사용해 주세요."
+            phase == VoicePhase.REVIEW -> "계획 요약에서 내용을 확인하고 고칠 수 있어요. 출발은 별도로 승인해 주세요."
+            else -> "최대 30초 동안 입력해요. 말을 마치면 자동으로 계획을 준비합니다. 출발 전 요약을 확인해 주세요."
         }
+        confirm.visibility = if (source == VoiceSource.EXAMPLE) View.VISIBLE else View.GONE
         confirm.isEnabled = phase == VoicePhase.REVIEW
         confirm.alpha = if (confirm.isEnabled) 1f else .35f
         retry.visibility = if (source == VoiceSource.EXAMPLE) View.GONE else View.VISIBLE
         retry.isEnabled = phase in setOf(VoicePhase.REVIEW, VoicePhase.ERROR)
         retry.alpha = if (retry.isEnabled) 1f else .35f
+        if (source == VoiceSource.PLEOS && phase == VoicePhase.REVIEW) window?.decorView?.post { if (isShowing) deliver() }
+    }
+    private fun deliver() {
+        val result = token?.let { session.confirm(it, vehicle(), BuildConfig.DEMO) } ?: return
+        dismiss()
+        applied(result)
     }
     override fun dismiss() {
         token = null
