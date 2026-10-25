@@ -770,3 +770,27 @@ subjective listening certification. Six owner-authorized actual images are in
 no MP4/audio/APK/raw/XML/report is committed. Final live ASR/LLM/Kakao/native
 navigation and physical-vehicle validation remain outstanding; keys are added
 later only on the server. Public video upload/final contest submission not done.
+# 2026-10-25 — spoken plan conversation (in progress)
+
+The actual Android app now reads the solver's ordered plan with Pleos
+TextToSpeech 3.3.1 in explicit ON_DEVICE mode. No speech key, app registration,
+cloud fallback or provider credential was read. Speech states uncertainty,
+required completion deadlines, dwell, omitted optional errands and home ETA.
+Explicit voice turns can refine conditions or approve only the current next
+destination/home. Bare assent, questions, negation, mixed commands, duplicate or
+stale turns cannot grant departure authority. Arrival still requires separate
+completion. Remaining-plan refinement preserves completed ids and current origin.
+
+Cancellation, leaving the screen, backgrounding and vehicle restriction cancel
+output/listening continuation. Replaying a plan cannot enable the microphone.
+Automatic reply listening begins only after confirmed output completion in an
+explicit conversation. A fresh review identified two continuation/recovery issues;
+both were fixed and the review found no remaining material issue.
+
+Actual checks: demo/live 101 unit tests each, zero failures/errors; both debug
+and release builds including release lint-vital succeeded (Gradle 182 tasks,
+1m10s). Official OnMyWay_Pleos AVD emitted actual ON_DEVICE tts-start/tts-done;
+authenticated local emulator speaker capture produced 1,532,102 bytes of PCM
+across 2,909 packets. Film and final lifecycle evidence are still being refreshed.
+Real Korean ASR/provider/navigation and physical vehicle success are not claimed.
+

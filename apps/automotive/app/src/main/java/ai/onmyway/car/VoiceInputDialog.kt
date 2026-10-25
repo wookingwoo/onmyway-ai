@@ -21,10 +21,13 @@ class VoiceInputDialog(
     private val vehicle: () -> VehicleState,
     private val exampleText: String = VoiceInputSession.EXAMPLE_TEXT,
     private val prompt: String = "할 일과 집에 도착할 시간을 함께 말해 주세요.",
+    private val actionLabel: String = "계획 준비하기",
+    private val onCancelled: () -> Unit = {},
     private val applied: (VoiceDraft) -> Unit
 ) : AlertDialog(owner) {
     private val session = VoiceInputSession()
     private var token: Long? = null
+    private var delivered = false
     private val sdk = PleosSpeechInput(owner) { event ->
         val id = token
         if (id != null && isShowing) {
@@ -108,7 +111,7 @@ class VoiceInputDialog(
         val actions = LinearLayout(owner).apply { orientation = LinearLayout.HORIZONTAL }
         val cancel = action("취소") { dismiss() }
         retry = action("다시 말하기") { begin() }
-        confirm = action("계획 준비하기", true) { deliver() }
+        confirm = action(actionLabel, true) { deliver() }
         actions.addView(cancel, LinearLayout.LayoutParams(0, -2, .65f).apply { rightMargin = dp(12) })
         actions.addView(retry, LinearLayout.LayoutParams(0, -2, .9f).apply { rightMargin = dp(12) })
         actions.addView(confirm, LinearLayout.LayoutParams(0, -2, 1.35f))
@@ -121,6 +124,7 @@ class VoiceInputDialog(
 
     override fun show() { super.show(); begin() }
     private fun begin() {
+        delivered = false
         sdk.close()
         token = session.start(source, vehicle(), BuildConfig.DEMO)
         if (token == null) { dismiss(); return }
@@ -158,13 +162,16 @@ class VoiceInputDialog(
     }
     private fun deliver() {
         val result = token?.let { session.confirm(it, vehicle(), BuildConfig.DEMO) } ?: return
+        delivered = true
         dismiss()
         applied(result)
     }
     override fun dismiss() {
+        val cancelled = token != null && !delivered
         token = null
         session.cancel()
         sdk.close()
         super.dismiss()
+        if (cancelled) onCancelled()
     }
 }

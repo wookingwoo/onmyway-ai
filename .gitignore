@@ -42,3 +42,4 @@ artifacts/shortform/
 /artifacts/**/*.zip
 artifacts/evidence/voice-first-demo/
 artifacts/evidence/pleos-service-demo/
+artifacts/evidence/spoken-plan/

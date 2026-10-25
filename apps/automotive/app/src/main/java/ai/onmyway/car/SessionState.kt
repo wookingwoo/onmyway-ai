@@ -31,6 +31,11 @@ class SessionState {
         complete(id)
         return id in completed
     }
+    fun interpreted(newJourney: Boolean) {
+        routeFailed()
+        if (newJourney) completed.clear()
+        edited()
+    }
     fun routeFailed(reason: String? = null) { activeId = null; arrivedId = null; accepted = false; approval = null; navigationError = reason }
     fun acceptsResponse(requestRevision: Long) = revision == requestRevision
 }

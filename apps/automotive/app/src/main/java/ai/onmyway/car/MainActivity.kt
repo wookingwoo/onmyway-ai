@@ -54,6 +54,11 @@ class MainActivity : Activity() {
     private var voiceExample = false
     private val exampleInput get() = VoiceInputSession.isExampleDraft(prefs.getString("input", "").orEmpty(), voiceExample, BuildConfig.DEMO)
     private var voiceDialog: VoiceInputDialog? = null
+    private val speechOutput by lazy { PleosSpeechOutput(this) }
+    private val spokenExchange = SpokenExchange()
+    private var voiceConversation = false
+    private var foreground = false
+    private var spokenStatus: String? = null
     private var status = "정차 상태를 확인한 뒤 계획을 시작하세요."
     private var navStatus = "Pleos 내비 연결 확인 중"
     private var computedElapsedMillis: Long? = null
@@ -87,8 +92,8 @@ class MainActivity : Activity() {
         navigation = PleosNavigation(this) { event -> runOnUiThread { onNavigation(event) } }
         navigation.connect()
     }
-    override fun onStart() { super.onStart(); if (::restrictions.isInitialized) restrictions.start() }
-    override fun onStop() { voiceDialog?.dismiss(); if (::restrictions.isInitialized) restrictions.stop(); vehicle = VehicleState.UNKNOWN; applyLock(); super.onStop() }
+    override fun onStart() { super.onStart(); foreground = true; if (::restrictions.isInitialized) restrictions.start() }
+    override fun onStop() { foreground = false; stopSpoken(true); voiceDialog?.dismiss(); if (::restrictions.isInitialized) restrictions.stop(); vehicle = VehicleState.UNKNOWN; applyLock(); super.onStop() }
     override fun onDestroy() { navigation.close(); worker.shutdownNow(); super.onDestroy() }
 
     private fun dp(value: Int) = (value * resources.displayMetrics.density).toInt()
@@ -167,7 +172,8 @@ class MainActivity : Activity() {
         if (description != null) parent.add(text(description, 24f, muted), 28)
     }
     private fun allowed() = state.canInteract(vehicle, BuildConfig.DEMO, simulate)
-    private fun edited() {
+    private fun edited(continueVoice: Boolean = false) {
+        stopSpoken(!continueVoice)
         voiceDialog?.dismiss()
         val wasRoute = flow.screen == JourneyScreen.ROUTE
         state.edited(); plan = null; flow.edited(); errorMessage = null
@@ -175,7 +181,7 @@ class MainActivity : Activity() {
         if (wasRoute) render() else applyLock()
     }
     @Deprecated("Uses the app journey instead of closing an in-progress drive")
-    override fun onBackPressed() { if (allowed() && !busy) { flow.back(); render() } }
+    override fun onBackPressed() { if (allowed() && !busy) { stopSpoken(true); flow.back(); render() } }
 
     private fun render() {
         voiceDialog?.dismiss()
@@ -190,14 +196,14 @@ class MainActivity : Activity() {
         val header = row()
         if (flow.screen != JourneyScreen.INPUT) {
             val backHost = column()
-            button(backHost, "‹ 뒤로") { flow.back(); render() }
+            button(backHost, "‹ 뒤로") { stopSpoken(true); flow.back(); render() }
             header.addView(backHost, LinearLayout.LayoutParams(dp(150), -2).apply { rightMargin = dp(24) })
         }
         header.addView(text("OnMyWay", 28f, ink, true), LinearLayout.LayoutParams(0, -2, 1f))
         header.addView(text(when(flow.screen) { JourneyScreen.INPUT -> "요청"; JourneyScreen.REVIEW -> "조건 확인"; JourneyScreen.ROUTE -> "계획 · 안내"; else -> "설정" }, 22f, muted))
         if (flow.screen != JourneyScreen.SETTINGS) {
             val settingsHost = column()
-            button(settingsHost, "설정") { flow.settings(); render() }
+            button(settingsHost, "설정") { stopSpoken(true); flow.settings(); render() }
             header.addView(settingsHost, LinearLayout.LayoutParams(dp(130), -2).apply { leftMargin = dp(24) })
         }
         root.add(header, 4)
@@ -276,9 +282,12 @@ class MainActivity : Activity() {
     private fun openVoice(source: VoiceSource) {
         if (source == VoiceSource.PLEOS && vehicle != VehicleState.PARKED) return
         voiceDialog?.dismiss()
-        val dialog = VoiceInputDialog(this, source, { vehicle }, VoiceJourney.EXAMPLE_REQUEST) { draft ->
+        voiceConversation = true
+        stopSpoken()
+        val dialog = VoiceInputDialog(this, source, { vehicle }, VoiceJourney.EXAMPLE_REQUEST, onCancelled = { stopSpoken(true) }) { draft ->
             if (!allowed() || busy) return@VoiceInputDialog
             input.setText(draft.text)
+            voiceConversation = true
             voiceExample = draft.source == VoiceSource.EXAMPLE && BuildConfig.DEMO
             prefs.edit().putBoolean("voice-example", voiceExample).apply()
             if (voiceExample) { simulate = true; loadFixture(voiceJourney = true) }
@@ -390,27 +399,102 @@ class MainActivity : Activity() {
     }
 
     private fun openContinuationVoice(review: IntentReview, question: String? = null) {
-        if (review !== intentReview || state.completed.isNotEmpty() || state.activeId != null || state.arrivedId != null) return
+        if (question == null && plan != null) { openPlanVoice(VoiceJourney.EXAMPLE_REFINEMENT); return }
+        if (review !== intentReview || state.activeId != null || state.arrivedId != null) return
         val revision = state.revision
         val source = if (review.example) VoiceSource.EXAMPLE else VoiceSource.PLEOS
         if (source == VoiceSource.PLEOS && vehicle != VehicleState.PARKED) return
         voiceDialog?.dismiss()
+        voiceConversation = true
+        stopSpoken()
         val dialog = VoiceInputDialog(this, source, { vehicle }, VoiceJourney.EXAMPLE_REFINEMENT,
-            question ?: "바꿀 조건을 편하게 말해 주세요. 나머지 필수 일정과 마감은 유지해요.") { draft ->
+            question ?: "바꿀 조건을 편하게 말해 주세요. 나머지 필수 일정과 마감은 유지해요.", onCancelled = { stopSpoken(true) }) { draft ->
             if (!allowed() || busy || review !== intentReview || !state.acceptsResponse(revision)) return@VoiceInputDialog
-            if (draft.source == VoiceSource.EXAMPLE) {
-                check(BuildConfig.DEMO && fixture && review.example)
-                for (i in 0 until errands.length()) if (errands.getJSONObject(i).optString("id") == "medicine") errands.getJSONObject(i).put("dwell_seconds", 1800)
-                review.answers.put(JSONObject().put("question", IntentReview.REFINEMENT_QUESTION).put("answer", draft.text))
-                edited(); render(); continueProposal()
-            } else {
-                val payload = if (question != null) review.answerPayload(question, draft.text, errands) else review.refinementPayload(draft.text, errands)
-                submitParse(payload, review)
-            }
+            applyVoiceAnswer(review, draft, question)
         }
         voiceDialog = dialog
         dialog.setOnDismissListener { if (voiceDialog === dialog) voiceDialog = null }
         dialog.show()
+    }
+
+    private fun applyVoiceAnswer(review: IntentReview, draft: VoiceDraft, question: String? = null) {
+        if (draft.source == VoiceSource.EXAMPLE) {
+            check(BuildConfig.DEMO && fixture && review.example)
+            for (i in 0 until errands.length()) if (errands.getJSONObject(i).optString("id") == "medicine" && "medicine" !in state.completed)
+                errands.getJSONObject(i).put("dwell_seconds", 1800)
+            review.answers.put(JSONObject().put("question", IntentReview.REFINEMENT_QUESTION).put("answer", draft.text))
+            edited(continueVoice = true); render(); continueProposal()
+        } else {
+            val payload = if (question != null) review.answerPayload(question, draft.text, errands) else review.refinementPayload(draft.text, errands)
+            submitParse(payload, review)
+        }
+    }
+
+    private fun stopSpoken(clearConversation: Boolean = false) {
+        spokenExchange.cancel(); speechOutput.close(); spokenStatus = null
+        if (clearConversation) voiceConversation = false
+    }
+
+    private fun announcePlan(listenAfter: Boolean = voiceConversation, prompt: String? = null) {
+        val result = plan ?: return
+        if (!foreground || flow.screen != JourneyScreen.ROUTE || vehicle != VehicleState.PARKED || busy || state.activeId != null || state.arrivedId != null) return
+        voiceDialog?.dismiss()
+        val revision = state.revision
+        val target = SpokenPlan.destinationId(result, state.completed)
+        val token = spokenExchange.read(revision, target, listenAfter)
+        val narration = prompt ?: SpokenPlan.summary(request, result, errands, state.completed)
+        speechOutput.speak(narration) { event ->
+            if (!spokenExchange.isCurrent(token) || !foreground || flow.screen != JourneyScreen.ROUTE || !state.acceptsResponse(revision) || plan !== result) return@speak
+            when(event) {
+                SpeechOutputEvent.Preparing -> spokenStatus = "음성 안내를 준비하고 있어요"
+                SpeechOutputEvent.Started -> spokenStatus = "계획을 설명하고 있어요"
+                SpeechOutputEvent.Done -> {
+                    spokenStatus = null
+                    if (spokenExchange.done(token, state.revision, SpokenPlan.destinationId(result, state.completed), vehicle == VehicleState.PARKED)) {
+                        root.postDelayed({ if (spokenExchange.isCurrent(token) && foreground && vehicle == VehicleState.PARKED) openPlanVoice() }, 350)
+                    }
+                }
+                SpeechOutputEvent.Stopped -> { spokenExchange.cancel(); spokenStatus = "음성 안내가 중단됐어요. 다시 듣거나 말로 대답해 주세요." }
+                is SpeechOutputEvent.Failure -> { spokenExchange.cancel(); spokenStatus = event.message }
+            }
+            applyLock()
+        }
+    }
+
+    private fun openPlanVoice(exampleText: String? = null) {
+        val result = plan ?: return
+        if (!foreground || flow.screen != JourneyScreen.ROUTE || vehicle != VehicleState.PARKED || busy || state.activeId != null || state.arrivedId != null) return
+        voiceDialog?.dismiss(); voiceConversation = true; spokenExchange.cancel(); spokenStatus = null
+        val epoch = spokenExchange.token
+        val revision = state.revision
+        val destination = SpokenPlan.destinationId(result, state.completed)
+        val turn = SpokenTurn(revision, destination)
+        speechOutput.stopThen { clean ->
+            if (!spokenExchange.isCurrent(epoch) || !foreground || flow.screen != JourneyScreen.ROUTE || vehicle != VehicleState.PARKED || plan !== result || !state.acceptsResponse(revision)) return@stopThen
+            if (!clean) { spokenStatus = "음성 안내 종료를 확인하지 못했어요. 잠시 뒤 다시 말해 주세요."; applyLock(); return@stopThen }
+            val initialSample = state.completed.isEmpty() && (0 until errands.length()).any { errands.getJSONObject(it).let { e -> e.optString("id") == "medicine" && e.optInt("dwell_seconds") == 600 } }
+            val source = if (fixture && sampleExperience) VoiceSource.EXAMPLE else VoiceSource.PLEOS
+            val dialog = VoiceInputDialog(this, source, { vehicle }, exampleText ?: if (initialSample) VoiceJourney.EXAMPLE_REFINEMENT else VoiceJourney.EXAMPLE_APPROVAL,
+                "바꿀 조건이나, 이 계획으로 출발할 뜻을 말해 주세요.", "말 전달하기", { stopSpoken(true) }) { draft ->
+                if (!foreground || !allowed() || busy || plan !== result || draft.source == VoiceSource.EXAMPLE && !(fixture && BuildConfig.DEMO)) return@VoiceInputDialog
+                runCatching { when(turn.take(draft.text, state.revision, SpokenPlan.destinationId(result, state.completed), vehicle == VehicleState.PARKED,
+                    navigationAllowed(), SpokenPlan.canApprove(result, errands, state.completed))) {
+                    SpokenCommand.APPROVE -> {
+                        val stop = firstRemainingStop(result) ?: JSONObject().put("errand_id", "__home").put("label", "귀가").put("place", requireNotNull(request).getJSONObject("home"))
+                        android.util.Log.i("OnMyWayVoice", "voice-approved revision=$revision")
+                        approveNavigation(stop, revision)
+                    }
+                    SpokenCommand.REFINE -> intentReview?.let { applyVoiceAnswer(it, draft) }
+                    SpokenCommand.CLARIFY -> announcePlan(true, "조건을 바꾸시거나 출발하겠다는 뜻을 분명히 말해 주세요. 단순한 네라는 답만으로는 출발하지 않아요.")
+                    SpokenCommand.CANCEL -> { stopSpoken(true); applyLock() }
+                    SpokenCommand.STALE -> { stopSpoken(true); showError(IllegalStateException("계획이나 시간이 바뀌었어요. 다시 계산하고 승인해 주세요.")) }
+                    null -> Unit
+                } }.onFailure { stopSpoken(true); showError(it) }
+            }
+            voiceDialog = dialog
+            dialog.setOnDismissListener { if (voiceDialog === dialog) voiceDialog = null }
+            dialog.show()
+        }
     }
 
     private fun continueProposal() {
@@ -505,9 +589,10 @@ class MainActivity : Activity() {
             val omitted = result.optJSONArray("skipped_errands") ?: JSONArray()
             for (i in 0 until omitted.length()) summary.add(text("${errandLabel(omitted.getJSONObject(i).optString("id"))}는 다음에 · 필수 일정과 마감을 우선했어요", 22f, amber), 4)
         }
-        if (state.activeId == null && state.arrivedId == null && state.completed.isEmpty()) intentReview?.let { review ->
+        if (state.activeId == null && state.arrivedId == null) intentReview?.let { review ->
             button(body, "말로 조건 바꾸기", enabled = { review.example || vehicle == VehicleState.PARKED }) { openContinuationVoice(review) }
         }
+        if (state.activeId == null && state.arrivedId == null) button(body, "계획 듣기", enabled = { vehicle == VehicleState.PARKED }) { announcePlan(false) }
         button(body, "요청 · 일정 자세히") { showPlanDetails(result) }
         if (state.activeId == null && state.arrivedId == null) button(body, "최신 시간으로 다시 계산") { calculate() }
         if (!fixture && !navigation.connected) button(body, "차량 내비 다시 연결") { navigation.connect(); status = "내비 연결을 다시 확인하고 있어요."; applyLock() }
@@ -539,10 +624,17 @@ class MainActivity : Activity() {
             !fixture && !navigationAllowed() -> button(footer, "시간이 흘렀어요 · 다시 계산", true) { calculate() }
             else -> {
                 footer.add(text("확인한 다음 목적지로 안내합니다.", 20f, muted), 4)
-                button(footer, if (homeLeg) "집으로 출발" else "확인하고 출발", true) {
+                val approvals = row()
+                val voice = column()
+                button(voice, "말로 대답하기", true, { vehicle == VehicleState.PARKED }) { openPlanVoice(VoiceJourney.EXAMPLE_APPROVAL) }
+                approvals.addView(voice, LinearLayout.LayoutParams(0, -2, 1f).apply { rightMargin = dp(16) })
+                val touch = column()
+                button(touch, if (homeLeg) "집으로 출발" else "확인하고 출발") {
                 val destination = next ?: JSONObject().put("errand_id", "__home").put("label", "귀가").put("place", requireNotNull(request).getJSONObject("home"))
                 approveNavigation(destination, displayedRevision)
                 }
+                approvals.addView(touch, LinearLayout.LayoutParams(0, -2, 1f))
+                footer.add(approvals, 0)
             }
         }
     }
@@ -722,6 +814,7 @@ class MainActivity : Activity() {
         OffsetDateTime.parse(value).format(DateTimeFormatter.ofPattern("M월 d일 HH:mm"))
     }.getOrDefault(value)
     private fun showPlanDetails(result: JSONObject) {
+        stopSpoken(true)
         val lines = mutableListOf(if (fixture) "예시 데이터입니다. 실제 장소·영업·도로 정보가 아닙니다." else "실제 제공자 조회 결과입니다. 미확인 정보는 확정된 사실이 아닙니다.")
         intentReview?.let { review ->
             lines += "처음 요청\n${review.originalText}"
@@ -772,13 +865,14 @@ class MainActivity : Activity() {
             (getSystemService(INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager).hideSoftInputFromWindow(root.windowToken, 0)
         }
         if (vehicle != VehicleState.PARKED) voiceDialog?.dismiss()
+        if (vehicle != VehicleState.PARKED) stopSpoken(true)
         lockLabel.visibility = if (lockLabel.text.isBlank()) View.GONE else View.VISIBLE
         bodyScroll.visibility = if (can) View.VISIBLE else View.GONE
         lockedPanel.visibility = if (can) View.GONE else View.VISIBLE
         footer.visibility = if (can) View.VISIBLE else View.GONE
         demoRescue?.visibility = if (vehicle == VehicleState.UNKNOWN && !busy) View.VISIBLE else View.GONE
         controls.forEach { (view, enabled) -> view.isEnabled = can && !busy && enabled(); view.alpha = if (view.isEnabled) 1f else .4f }
-        statusLabel.text = if (busy) "확인 중이에요…" else (errorMessage ?: state.navigationError).orEmpty()
+        statusLabel.text = if (busy) "확인 중이에요…" else (errorMessage ?: state.navigationError ?: spokenStatus).orEmpty()
         statusLabel.visibility = if (statusLabel.text.isBlank()) View.GONE else View.VISIBLE
     }
     private fun api() = ApiClient(server.text.toString())
@@ -804,6 +898,8 @@ class MainActivity : Activity() {
         submitParse(payload, null)
     }
     private fun submitParse(payload: JSONObject, prior: IntentReview?) {
+        stopSpoken()
+        val retainedRequest = if (prior != null) request?.let { JSONObject(it.toString()) } else null
         // A newly spoken constraint invalidates the old proposal immediately,
         // including when parsing fails. A failure must not re-enable old approval.
         pendingParse = JSONObject(payload.toString()); pendingPrior = prior
@@ -813,12 +909,13 @@ class MainActivity : Activity() {
             pendingParse = null; pendingPrior = null
             cancelOwnedNavigation()
             clearFixtureDrafts()
-            fixture = false; request = null; plan = null; state.routeFailed(); state.completed.clear(); state.edited()
+            fixture = false; request = retainedRequest; plan = null
+            state.interpreted(newJourney = prior == null)
             requiresParse = false
             errands = VoiceJourney.retainPins(result.getJSONArray("errands"), if (prior != null) errands else JSONArray())
             result.put("errands", errands)
             intentReview = prior?.acceptAnswer(result, payload) ?: IntentReview(payload.getString("text"), payload.getString("reference_time"), false, result)
-            request = JSONObject().put("deadline", intentReview?.deadline ?: JSONObject.NULL)
+            request = (retainedRequest ?: JSONObject()).put("deadline", intentReview?.deadline ?: JSONObject.NULL)
             prefs.edit().putString("draft-deadline", intentReview?.deadline).apply()
             val warnings = result.optJSONArray("warnings") ?: JSONArray()
             status = ((0 until warnings.length()).joinToString(" · ") { humanMessage(warnings.getString(it)) } + " " + result.optJSONArray("clarification_questions")?.join(" · ").orEmpty()).trim()
@@ -920,11 +1017,12 @@ class MainActivity : Activity() {
             computationStartedWallMillis = startedWall
             status = "계획을 계산했습니다. 데이터 경고와 마감을 확인한 뒤 다음 목적지를 승인하세요."
             flow.planned(); persist(); render()
+            announcePlan()
         }
     }
 
     private fun renderPlan() {
-        if (flow.screen == JourneyScreen.ROUTE) render() else applyLock()
+        if (flow.screen == JourneyScreen.ROUTE && voiceDialog?.isShowing != true) render() else applyLock()
     }
     private fun firstRemainingStop(result: JSONObject): JSONObject? {
         val stops = result.optJSONArray("stops") ?: return null
@@ -933,7 +1031,10 @@ class MainActivity : Activity() {
     }
     private fun approveNavigation(stop: JSONObject, displayedRevision: Long) {
         check(state.acceptsResponse(displayedRevision)) { "계획이 바뀌었어요. 최신 계획을 다시 확인해 주세요." }
+        check(SpokenPlan.canApprove(plan, errands, state.completed)) { "필수 볼일과 귀가를 포함한 현재 계획을 먼저 확인해 주세요." }
+        check(stop.optString("errand_id") == plan?.let { SpokenPlan.destinationId(it, state.completed) }) { "다음 목적지가 바뀌었어요. 다시 확인해 주세요." }
         ensureNavigationAllowed()
+        stopSpoken(true)
         val place = stop.getJSONObject("place")
         if (!allowed() || busy) return
         val id = stop.getString("errand_id")
