@@ -25,7 +25,7 @@ button. Driving restrictions dismiss open editors and hide the form. Technical
 settings and evidence remain secondary. See the actual captures in
 `docs/screenshots/automotive-ux/`.
 
-Route approval is specific to one destination and the current input revision. Connection is separate from request transmission and route-search completion. Route-start and arrival names must match the requested destination; SDK event variants that omit or change these names remain unconfirmed. Arrival never completes an errand. The user explicitly confirms completion and recalculates remaining errands; final home navigation requires a separate approval. Only completed IDs and editable drafts are persisted; navigation approval is never restored.
+Route approval is specific to one destination and the current input revision. Connection is separate from request transmission and route-search completion. Route-start and arrival names must match the requested destination; SDK event variants that omit or change these names remain unconfirmed. Arrival never completes an errand. The user explicitly confirms completion; the remaining preview refreshes automatically while parked, retaining selected venues. Final home navigation requires a separate approval. Only completed IDs and editable drafts are persisted; navigation approval is never restored.
 
 Pure safety tests can run without an Android SDK:
 
@@ -33,12 +33,12 @@ Pure safety tests can run without an Android SDK:
 .\gradlew.bat -p safety-tests test
 ```
 
-The 41 tests per variant cover clarification and deadline preservation, explanation
+The 80 tests per variant cover clarification and deadline preservation, explanation
 evidence, voice confirmation/cancellation, stale and duplicate
 speech callbacks, example provenance, stage transitions, fixture draft isolation,
 date/dwell edits, vehicle lock and simulation boundaries, revision and destination
 approval, stale responses, arrival versus completion and the final home leg.
-Successful compile is not proof of SDK service connection, request acceptance,
+Exact venue selection, explicit availability basis/freshness, elapsed computation/review slack, owned-request timeout/cancellation and invalidated callback generations are also covered. Successful compile is not proof of SDK service connection, request acceptance,
 arrival or vehicle-state behavior; capture those separately on the emulator/device.
 
 ## Voice input demo

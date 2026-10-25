@@ -20,7 +20,8 @@
       "query": "약국",
       "mandatory": true,
       "dwell_seconds": 600,
-      "latest_finish": null
+      "latest_finish": null,
+      "selected_place": null
     },
     {
       "id": "laundry",
@@ -28,7 +29,8 @@
       "query": "세탁소",
       "mandatory": true,
       "dwell_seconds": 300,
-      "latest_finish": null
+      "latest_finish": null,
+      "selected_place": null
     },
     {
       "id": "groceries",
@@ -36,7 +38,8 @@
       "query": "마트",
       "mandatory": false,
       "dwell_seconds": 300,
-      "latest_finish": null
+      "latest_finish": null,
+      "selected_place": null
     }
   ]
 }

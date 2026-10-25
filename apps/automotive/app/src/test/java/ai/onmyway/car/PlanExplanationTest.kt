@@ -37,4 +37,11 @@ class PlanExplanationTest {
         assertTrue(text.contains("다시 계산"))
         assertFalse(text.contains("여유"))
     }
+    @Test fun uncertainProposalExplainsThatChangingTheDeadlineDoesNotVerifyFeasibility() {
+        val result = result("infeasible").put("home_arrival_time", JSONObject.NULL)
+            .put("relaxation", JSONObject("""{"required_deadline":"2026-10-23T19:10:00+09:00","extension_seconds":600,"requires_verification":true}"""))
+        val text = PlanExplanation.lines(request(), result).joinToString("\n")
+        assertTrue(text.contains("조건부"))
+        assertTrue(text.contains("확정할 수 없어요"))
+    }
 }

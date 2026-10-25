@@ -12,17 +12,23 @@ from .models import DeadlineRelaxation, PlanRequest, PlanResponse, SkippedErrand
 
 def plan(request: PlanRequest) -> PlanResponse:
     result = _solve(request)
-    if result.status == "infeasible":
+    if result.home_arrival_time is None:
         relaxed_request = request.model_copy(update={
             "deadline": request.departure_time + timedelta(hours=24),
             "errands": [e for e in request.errands if e.mandatory],
         })
         relaxed = _solve(relaxed_request)
-        if relaxed.status == "feasible" and relaxed.home_arrival_time > request.deadline:
+        if relaxed.home_arrival_time is not None and relaxed.home_arrival_time > request.deadline:
             result.relaxation = DeadlineRelaxation(
                 required_deadline=relaxed.home_arrival_time,
                 extension_seconds=ceil((relaxed.home_arrival_time - request.deadline).total_seconds()),
-                description="All mandatory errands fit if the home deadline is extended; opening hours and individual finish deadlines remain enforced. Optional errands are excluded. User approval is required.")
+                requires_verification=relaxed.status == "needs_verification",
+                warnings=list(relaxed.warnings),
+                description=("Conditional proposal: all mandatory errands fit the computed timeline if the home deadline is extended; availability and road evidence must still be verified. "
+                             if relaxed.status == "needs_verification" else
+                             "All mandatory errands fit if the home deadline is extended; ") +
+                            "Opening intervals and individual finish deadlines remain enforced. Optional errands are excluded. User approval is required.")
+            result.warnings = sorted(set(result.warnings + relaxed.warnings))
     return result
 
 
@@ -85,16 +91,24 @@ def _solve(request: PlanRequest) -> PlanResponse:
                 arrival = time + timedelta(seconds=seconds)
                 start = arrival
                 extra_warnings = road_warnings(location_id, place.id)
-                if place.hours_status == "verified":
+                if place.opening_intervals or place.hours_status == "verified":
                     fits = [max(arrival, i.start) for i in place.opening_intervals
                             if max(arrival, i.start) + timedelta(seconds=errand.dwell_seconds) <= i.end]
                     if not fits:
                         continue
                     start = min(fits)
-                else:
+                if place.hours_status != "verified":
                     extra_warnings.append(f"{errand.id}/{place.id}: opening hours need verification")
                 if place.service_status != "verified":
                     extra_warnings.append(f"{errand.id}/{place.id}: requested service needs verification")
+                if not place.source.is_fixture and (place.hours_status == "verified" or place.service_status == "verified"):
+                    evidence = place.availability_evidence
+                    if evidence is None:
+                        extra_warnings.append(f"{errand.id}/{place.id}: availability evidence is missing; verification required")
+                    elif evidence.confirmed_at > request.departure_time:
+                        extra_warnings.append(f"{errand.id}/{place.id}: availability evidence is in the future; verification required")
+                    elif request.departure_time - evidence.confirmed_at > timedelta(hours=24):
+                        extra_warnings.append(f"{errand.id}/{place.id}: availability evidence is older than 24 hours; verification required")
                 end = start + timedelta(seconds=errand.dwell_seconds)
                 if end > request.deadline or (errand.latest_finish is not None and end > errand.latest_finish):
                     continue

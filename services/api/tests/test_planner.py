@@ -14,6 +14,7 @@ def source(fixture=False):
 def request():
     location = lambda id: {"id": id, "name": id, "latitude": 37.5, "longitude": 127.0}
     place = {**location("p"), "hours_status": "verified", "service_status": "verified",
+             "availability_evidence": {"basis": "Test branch confirmed hours and service by phone", "confirmed_at": "2026-10-23T17:50:00+09:00"},
              "opening_intervals": [{"start": "2026-10-23T17:00:00+09:00", "end": "2026-10-23T20:00:00+09:00"}], "source": source()}
     return {"origin": location("origin"), "home": location("home"),
             "departure_time": "2026-10-23T18:00:00+09:00", "deadline": "2026-10-23T19:00:00+09:00",

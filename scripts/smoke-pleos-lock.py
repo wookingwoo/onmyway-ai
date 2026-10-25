@@ -57,7 +57,9 @@ def main():
         evidence["restriction_labels"] = [t for t in labels if "제한 중" in t or "잠금" in t or "주행" in t]
         unsafe_labels = {"이곳으로 안내", "집으로 안내", "목적지 승인", "저장", "할 일 확인하기", "동선 확인하기",
                          "음성으로 말하기", "예시 음성 흐름 체험", "이 내용 사용하기", "다시 말하기",
-                         "질문에 답하기", "답변 반영하기", "18:30 전 수령 완료", "귀가 시간 정하기"}
+                         "질문에 답하기", "답변 반영하기", "18:30 전 수령 완료", "귀가 시간 정하기",
+                         "방문할 장소 선택", "확인 근거 저장", "다른 장소 선택", "최신 시간으로 다시 계산",
+                         "취소하고 다시 계산", "차량 내비 다시 연결"}
         evidence["enabled_destination_controls"] = [n.get("text") for n in tree
             if n.get("text", "") in unsafe_labels and n.get("enabled") == "true"]
         adb("shell", "screencap", "-p", "/sdcard/omw-driving.png")

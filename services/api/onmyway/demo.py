@@ -1,8 +1,10 @@
 """Explicit synthetic, repeatable example; never a provider fallback."""
+from typing import Literal
+
 from .models import PlanRequest
 
 
-def demo_request() -> PlanRequest:
+def demo_request(scenario: Literal["basic", "deadline_conflict"] = "basic") -> PlanRequest:
     source = {"provider": "synthetic-demo", "retrieved_at": "2026-10-23T17:00:00+09:00", "is_fixture": True}
     def location(id, name, lat, lng):
         return {"id": id, "name": name, "latitude": lat, "longitude": lng}
@@ -21,5 +23,10 @@ def demo_request() -> PlanRequest:
     points = [origin] + places + [home]
     edges = [{"from_id": a["id"], "to_id": b["id"], "seconds": 240 + 60 * abs(i - j), "source": source}
              for i, a in enumerate(points) for j, b in enumerate(points) if a["id"] != b["id"]]
+    deadline = "2026-10-23T19:00:00+09:00"
+    if scenario == "deadline_conflict":
+        deadline = "2026-10-23T18:20:00+09:00"
+        errands[1]["latest_finish"] = "2026-10-23T18:30:00+09:00"
+        errands[0]["candidates"][0].update(hours_status="unknown", service_status="unknown", opening_intervals=[])
     return PlanRequest(origin=origin, home=home, departure_time="2026-10-23T18:00:00+09:00",
-                       deadline="2026-10-23T19:00:00+09:00", errands=errands, travel_edges=edges)
+                       deadline=deadline, errands=errands, travel_edges=edges)
