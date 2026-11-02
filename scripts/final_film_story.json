@@ -1,0 +1,55 @@
+{
+  "title": "OnMyWay AI",
+  "provenance": "Editorial prototype. Authored places/times and illustrated UI; not live provider or Android screen capture. ElevenLabs editorial speech.",
+  "scenario": {"departure": "17:50", "laundry_deadline": "18:30", "home_deadline": "19:00", "laundry_complete": "18:05", "pharmacy_base_complete": "18:18", "pharmacy_revised_complete": "18:43", "home_base": "18:40", "home_unchanged": "19:05", "home_revised": "18:53", "mandatory": ["laundry", "medicine"], "omitted": ["milk"]},
+  "voices": {
+    "narrator": {"voice_id": "ZYyPb36rFIFpnxQWM6MO", "name": "Min-woo - Professional Korean Announcer", "model_id": "eleven_multilingual_v2", "voice_settings": {"stability": 0.52, "similarity_boost": 0.75, "style": 0.12, "use_speaker_boost": true, "speed": 1.04}},
+    "driver": {"voice_id": "DkAJhrMznCtWh38YrjTv", "name": "Minjun - Gentle & Charming Korean", "model_id": "eleven_multilingual_v2", "voice_settings": {"stability": 0.44, "similarity_boost": 0.75, "style": 0.15, "use_speaker_boost": true, "speed": 1.04}},
+    "assistant": {"voice_id": "lFG74KW6EG0aRXg1kKfh", "name": "Yun - Warm, Clear", "model_id": "eleven_multilingual_v2", "voice_settings": {"stability": 0.65, "similarity_boost": 0.75, "style": 0.05, "use_speaker_boost": true, "speed": 1.04}},
+    "short_narrator": {"voice_id": "1W00IGEmNmwmsDeYy7ag", "name": "KKC - Korean Bright Voice", "model_id": "eleven_multilingual_v2", "voice_settings": {"stability": 0.4, "similarity_boost": 0.75, "style": 0.3, "use_speaker_boost": true, "speed": 1.1}},
+    "milk": {"voice_id": "O2KReOFLpoR65nz6C9Se", "name": "Aria - Bright and Youthful Korean", "model_id": "eleven_multilingual_v2", "voice_settings": {"stability": 0.35, "similarity_boost": 0.75, "style": 0.35, "use_speaker_boost": true, "speed": 1.06}}
+  },
+  "auditions": [
+    {"id": "audition-narrator", "role": "narrator", "text": "퇴근은 했는데, 오늘의 할 일은 아직 남았습니다. 가는 길에, 할 일까지."},
+    {"id": "audition-driver", "role": "driver", "text": "집엔 일곱 시까지. 세탁물하고 약은 꼭 챙겨야 해. 우유는 시간이 되면."},
+    {"id": "audition-assistant", "role": "assistant", "text": "필수 용무는 그대로 유지할게요. 우유를 제외하면 여섯 시 오십삼 분, 귀가 예상입니다."}
+  ],
+  "main": [
+    {"id": "m01", "kind": "opening", "role": "narrator", "min_seconds": 7, "heading": "퇴근은 했는데,", "subheading": "할 일이 남았다.", "text": "퇴근은 했는데, 오늘의 할 일은 아직 남았습니다."},
+    {"id": "m02", "kind": "request", "role": "driver", "min_seconds": 10, "heading": "목적지 말고,\n오늘 할 일을.", "subheading": "한 문장으로 시작하는 퇴근길", "text": "집엔 일곱 시까지. 여섯 시 반까지 세탁물 찾고, 약은 꼭. 우유는 시간이 되면."},
+    {"id": "m03", "kind": "clarify", "role": "assistant", "min_seconds": 7, "heading": "애매한 마감은, 먼저 확인.", "subheading": "도착과 수령 완료는 다르니까", "text": "여섯 시 반은 세탁소에 도착하는 시간인가요, 수령을 끝내는 시간인가요?"},
+    {"id": "m04", "kind": "answer", "role": "driver", "min_seconds": 3, "heading": "마감의 뜻까지 정확하게.", "subheading": "세탁물 수령 완료 · 18:30까지", "text": "수령을 끝내는 시간이야."},
+    {"id": "m05", "kind": "calculate", "role": "narrator", "min_seconds": 9, "heading": "길 위의 시간만\n세지 않습니다.", "subheading": "이동 + 영업 대기 + 머무는 시간", "text": "이동뿐 아니라, 문을 열 때까지의 대기와 용무를 보는 시간까지. 수령 마감과 귀가 시간을 함께 계산합니다."},
+    {"id": "m06", "kind": "plan", "role": "assistant", "min_seconds": 8, "heading": "할 일 세 개. 하나의 여정.", "subheading": "집까지 이어지는 계획", "text": "세탁소, 약국, 마트 순서예요. 여섯 시 사십 분, 귀가 예상입니다."},
+    {"id": "m07", "kind": "change", "role": "driver", "min_seconds": 5, "heading": "계획이 달라져도,", "subheading": "대화는 이어집니다.", "text": "약국에서 상담도 할 거야. 삼십 분은 필요해."},
+    {"id": "m08", "kind": "conflict", "role": "narrator", "min_seconds": 6, "heading": "다 넣으면, 마감을 넘깁니다.", "subheading": "상담 30분 반영 · 귀가 예상 19:05", "text": "상담 삼십 분을 반영하면, 세 용무를 모두 마치고는 귀가 마감을 넘깁니다."},
+    {"id": "m09", "kind": "revised", "role": "assistant", "min_seconds": 11, "heading": "꼭 해야 할 일은 지키고.", "subheading": "선택한 용무만 조정합니다.", "text": "세탁물과 약은 유지할게요. 우유를 제외하면 여섯 시 오십삼 분, 귀가 예상입니다. 이 계획으로 갈까요?"},
+    {"id": "m10", "kind": "approve", "role": "driver", "min_seconds": 5, "heading": "결정은 언제나, 운전자에게.", "subheading": "변경된 계획을 확인한 뒤 승인", "text": "좋아. 우유는 빼고, 그 계획으로 가자."},
+    {"id": "m11", "kind": "driving", "role": "narrator", "min_seconds": 8, "heading": "운전이 시작되면, 화면은 간결하게.", "subheading": "주행 중 편집·승인 잠금", "text": "승인한 다음 목적지만 연결합니다. 운전 중에는 편집과 승인을 잠그고, 다음 할 일에 집중합니다."},
+    {"id": "m12", "kind": "arrival", "role": "assistant", "min_seconds": 6, "heading": "도착했다고, 끝난 건 아니니까.", "subheading": "세탁소 도착 · 수령은 아직", "text": "세탁소에 도착했습니다. 수령을 마치면 완료를 눌러 주세요."},
+    {"id": "m13", "kind": "complete", "role": "narrator", "min_seconds": 6, "heading": "실제로 마친 일만, 완료.", "subheading": "도착과 용무 완료를 분리합니다.", "text": "도착과 완료는 다릅니다. 실제로 마친 용무만 지우고, 남은 일정을 다시 봅니다."},
+    {"id": "m14", "kind": "next", "role": "assistant", "min_seconds": 6, "heading": "하나를 끝내면, 다음 할 일로.", "subheading": "세탁물 완료 → 약국 상담 30분", "text": "세탁물 수령을 완료했어요. 다음은 약국입니다. 상담 시간 삼십 분을 유지할게요."},
+    {"id": "m14b", "kind": "medicinecomplete", "role": "narrator", "min_seconds": 5, "heading": "상담을 마치고,\n약까지 챙겼다면.", "subheading": "약 수령 완료 · 필수 용무 2개 완료", "text": "상담을 마치고 약까지 수령. 두 가지 필수 용무를 모두 끝냈습니다."},
+    {"id": "m15", "kind": "home", "role": "assistant", "min_seconds": 6, "heading": "마지막 목적지는, 집.", "subheading": "필수 용무 2개 완료 · 귀가는 별도 승인", "text": "필수 용무를 모두 마쳤어요. 이제 집으로 안내할까요?"},
+    {"id": "m16", "kind": "homeapprove", "role": "driver", "min_seconds": 3, "heading": "이제, 집으로 가자.", "subheading": "귀가 안내 승인", "text": "응, 집으로 가자."},
+    {"id": "m17", "kind": "value", "role": "narrator", "min_seconds": 8, "heading": "매일의 퇴근길에, 다시 쓰는 이유.", "subheading": "퇴근길 픽업 · 장보기 · 가족의 생활 용무", "text": "퇴근길 픽업부터 가족의 생활 용무까지. 차 안에서 반복되는 작은 불편을, 하나의 여정으로 해결합니다."},
+    {"id": "m18", "kind": "closing", "role": "narrator", "min_seconds": 8, "heading": "가는 길에, 할 일까지.", "subheading": "OnMyWay AI", "text": "가는 길을 찾는 데서, 할 일을 끝내는 경험으로. 온마이웨이 에이아이."}
+  ],
+  "short": [
+    {"id": "v01", "kind": "hook", "role": "short_narrator", "min_seconds": 3, "heading": "퇴근했는데", "subheading": "2차 출근이요?", "text": "퇴근했는데, 이차 출근이요?"},
+    {"id": "v02", "kind": "quests", "role": "short_narrator", "min_seconds": 3, "heading": "오늘의 퇴근 퀘스트", "subheading": "약 + 세탁물 + 우유", "text": "세탁물 찾고, 약 챙기고, 우유까지?"},
+    {"id": "v03", "kind": "deadline", "role": "driver", "min_seconds": 3, "heading": "집엔 7시까지.", "subheading": "이거… 가능한 일정임?", "text": "근데 집엔 일곱 시까지 가야 돼."},
+    {"id": "v04", "kind": "calculate", "role": "short_narrator", "min_seconds": 3, "heading": "이동만 세면", "subheading": "계산이 안 맞지.", "text": "이동만 세면 안 되죠. 대기랑 수령 시간도."},
+    {"id": "v05", "kind": "change", "role": "driver", "min_seconds": 3, "heading": "아 맞다,", "subheading": "약국 상담 30분.", "text": "아 맞다. 약국 상담 삼십 분도."},
+    {"id": "v06", "kind": "conflict", "role": "assistant", "min_seconds": 4, "heading": "다 들르면", "subheading": "19:05 귀가 예상", "text": "다 들르면, 귀가 마감보다 오 분 늦어요."},
+    {"id": "v07", "kind": "milkplea", "role": "milk", "min_seconds": 2, "heading": "우유: 저기…", "subheading": "나도 데려가…?", "text": "저기, 나도 데려가?"},
+    {"id": "v08", "kind": "revised", "role": "assistant", "min_seconds": 4, "heading": "필수는 지키고.", "subheading": "우유만 다음에.", "text": "필수는 지키고, 우유만 다음에. 여섯 시 오십삼 분 귀가 예상이에요."},
+    {"id": "v09", "kind": "milkexit", "role": "milk", "min_seconds": 2, "heading": "우유: ㅇㅋ", "subheading": "합리적인 퇴장.", "text": "오케이. 나는 다음에."},
+    {"id": "v10", "kind": "approve", "role": "driver", "min_seconds": 2, "heading": "좋아, 그 계획으로.", "subheading": "내 승인 후 출발", "text": "좋아, 그 계획으로."},
+    {"id": "v11", "kind": "driving", "role": "short_narrator", "min_seconds": 3, "heading": "운전 중엔", "subheading": "손도 잠깐 퇴근.", "text": "운전 중엔 손도 잠깐 퇴근. 편집과 승인 잠금."},
+    {"id": "v12", "kind": "arrival", "role": "short_narrator", "min_seconds": 3, "heading": "도착했다고 끝?", "subheading": "수령해야 완료지.", "text": "도착했다고 끝? 수령해야 완료지."},
+    {"id": "v13", "kind": "homeapprove", "role": "driver", "min_seconds": 3, "heading": "할 일 끝.", "subheading": "이제 집으로 가자.", "text": "할 일 끝. 이제 집으로 가자."},
+    {"id": "v14", "kind": "closing", "role": "short_narrator", "min_seconds": 4, "heading": "가는 길에,", "subheading": "할 일까지.", "text": "가는 길에, 할 일까지. 온마이웨이 에이아이."},
+    {"id": "v15", "kind": "loop", "role": "milk", "min_seconds": 2, "heading": "내일은", "subheading": "나도…?", "text": "내일은, 나도?"}
+  ]
+}

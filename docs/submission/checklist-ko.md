@@ -18,6 +18,11 @@
 
 ## 개발 증거
 
+**최신 홍보 편집본:** [본편·쇼츠 제작 및 검수 안내](final-films-ko.md).
+133.5초 본편과 50초 세로 쇼츠는 ElevenLabs 음성과 직접 그린 인터페이스를 사용한
+연출 프로토타입입니다. 아래 실제 AVD 녹화·제공자 검증과 구분합니다. 영상·음성은
+`artifacts/final-films/`에 로컬 보관하며 Git에는 넣지 않습니다.
+
 **현재 영상 기록:** artifacts/evidence/spoken-plan/OnMyWay_AI_spoken_demo.mp4(164.355542초). 실제 Pleos ON_DEVICE 한국어 계획 음성·오프라인 준비 사용자 대사·전체 Pleos 화면·예시/모의 고지를 포함합니다. 대본은 [spoken-demo-ko.md](spoken-demo-ko.md)입니다. 영상은 후속 내비 변경 전 녹화이므로 최종 APK와 다시 대조해야 합니다. 183.3초 story-demo·107.667초 intent-demo 및 HTML 발표·DOCX·PPTX·ZIP은 이전 자료입니다.
 
 아래 항목은 결과 파일·명령·환경·날짜가 확보된 경우에만 체크합니다. 다른 개발 작업의 진행 여부를 추정해서 체크하지 않습니다.

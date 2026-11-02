@@ -1,0 +1,138 @@
+{
+  "verified_on": "2026-11-03 KST",
+  "scope": "Editorial interface prototype and authored scenario; ElevenLabs editorial speech. Not live provider/native runtime evidence.",
+  "media": {
+    "main": {
+      "file": "OnMyWay_AI_Product_Film_Final.mp4",
+      "sha256": "313a09756f4d48ddf11971125b1ab71ed6c77090e7077d3fb23197dd0f385f27",
+      "bytes": 5997007,
+      "seconds": 133.5,
+      "width": 1920,
+      "height": 1080,
+      "fps": 30,
+      "frames": 4005,
+      "video_codec": "h264",
+      "pixel_format": "yuv420p",
+      "audio_codec": "aac",
+      "audio_channels": 2,
+      "full_decode": "passed",
+      "visual_review": {
+        "state": "passed",
+        "decoded_scene_samples": 19,
+        "caption_band": "separate, readable; maximum two lines",
+        "unexpected_full_black_intervals": [],
+        "contact_sheet": "decoded-contact-sheet.jpg"
+      },
+      "playback_review": {
+        "started": 1793637271610,
+        "timeSamples": [
+          0.194202,
+          10.282862,
+          20.404873,
+          30.520597,
+          40.631047,
+          50.738287,
+          60.852579,
+          70.968137,
+          81.078116,
+          91.18041,
+          101.263145,
+          111.377983,
+          121.47795,
+          131.59814
+        ],
+        "errors": [],
+        "seeks": 0,
+        "ended": true,
+        "endedAt": 1793637405469,
+        "currentTime": 133.5,
+        "muted": false,
+        "error": null,
+        "speed": 1,
+        "scope": "Browser technical playback, not subjective listening certification"
+      },
+      "source_sha256": {
+        "build-final-films.py": "0fe990315a39eb4ec70f6ad8b82b44910d78eca00df8eb283d93693385674082",
+        "final_film.py": "0a7d353f32022b4edfb2f9ad44511a9ef9262039dc52812f45767f0adb601c71",
+        "final_film_visuals.py": "cac500a28f2ed284a022cd3646d6d6ece0dfad1ebdbabb74de53132f9b94e267",
+        "final_short_visuals.py": "63a902528d4c1a917bfdeca54b64299495018a79a9645e830d8f4688fba131ab",
+        "final_film_story.json": "69fbb49bd1f8fedfc2d6f97cbda578726d4779835375a7c25239188b82c413f7"
+      },
+      "loudness": {
+        "integrated_lufs": -15.95,
+        "true_peak_dbtp": -1.48
+      },
+      "srt_cues": 43
+    },
+    "short": {
+      "file": "OnMyWay_AI_Shorts_Final.mp4",
+      "sha256": "d3a3603770cda37001cbc3c51abf07f6f1fbcde4f9e966499949ae306d1afb13",
+      "bytes": 2195508,
+      "seconds": 50.0,
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "frames": 1500,
+      "video_codec": "h264",
+      "pixel_format": "yuv420p",
+      "audio_codec": "aac",
+      "audio_channels": 2,
+      "full_decode": "passed",
+      "visual_review": {
+        "state": "passed",
+        "decoded_scene_samples": 15,
+        "caption_band": "separate, readable; maximum two lines",
+        "unexpected_full_black_intervals": [],
+        "contact_sheet": "decoded-contact-sheet.jpg"
+      },
+      "playback_review": {
+        "started": 1793637484133,
+        "timeSamples": [
+          0.02,
+          5.258483,
+          10.331341,
+          15.378826,
+          20.414592,
+          25.465027,
+          30.536375,
+          35.594427,
+          40.65339,
+          45.721815
+        ],
+        "errors": [],
+        "seeks": 0,
+        "ended": true,
+        "endedAt": 1793637534488,
+        "currentTime": 50,
+        "muted": false,
+        "error": null,
+        "speed": 1,
+        "scope": "Browser technical playback, not subjective listening certification"
+      },
+      "source_sha256": {
+        "build-final-films.py": "0fe990315a39eb4ec70f6ad8b82b44910d78eca00df8eb283d93693385674082",
+        "final_film.py": "0a7d353f32022b4edfb2f9ad44511a9ef9262039dc52812f45767f0adb601c71",
+        "final_film_visuals.py": "cac500a28f2ed284a022cd3646d6d6ece0dfad1ebdbabb74de53132f9b94e267",
+        "final_short_visuals.py": "63a902528d4c1a917bfdeca54b64299495018a79a9645e830d8f4688fba131ab",
+        "final_film_story.json": "69fbb49bd1f8fedfc2d6f97cbda578726d4779835375a7c25239188b82c413f7"
+      },
+      "loudness": {
+        "integrated_lufs": -15.94,
+        "true_peak_dbtp": -1.5
+      },
+      "srt_cues": 23
+    }
+  },
+  "tests": {
+    "api_pytest": 67,
+    "media_unittest": 37,
+    "android_demo_unit": 116,
+    "android_live_unit": 116,
+    "android_debug_builds": [
+      "demo",
+      "live"
+    ],
+    "android_gradle_tasks": 86
+  },
+  "review": "Independent whole-source review: partial-cache billing and total-dwell wording fixed; no outstanding material finding."
+}
