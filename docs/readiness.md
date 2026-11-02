@@ -1,6 +1,15 @@
 # Submission readiness
 
 **Status: KEY-FREE DEMO READY; LIVE LAUNCH AND SUBMISSION PENDING.**
+
+Official briefing and website rechecked 2026-11-03 KST; see the
+[timestamped review and priorities](submission/briefing-review-ko.md).
+The implementation/media table below is historical. New location implementation,
+fresh tests/builds and actual AVD checks are recorded in [location setup](location-setup.md)
+and progress. Fresh debug/unsigned release APKs stay local; historical signed
+submission APKs, films and office files were not regenerated/reverified here.
+Contest validation uses the official emulator; physical-vehicle usability is a
+separate launch task. Final APK, film and form versions still need reconciliation.
 Checked 2026-10-25. The separate motion Short uses earlier intent-review footage
 and is not evidence of the current venue/automatic-preview flow. This is a
 functioning native demo, not a verified live service or a submitted entry.
@@ -19,7 +28,7 @@ functioning native demo, not a verified live service or a submitted entry.
 | Film review | Representative frames and uninterrupted unmuted browser playback recorded separately in docs/progress.md |
 | Historical media | Earlier editorial-narration films, silent captures and motion Short are historical and do not demonstrate the new spoken output/approval |
 | Contest materials | Anonymous source remains a draft; old DOCX/PPTX/ZIP/pitch must be regenerated before submission. No public video posting, access grant or final submission performed |
-| GitHub/CI | PR8 on feature/immersive-demo-video contains this work; its final head checks are reported in the PR |
+| GitHub/CI | Spoken-film work was merged through PR8; subsequent navigation handoff through PR9. Historical check results belong to those revisions, not this review branch |
 
 ## Run the current demo
 
@@ -56,7 +65,8 @@ Local deliverables:
    Native search supplies up to three nearby candidates for explicit selection. Pinned venues remain fixed; availability must be explicitly reviewed with basis/time. Unknown or stale evidence and current-traffic snapshots remain needs_verification.
 3. Verify final Korean STT, actual NaviHelper route acceptance and arrival,
    same-name/unrelated destination callbacks, physical vehicle/region/category UX.
-   Current departure/home coordinates are manual; auto-location remains future.
+   Fresh device departure and explicit home setup are implemented; home keyword
+   search still needs live provider verification. See [location setup](location-setup.md).
 4. Before public hosting: authentication/TLS/rate limits, privacy/deletion,
    shared-driver sessions, monitoring/support, API costs and user validation.
    This trusted local prototype is not an authenticated production backend.

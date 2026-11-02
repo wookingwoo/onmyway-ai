@@ -65,6 +65,12 @@ class MainActivity : Activity() {
     private var navigationRecovery = false
     private var mapMessage: String? = null
     private val navigationConnected get() = ::navigation.isInitialized && navigation.connected
+    private val locationProvider by lazy { PleosLocation(this) }
+    private val locationAttempt = LocationAttempt()
+    private var locationEpoch = 0L
+    private var locationBusy = false
+    private var locationMessage: String? = null
+    private var locationStatusView: TextView? = null
     private var computedElapsedMillis: Long? = null
     private var computationStartedWallMillis: Long? = null
     private lateinit var restrictions: VehicleRestrictions
@@ -97,10 +103,10 @@ class MainActivity : Activity() {
         navigation.connect()
     }
     override fun onStart() { super.onStart(); if (::restrictions.isInitialized) restrictions.start() }
-    override fun onResume() { super.onResume(); foreground = true }
-    override fun onPause() { foreground = false; navigationHandoff.cancel(); stopSpoken(true); voiceDialog?.dismiss(); super.onPause() }
+    override fun onResume() { super.onResume(); foreground = true; if (::root.isInitialized) applyLock() }
+    override fun onPause() { foreground = false; cancelLocationWork(); navigationHandoff.cancel(); stopSpoken(true); voiceDialog?.dismiss(); super.onPause() }
     override fun onStop() { foreground = false; navigationHandoff.cancel(); stopSpoken(true); voiceDialog?.dismiss(); if (::restrictions.isInitialized) restrictions.stop(); vehicle = VehicleState.UNKNOWN; applyLock(); super.onStop() }
-    override fun onDestroy() { navigation.close(); worker.shutdownNow(); super.onDestroy() }
+    override fun onDestroy() { cancelLocationWork(); navigation.close(); worker.shutdownNow(); super.onDestroy() }
 
     private fun dp(value: Int) = (value * resources.displayMetrics.density).toInt()
     private fun column() = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
@@ -191,6 +197,7 @@ class MainActivity : Activity() {
     override fun onBackPressed() { if (allowed() && !busy) { stopSpoken(true); flow.back(); render() } }
 
     private fun render() {
+        cancelLocationWork()
         voiceDialog?.dismiss()
         controls.clear(); demoRescue = null
         root = column().apply { setBackgroundColor(bg); setPadding(dp(40), dp(20), dp(40), dp(20)) }
@@ -208,7 +215,7 @@ class MainActivity : Activity() {
         }
         header.addView(text("OnMyWay", 28f, ink, true), LinearLayout.LayoutParams(0, -2, 1f))
         header.addView(text(when(flow.screen) { JourneyScreen.INPUT -> "요청"; JourneyScreen.REVIEW -> "조건 확인"; JourneyScreen.ROUTE -> "계획 · 안내"; else -> "설정" }, 22f, muted))
-        if (flow.screen != JourneyScreen.SETTINGS) {
+        if (flow.screen != JourneyScreen.SETTINGS && flow.screen != JourneyScreen.LOCATIONS) {
             val settingsHost = column()
             button(settingsHost, "설정") { stopSpoken(true); flow.settings(); render() }
             header.addView(settingsHost, LinearLayout.LayoutParams(dp(130), -2).apply { leftMargin = dp(24) })
@@ -258,6 +265,7 @@ class MainActivity : Activity() {
         if (navigationRecovery) renderNavigationRecovery(body) else when (flow.screen) {
             JourneyScreen.INPUT -> renderInput(body)
             JourneyScreen.REVIEW -> renderReview(body)
+            JourneyScreen.LOCATIONS -> renderLocations(body)
             JourneyScreen.ROUTE -> renderRoute(body)
             JourneyScreen.SETTINGS -> renderSettings(body)
         }
@@ -356,9 +364,9 @@ class MainActivity : Activity() {
         if (state.completed.isNotEmpty()) body.add(text("${state.completed.size}개 완료했어요", 22f, muted))
         val dateLabel = runCatching { OffsetDateTime.parse(deadline.text.toString()).format(DateTimeFormatter.ofPattern("M월 d일")) }.getOrDefault("")
         button(body, if (intentReview?.deadline == null && intentReview != null) "귀가 시간 정하기" else "$dateLabel ${clock(deadline.text.toString())}까지 집에 도착") { chooseHomeTime() }
-        if (!fixture && (originLat.text.isBlank() || homeLat.text.isBlank())) {
-            body.add(text("출발지와 집이 아직 설정되지 않았어요.", 22f, amber))
-            button(body, "출발 · 귀가 설정") { flow.settings(); render() }
+        if (!fixture && (!LocationSetup.originReady(prefs.getString("live-origin", null), originLat.text.toString(), originLon.text.toString(), System.currentTimeMillis()) || homeLat.text.isBlank() || homeLon.text.isBlank())) {
+            body.add(text("출발 위치를 새로 확인하거나 집을 설정해 주세요.", 22f, amber))
+            button(body, "출발 · 귀가 설정", enabled = { locationAccess().canEdit }) { flow.locations(); render() }
         }
         if (!fixture && !reviewNotes.isNullOrBlank()) body.add(text(reviewNotes!!, 22f, amber))
         val reviewAction = intentReview?.action ?: ReviewAction.PLAN
@@ -576,15 +584,170 @@ class MainActivity : Activity() {
             simulate = !simulate; state.routeFailed(); state.edited(); flow.edited(); plan = null; persist(); render()
         }
         button(body, "새 일정 시작") { resetJourney() }
+        button(body, "출발 · 귀가 설정", enabled = { locationAccess().canEdit }) { flow.locations(); render() }
         button(body, "연결 · 위치 고급 설정") {
             val advanced = column().apply { setPadding(dp(28), dp(12), dp(28), dp(12)) }
-            advanced.add(text("개발용 수동 설정입니다. 위치 자동 감지는 아직 지원하지 않습니다.", 22f, muted))
-            for ((label, editor) in listOf("서버 주소" to server, "출발 위도" to originLat, "출발 경도" to originLon, "집 위도" to homeLat, "집 경도" to homeLon, "추가 지연 (분)" to delay)) showEditor(advanced, label, editor)
+            advanced.add(text("서버 연결과 추가 지연을 설정해요. 출발·귀가는 별도 위치 설정에서 확인해 주세요.", 22f, muted))
+            for ((label, editor) in listOf("서버 주소" to server, "추가 지연 (분)" to delay)) showEditor(advanced, label, editor)
             dialog(AlertDialog.Builder(this).setTitle("고급 설정").setView(ScrollView(this).apply { addView(advanced) }).setPositiveButton("닫기") { _, _ -> render() })
         }
         body.add(text(if (fixture) "예시 장소·영업시간·이동시간을 사용합니다. 모의 안내는 실제 내비게이션을 요청하지 않습니다." else "실제 데이터는 서버 연결과 API 설정이 필요합니다.", 24f, muted))
         button(footer, "돌아가기", true) { flow.back(); render() }
     }
+    private fun locationAccess() = LocationAccess(foreground, vehicle, fixture || simulate || sampleExperience,
+        navigationRecovery || state.activeId != null || (::navigation.isInitialized && navigation.hasActiveRequest), busy)
+
+    private fun cancelLocationWork() {
+        if (locationBusy) { locationMessage = "위치 확인을 취소했어요. 정차 중 다시 확인해 주세요."; locationStatusView?.text = locationMessage }
+        locationEpoch++; locationAttempt.cancel(); locationProvider.close(); locationBusy = false
+    }
+
+    private fun renderLocations(body: LinearLayout) {
+        heading(body, "출발 · 귀가 설정", "출발지는 차량 위치로, 집은 직접 확인해 저장해요.")
+        val origin = SetupLocation.parse(prefs.getString("live-origin", null))
+        val home = SetupLocation.parse(prefs.getString("real-home", null))
+        val ready = LocationSetup.originReady(prefs.getString("live-origin", null), originLat.text.toString(), originLon.text.toString(), System.currentTimeMillis())
+        card(body, "출발지", when {
+            !ready -> "설정이 없거나 위치가 오래됐어요. 다시 확인해 주세요."
+            origin?.source == LocationSource.DEVICE -> "차량 위치 확인됨 · 1분 안에 동선을 계산해 주세요."
+            origin?.source == LocationSource.COMPLETED_STOP -> "마지막으로 완료한 장소에서 이어갑니다."
+            else -> "직접 지정한 출발지 · 현재 차량 위치는 아니에요."
+        })
+        card(body, "집", home?.label ?: if (homeLat.text.isNotBlank() && homeLon.text.isNotBlank()) "직접 지정한 귀가 위치" else "아직 저장하지 않았어요.")
+        locationStatusView = text(locationMessage.orEmpty(), 23f, amber).also { body.add(it) }
+        val originEditable = state.completed.isEmpty()
+        button(body, "현재 위치로 출발지 설정", true, { locationAccess().canEdit && !locationBusy && originEditable }) { acquireLocation(false) }
+        button(body, "현재 위치를 집으로 저장", enabled = { locationAccess().canEdit && !locationBusy }) { acquireLocation(true) }
+        button(body, "집 근처 장소 검색", enabled = { locationAccess().canEdit && !locationBusy }) { searchHome() }
+        body.add(text("장소명·지역으로 검색해요. 모든 주거 주소를 찾을 수 있는 검색은 아니에요. 집에 있을 때 현재 위치를 저장하거나 직접 지정할 수도 있어요.", 22f, muted))
+        if (!originEditable) body.add(text("진행 중인 일정의 출발지는 마지막 완료 장소로 유지해요. 새 출발지는 새 일정에서 정해 주세요.", 22f, muted))
+        button(body, "위치 직접 지정", enabled = { locationAccess().canEdit && !locationBusy }) { manualLocation() }
+        button(body, "차량 위치 접근 설정 안내", enabled = { locationAccess().canEdit && !locationBusy }) {
+            if (!locationProvider.showAccessHelp()) showError(IllegalStateException("차량 개인정보 설정에서 위치 접근을 확인해 주세요."))
+        }
+        button(footer, "돌아가기", true) { flow.back(); render() }
+    }
+
+    private fun acquireLocation(home: Boolean) {
+        check(flow.screen == JourneyScreen.LOCATIONS && locationAccess().canEdit)
+        check(home || state.completed.isEmpty())
+        val permission = "pleos.car.permission.FUSED_LOCATION"
+        if (checkSelfPermission(permission) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(permission), 401)
+            return
+        }
+        cancelLocationWork()
+        val epoch = locationEpoch
+        val revision = state.revision
+        val token = locationAttempt.begin(revision, SystemClock.elapsedRealtime(), locationAccess()) ?: return
+        locationBusy = true; locationMessage = "차량의 최신 위치를 확인하고 있어요…"
+        locationStatusView?.text = locationMessage; applyLock()
+        locationProvider.acquire { result ->
+            if (epoch != locationEpoch || flow.screen != JourneyScreen.LOCATIONS) return@acquire
+            locationBusy = false
+            locationMessage = null; locationStatusView?.text = ""
+            val owned = locationAttempt.finish(token, state.revision, SystemClock.elapsedRealtime(), locationAccess())
+            if (!owned) { locationMessage = "위치 확인이 취소됐어요. 정차 후 다시 확인해 주세요."; render(); return@acquire }
+            result.onSuccess { confirmLocation(it, home, revision, epoch) }.onFailure {
+                locationMessage = it.message; render()
+            }
+            applyLock()
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode != 401) return
+        cancelLocationWork()
+        locationMessage = if (grantResults.firstOrNull() == android.content.pm.PackageManager.PERMISSION_GRANTED)
+            "위치 권한을 허용했어요. 정차 중 위치 확인 버튼을 다시 눌러 주세요."
+            else "위치 권한이 없어 차량 위치를 받지 않아요. 다시 허용하거나 위치를 직접 지정해 주세요."
+        locationStatusView?.text = locationMessage
+        if (foreground && flow.screen == JourneyScreen.LOCATIONS) render()
+    }
+
+    private fun confirmLocation(selection: SetupLocation, home: Boolean, revision: Long, epoch: Long) {
+        if (epoch != locationEpoch || !LocationSetup.canSave(revision, state.revision, locationAccess(), selection, System.currentTimeMillis())) return
+        dialog(AlertDialog.Builder(this).setTitle(if (home) "이 위치를 집으로 저장할까요?" else "이 위치에서 출발할까요?")
+            .setMessage(if (selection.source == LocationSource.DEVICE)
+                "차량에서 받은 위치예요. ${if (home) "지금 집에 있는지 확인해 주세요. 다음 일정에도 귀가 위치로 유지해요." else "현재 출발 위치가 맞는지 확인해 주세요."}\n확인 시각 ${java.time.Instant.ofEpochMilli(selection.timestampMillis).atZone(java.time.ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("HH:mm:ss"))}"
+                else "${selection.label}\n정확한 귀가 장소가 맞는지 확인해 주세요.")
+            .setNegativeButton("취소", null).setPositiveButton("확인하고 저장") { _, _ ->
+                if (epoch == locationEpoch && flow.screen == JourneyScreen.LOCATIONS &&
+                    LocationSetup.canSave(revision, state.revision, locationAccess(), selection, System.currentTimeMillis()) &&
+                    (home || state.completed.isEmpty())) {
+                    val edit = prefs.edit()
+                    val prefix = if (home) "home" else "origin"
+                    edit.putString("draft-${prefix}Lat", selection.latitude.toString()).putString("draft-${prefix}Lon", selection.longitude.toString())
+                    edit.putString(if (home) "real-home" else "live-origin", selection.toJson()).apply()
+                    locationMessage = if (home) "귀가 위치를 저장했어요. 새 계획을 확인해 주세요." else "출발 위치를 저장했어요. 1분 안에 동선을 확인해 주세요."
+                    edited(); render()
+                } else if (foreground && flow.screen == JourneyScreen.LOCATIONS) {
+                    locationMessage = "위치나 일정 상태가 바뀌었어요. 다시 확인해 주세요."; render()
+                }
+            })
+    }
+
+    private fun searchHome() {
+        check(locationAccess().canEdit)
+        require(LocationSetup.originReady(prefs.getString("live-origin", null), originLat.text.toString(), originLon.text.toString(), System.currentTimeMillis())) {
+            "검색 전에 출발 위치를 먼저 확인해 주세요."
+        }
+        val content = column().apply { setPadding(dp(28), dp(16), dp(28), dp(16)) }
+        val query = field(content, "장소명 · 지역", "") { }
+        content.add(text("아파트·건물 등 검색된 장소만 선택할 수 있어요. 결과가 없으면 집에서 현재 위치를 저장하거나 직접 지정해 주세요.", 22f, muted))
+        val epoch = locationEpoch; val revision = state.revision
+        val prompt = dialog(AlertDialog.Builder(this).setTitle("집 근처 장소 검색").setView(ScrollView(this).apply { addView(content) })
+            .setNegativeButton("취소", null).setPositiveButton("검색", null))
+        prompt.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+            if (epoch != locationEpoch || !locationAccess().canEdit) return@setOnClickListener
+            val value = query.text.toString().trim()
+            if (value.isBlank() || value.length > 200) { query.error = "장소명·지역을 1~200자로 입력해 주세요."; return@setOnClickListener }
+            val payload = JSONObject().put("query", value).put("origin", location("origin", "출발", originLat, originLon))
+            prompt.dismiss()
+            async({ api().call("/v1/places", payload) }) { response ->
+                if (epoch != locationEpoch || revision != state.revision || !locationAccess().canEdit || flow.screen != JourneyScreen.LOCATIONS) return@async
+                val choices = response.getJSONArray("places")
+                val list = column().apply { setPadding(dp(28), dp(16), dp(28), dp(16)) }
+                if (choices.length() == 0) list.add(text("검색 결과가 없어요. 집에서 현재 위치를 저장하거나 위치를 직접 지정해 주세요.", 24f, amber))
+                var window: AlertDialog? = null
+                for (i in 0 until choices.length()) {
+                    val p = choices.getJSONObject(i)
+                    val label = p.getString("name") + p.optString("address").takeIf { it.isNotBlank() }?.let { "\n$it" }.orEmpty()
+                    button(list, label, enabled = { locationAccess().canEdit }) {
+                        check(!p.optJSONObject("source")!!.optBoolean("is_fixture")) { "예시 장소는 실제 집 위치로 저장할 수 없어요." }
+                        window?.dismiss()
+                        confirmLocation(SetupLocation(p.getDouble("latitude"), p.getDouble("longitude"), LocationSource.PLACE, label), true, revision, epoch)
+                    }
+                }
+                window = dialog(AlertDialog.Builder(this).setTitle("귀가 장소 선택").setView(ScrollView(this).apply { addView(list) }).setNegativeButton("닫기", null))
+            }
+        }
+    }
+
+    private fun manualLocation() {
+        check(locationAccess().canEdit)
+        val content = column().apply { setPadding(dp(28), dp(16), dp(28), dp(16)) }
+        content.add(text("좌표를 확인한 위치만 직접 지정해 주세요. 차량 현재 위치로 확인된 정보는 아니에요.", 22f, muted))
+        var home = true
+        val target = android.widget.RadioGroup(this)
+        val homeChoice = RadioButton(this).apply { text = "귀가 위치"; textSize = 24f; id = View.generateViewId(); isChecked = true; minHeight = dp(80) }
+        val originChoice = RadioButton(this).apply { text = "출발 위치"; textSize = 24f; id = View.generateViewId(); minHeight = dp(80); isEnabled = state.completed.isEmpty() }
+        target.addView(homeChoice); if (state.completed.isEmpty()) target.addView(originChoice)
+        target.setOnCheckedChangeListener { _, id -> home = id == homeChoice.id }
+        content.add(target)
+        val lat = field(content, "위도", "") { }
+        val lon = field(content, "경도", "") { }
+        val epoch = locationEpoch; val revision = state.revision
+        val prompt = dialog(AlertDialog.Builder(this).setTitle("위치 직접 지정").setView(ScrollView(this).apply { addView(content) })
+            .setNegativeButton("취소", null).setPositiveButton("확인", null))
+        prompt.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+            val selected = SetupLocation(lat.text.toString().toDoubleOrNull() ?: Double.NaN, lon.text.toString().toDoubleOrNull() ?: Double.NaN, LocationSource.MANUAL, "직접 지정한 ${if (home) "귀가 위치" else "출발지"}")
+            if (!selected.usable(System.currentTimeMillis(), true)) { lat.error = "올바른 위도·경도를 입력해 주세요."; return@setOnClickListener }
+            prompt.dismiss(); confirmLocation(selected, home, revision, epoch)
+        }
+    }
+
     private fun renderRoute(body: LinearLayout) {
         val displayedRevision = state.revision
         val result = plan
@@ -881,20 +1044,22 @@ class MainActivity : Activity() {
     private fun resetJourney() {
         dialog(AlertDialog.Builder(this).setTitle("새 일정을 시작할까요?").setMessage("현재 일정과 완료 기록을 초기화합니다.").setNegativeButton("유지", null).setPositiveButton("새로 시작") { _, _ -> if (allowed() && !busy) {
             cancelOwnedNavigation()
-            clearFixtureDrafts()
+            clearFixtureDrafts(true)
             state.completed.clear(); state.routeFailed(); state.edited(); request = null; plan = null; errands = JSONArray(); fixture = false; requiresParse = false; voiceExample = false; intentReview = null; pendingParse = null; pendingPrior = null
             prefs.edit().putString("input", "").putBoolean("voice-example", false).putString("delay", "0").apply(); errorMessage = null; reviewNotes = null; simulate = false; computedElapsedMillis = null; flow.start(); persist(); render()
         } })
     }
-    private fun clearFixtureDrafts() {
+    private fun clearFixtureDrafts(resetOrigin: Boolean = false, newJourney: Boolean = false) {
         val values = prefs.all.filterValues { it is String }.mapValues { it.value as String }
-        val clean = JourneyDrafts.withoutFixtureLocations(values, fixture)
+        val clean = if (resetOrigin) LocationSetup.reset(values, fixture) else LocationSetup.prepareForInterpretation(values, fixture, newJourney)
         val edit = prefs.edit()
         (values.keys - clean.keys).forEach { edit.remove(it) }
+        clean.forEach { (key, value) -> edit.putString(key, value) }
         edit.apply()
     }
     private fun applyLock() {
         navigationHandoff.vehicleChanged(vehicle)
+        if (!locationAccess().copy(busy = false).canEdit) cancelLocationWork()
         if (!::lockLabel.isInitialized) return
         val can = allowed()
         lockLabel.text = when {
@@ -953,7 +1118,7 @@ class MainActivity : Activity() {
         async({ client.call("/v1/parse", payload) }) { result ->
             pendingParse = null; pendingPrior = null
             cancelOwnedNavigation()
-            clearFixtureDrafts()
+            clearFixtureDrafts(newJourney = prior == null)
             fixture = false; request = retainedRequest; plan = null
             state.interpreted(newJourney = prior == null)
             requiresParse = false
@@ -1016,6 +1181,9 @@ class MainActivity : Activity() {
     }
     private fun calculate() {
         check(allowed())
+        require(fixture || LocationSetup.originReady(prefs.getString("live-origin", null), originLat.text.toString(), originLon.text.toString(), System.currentTimeMillis())) {
+            "출발 위치가 없거나 오래됐어요. 출발 · 귀가 설정에서 현재 위치를 다시 확인해 주세요."
+        }
         require(!requiresParse) { "입력 문장이 바뀌었습니다. 먼저 할 일을 다시 정리하세요." }
         require(intentReview?.ready != false) { "확인 질문과 귀가 시간에 먼저 답해 주세요." }
         val remaining = if (fixture) PlaceReview.fixtureErrands(errands, state.completed) else PlaceReview.discoveryErrands(errands, state.completed)
@@ -1183,6 +1351,12 @@ class MainActivity : Activity() {
     private fun saveDraft(key: String, value: String) { prefs.edit().putString("draft-$key", value).apply(); edited() }
     private fun syncDraftLocations(payload: JSONObject) {
         val edit = prefs.edit()
+        if (!fixture && state.completed.isNotEmpty()) {
+            payload.optJSONObject("origin")?.let { origin ->
+                edit.putString("live-origin", SetupLocation(origin.getDouble("latitude"), origin.getDouble("longitude"),
+                    LocationSource.COMPLETED_STOP, "마지막 완료 장소").toJson())
+            }
+        }
         for ((key, location, coordinate) in listOf(Triple("originLat", "origin", "latitude"), Triple("originLon", "origin", "longitude"), Triple("homeLat", "home", "latitude"), Triple("homeLon", "home", "longitude"))) {
             payload.optJSONObject(location)?.let { edit.putString("draft-$key", it.optString(coordinate)) }
         }
