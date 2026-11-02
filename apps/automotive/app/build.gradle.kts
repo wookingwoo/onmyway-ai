@@ -8,6 +8,7 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "0.1.0"
+        testInstrumentationRunner = "ai.onmyway.car.NativeNavigationScreenSmoke"
         buildConfigField("String", "DEFAULT_SERVER_URL", "\"http://10.0.2.2:8000\"")
     }
     flavorDimensions += "mode"

@@ -826,3 +826,69 @@ final media/evidence head is reported in PR8. Keys remain deferred/server-only;
 no publication/access grant or final contest submission was performed.
 Real Korean ASR/provider/navigation and physical vehicle success are not claimed.
 
+# 2026-10-26 — official Pleos navigation screen handoff
+
+Created Git Flow `feature/pleos-navigation-handoff` in the existing isolated
+worktree from verified merged main2876838/treeff3ae318. Git HTTP fetch still
+returned403; the connected GitHub branch API verified that local main exactly
+matches the current remote. Earlier merged branch/history was not rewritten.
+
+Current live approval arms one revision/destination-bound automatic foreground
+request. Only actual owned route acceptance while resumed and native-Parked can
+consume it. Duplicate/stale callbacks, pause/background, Drive/unknown transitions,
+cancel/arrival and fixture/simulation cannot launch it. Explicit parked map retry
+uses the official screen API without resending a destination. Synchronous screen
+failure preserves accepted guidance. Native connection survives ordinary pause/
+stop/return. A persisted interrupted-guidance hint restores uncertainty rather
+than approval and blocks replacement until the user checks/ends the old guidance,
+then recalculates and separately approves a fresh plan. Arrival/completion/home
+boundaries remain intact. No map/provider library or client credential was added.
+
+NaviHelper3.0.5/navi-data3.0.4 installed signatures and NAVI_CUSTOM_MAP were
+verified. The actual framework-only device smoke dispatched Foreground and
+`ai.umos.maps.android.navigation.app/.MainActivity` became top resumed. All three
+navigation permissions were granted; installed Navigation is3.3.2-rc5-hotfix.3.
+The actual MainActivity recovery-button path also dispatched the SDK and brought
+that native app forward. The recovery hint was explicitly seeded on a selected
+sample, not inferred from a real accepted route, and restored afterward.
+
+**Native map limitation:** the map canvas was blank. Sanitized native-process
+diagnostics observed three tile HTTP401 responses from
+`a.tile.static.maps-stage.umos.ai`. No raw URL, token, credential or native log was
+stored/published. Screen dispatch/foreground do not prove successful tiles,
+live planned-route acceptance or actual arrival. No undocumented authentication
+workaround, SDK access grant, public posting or key provisioning was attempted.
+
+Actual sample flow passed: independently selected request/refinement;18:53 home
+estimate; disabled map action; zero SDK screen calls on synthetic acceptance;
+manual OS app switch/return retained accepted sample guidance; actual Drive30
+locked input; Park0 restored; arrival remained incomplete until explicit action;
+mandatory laundry/medicine completed; home separately approved. Existing app
+voice output was stopped before handoff. Selected four full native screenshots
+are under docs/screenshots/navigation-handoff with source/pixel/hash provenance.
+
+Checks after final source fixes: demo/live106 unit tests each, zero failures or
+errors; both debug/release APKs, release lint-vital and device-test APK passed
+(210 Gradle tasks,3m11s). Standalone SDK-free safety suite106 passed (1m14s);
+its stale baseline include list was updated for all current pure classes.
+Python API67 passed/1.66s with provider HTTP mocked. Initial device-runner compile
+failed because deprecated android.test classes are absent from API35; replaced
+it with framework Instrumentation, without a new dependency. A separate explicit
+Drive→Park regression was observed RED before its gate fix. Existing SDK XML,
+deprecated-window API and one Kotlin daemon startup-retry warning remain.
+
+Fresh whole-branch review found restriction-transition and pause/resume races;
+both were fixed and re-reviewed, with no outstanding material findings. Manual
+map gates now reject fixture OR simulation. CI now also runs live unit tests and
+compiles the device-only smoke APK; it does not claim actual emulator execution.
+
+Local signed APK SHA256 (not committed):
+- demo `a4fbb9ba3ad34431a544625eb130b119bb3df8e7c1e1047a01712864777f48b4`
+- live `82eb390dc4deb6e77a873e5c697ee13205de37c6298ddf449a36b77407ec801b`
+
+Large APK/raw/XML/reports and the earlier local spoken film stay ignored. This
+task did not regenerate that historical film or office/pitch materials. Real
+ASR/LLM/Kakao, native accepted-route/home arrival and physical-vehicle validation
+remain open; AI/provider keys are still deferred to the ignored server env.
+Final feature PR and exact-head CI are reported in the PR description.
+

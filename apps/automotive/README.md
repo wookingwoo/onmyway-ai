@@ -64,8 +64,8 @@ result is consumed once and automatically starts server interpretation, discover
 and planning. Speech answers missing conditions and **말로 조건 바꾸기** refines a
 proposal. Flexible generic shops are proposed automatically; exact pickup venues
 require confirmation. The route summary and its **확인하고 출발** action
-approve only the current fresh destination. Speech never starts navigation or
-completes an errand by itself. Direct text/editors remain recovery paths. A failed
+approve only the current fresh destination. Explicit spoken departure can also
+approve that destination; interpretation alone never starts navigation or completes an errand. Direct text/editors remain recovery paths. A failed
 refinement invalidates the old proposal and retains an explicit retry.
 
 The SDK has an 8-second connection deadline and a 30-second recognition deadline.
@@ -129,3 +129,19 @@ secondary/warning text against the actual surfaces is tested at≥4.5:1 contrast
 Touch actions remain≥80dp. The design follows the
 [Pleos consistency/glanceability guidance](https://document.pleos.ai/docs/connect/guide/docs-design/Introduction/intro)
 without claiming platform certification or physical-vehicle usability testing.
+
+
+## Official Pleos map handoff
+
+`NAVI_CUSTOM_MAP` and NaviHelper3.0.5 Foreground screen requests connect accepted
+live guidance to the native Navigation app. Automatic launch is single-use and
+requires a resumed current plan and native Park. Pause, Drive/unknown, cancel and
+stale targets invalidate it. Failed screen dispatch preserves accepted guidance.
+The explicit parked **차량 내비 보기** action retries without resending a destination.
+Synthetic/simulated guidance cannot invoke it. App restart restores an uncertainty
+hint, blocks replacement and requires checking/ending prior native guidance before
+fresh planning/approval. See [implementation and actual limitations](../../docs/navigation-handoff.md).
+
+CI compiles the framework-only device instrumentation APK but does not claim a
+real device smoke run. Actual AVD SDK foreground was checked separately; native
+map-tile HTTP401 prevented normal map rendering. Live route/arrival remains open.

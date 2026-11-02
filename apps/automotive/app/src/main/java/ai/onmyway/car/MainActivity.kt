@@ -61,6 +61,10 @@ class MainActivity : Activity() {
     private var spokenStatus: String? = null
     private var status = "정차 상태를 확인한 뒤 계획을 시작하세요."
     private var navStatus = "Pleos 내비 연결 확인 중"
+    private val navigationHandoff = NavigationHandoff()
+    private var navigationRecovery = false
+    private var mapMessage: String? = null
+    private val navigationConnected get() = ::navigation.isInitialized && navigation.connected
     private var computedElapsedMillis: Long? = null
     private var computationStartedWallMillis: Long? = null
     private lateinit var restrictions: VehicleRestrictions
@@ -92,8 +96,10 @@ class MainActivity : Activity() {
         navigation = PleosNavigation(this) { event -> runOnUiThread { onNavigation(event) } }
         navigation.connect()
     }
-    override fun onStart() { super.onStart(); foreground = true; if (::restrictions.isInitialized) restrictions.start() }
-    override fun onStop() { foreground = false; stopSpoken(true); voiceDialog?.dismiss(); if (::restrictions.isInitialized) restrictions.stop(); vehicle = VehicleState.UNKNOWN; applyLock(); super.onStop() }
+    override fun onStart() { super.onStart(); if (::restrictions.isInitialized) restrictions.start() }
+    override fun onResume() { super.onResume(); foreground = true }
+    override fun onPause() { foreground = false; navigationHandoff.cancel(); stopSpoken(true); voiceDialog?.dismiss(); super.onPause() }
+    override fun onStop() { foreground = false; navigationHandoff.cancel(); stopSpoken(true); voiceDialog?.dismiss(); if (::restrictions.isInitialized) restrictions.stop(); vehicle = VehicleState.UNKNOWN; applyLock(); super.onStop() }
     override fun onDestroy() { navigation.close(); worker.shutdownNow(); super.onDestroy() }
 
     private fun dp(value: Int) = (value * resources.displayMetrics.density).toInt()
@@ -173,6 +179,7 @@ class MainActivity : Activity() {
     }
     private fun allowed() = state.canInteract(vehicle, BuildConfig.DEMO, simulate)
     private fun edited(continueVoice: Boolean = false) {
+        navigationHandoff.cancel(); mapMessage = null
         stopSpoken(!continueVoice)
         voiceDialog?.dismiss()
         val wasRoute = flow.screen == JourneyScreen.ROUTE
@@ -248,13 +255,43 @@ class MainActivity : Activity() {
         statusLabel = text("", 22f, amber).apply { maxLines = 3 }
         footer.add(statusLabel, 8)
         root.add(footer, 0)
-        when (flow.screen) {
+        if (navigationRecovery) renderNavigationRecovery(body) else when (flow.screen) {
             JourneyScreen.INPUT -> renderInput(body)
             JourneyScreen.REVIEW -> renderReview(body)
             JourneyScreen.ROUTE -> renderRoute(body)
             JourneyScreen.SETTINGS -> renderSettings(body)
         }
         setContentView(root); root.requestApplyInsets(); applyLock()
+    }
+    private fun renderNavigationRecovery(body: LinearLayout) {
+        heading(body, "차량 내비를 먼저 확인해 주세요", "앱이 다시 열렸어요. 기존 안내가 진행 중일 수 있어요.")
+        val recovery = card(body, "일정과 완료 기록은 보관했어요")
+        recovery.add(text("차량 내비에서 목적지와 안내 상태를 확인해 주세요. 확인 전에는 새 목적지를 보내지 않아요.", 26f))
+        mapMessage?.let { recovery.add(text(it, 22f, amber)) }
+        button(footer, "차량 내비 보기", true, { NavigationHandoff.canShow(navigationConnected, fixture || simulate, false, navigationRecovery, vehicle, busy) }) { showVehicleNavigation() }
+        if (!navigationConnected) button(body, "차량 내비 다시 연결") { if (::navigation.isInitialized) navigation.connect() }
+        button(body, "기존 안내를 종료했어요 · 다시 계획") {
+            dialog(AlertDialog.Builder(this).setTitle("기존 안내를 종료했나요?")
+                .setMessage("차량 내비에서 기존 안내를 종료했는지 먼저 확인해 주세요. 이 확인은 새 출발 승인이 아닙니다. 남은 볼일을 다시 계산하고 새 계획을 승인해야 해요.")
+                .setNegativeButton("확인하러 가기", null).setPositiveButton("종료 확인 · 다시 계산") { _, _ -> if (allowed() && !busy) {
+                    navigationRecovery=false; navigationHandoff.cancel(); mapMessage=null
+                    state.routeFailed(); state.edited(); plan=null; flow.parsed(); persist(); render()
+                    runCatching { calculate() }.onFailure { showError(it) }
+                } })
+        }
+    }
+    private fun showVehicleNavigation() {
+        if (!foreground || !NavigationHandoff.canShow(navigationConnected, fixture || simulate,
+                state.guidanceAccepted && state.activeId!=null && state.arrivedId==null,
+                navigationRecovery, vehicle, busy)) return
+        stopSpoken(true); voiceDialog?.dismiss(); persist()
+        // Commit the recovery hint before another app can take foreground.
+        prefs.edit().putBoolean("guidance-unresolved", navigationRecovery || !fixture && state.activeId!=null && state.arrivedId==null).commit()
+        navigation.showNavigationScreen().fold(
+            onSuccess = { mapMessage="차량 내비 화면을 요청했어요. 화면이 열리지 않으면 다시 눌러 주세요." },
+            onFailure = { mapMessage="차량 내비 화면을 열지 못했어요. 안내 상태는 유지합니다. 내비 연결을 확인하고 다시 시도해 주세요." }
+        )
+        renderPlan()
     }
     private fun renderInput(body: LinearLayout) {
         heading(body, "가는 길에, 무엇을 할까요?", "할 일과 귀가 시간을 편하게 말해 주세요.")
@@ -617,7 +654,14 @@ class MainActivity : Activity() {
             }
             state.arrivedId == "__home" -> button(footer, "새 일정 시작", true) { resetJourney() }
             state.arrivedId == id && next != null -> button(footer, "완료했어요", true) { completeCurrent(next, displayedRevision) }
-            state.activeId == id -> footer.add(text("안내 중 · 차량 내비게이션을 확인해 주세요", 24f, muted).apply { gravity = Gravity.CENTER }, 12)
+            state.activeId == id -> {
+                footer.add(text(if (state.guidanceAccepted) "안내 중 · 차량 내비게이션을 확인해 주세요" else "차량 내비의 경로 수락을 기다리고 있어요", 24f, muted).apply { gravity = Gravity.CENTER }, 8)
+                if (state.guidanceAccepted) {
+                    button(footer, "차량 내비 보기", true, { NavigationHandoff.canShow(navigationConnected, fixture || simulate, state.guidanceAccepted, false, vehicle, busy) }) { showVehicleNavigation() }
+                    if (fixture) footer.add(text("샘플 안내는 실제 차량 내비를 실행하지 않아요.", 20f, muted), 0)
+                    else mapMessage?.let { footer.add(text(it, 20f, amber), 0) }
+                }
+            }
             fixture && !simulate -> button(footer, "안내 연결", true) { simulate = true; state.routeFailed(); state.edited(); render() }
             homeLeg && (0 until errands.length()).any { errands.getJSONObject(it).let { item -> item.optBoolean("mandatory", true) && item.optString("id") !in state.completed } } -> button(footer, "남은 필수 할 일 확인", true) { flow.parsed(); render() }
             homeLeg && result.isNull("home_arrival_time") -> button(footer, "동선 다시 확인", true) { calculate() }
@@ -850,6 +894,7 @@ class MainActivity : Activity() {
         edit.apply()
     }
     private fun applyLock() {
+        navigationHandoff.vehicleChanged(vehicle)
         if (!::lockLabel.isInitialized) return
         val can = allowed()
         lockLabel.text = when {
@@ -1022,7 +1067,7 @@ class MainActivity : Activity() {
     }
 
     private fun renderPlan() {
-        if (flow.screen == JourneyScreen.ROUTE && voiceDialog?.isShowing != true) render() else applyLock()
+        if ((navigationRecovery || flow.screen == JourneyScreen.ROUTE) && voiceDialog?.isShowing != true) render() else applyLock()
     }
     private fun firstRemainingStop(result: JSONObject): JSONObject? {
         val stops = result.optJSONArray("stops") ?: return null
@@ -1030,6 +1075,7 @@ class MainActivity : Activity() {
         return null
     }
     private fun approveNavigation(stop: JSONObject, displayedRevision: Long) {
+        check(!navigationRecovery) { "기존 차량 내비 안내를 먼저 확인해 주세요." }
         check(state.acceptsResponse(displayedRevision)) { "계획이 바뀌었어요. 최신 계획을 다시 확인해 주세요." }
         check(SpokenPlan.canApprove(plan, errands, state.completed)) { "필수 볼일과 귀가를 포함한 현재 계획을 먼저 확인해 주세요." }
         check(stop.optString("errand_id") == plan?.let { SpokenPlan.destinationId(it, state.completed) }) { "다음 목적지가 바뀌었어요. 다시 확인해 주세요." }
@@ -1040,9 +1086,10 @@ class MainActivity : Activity() {
         val id = stop.getString("errand_id")
         state.approve(id)
         if (!state.requestNavigation(id)) return
+        navigationHandoff.arm(displayedRevision, id); mapMessage=null
         if (simulate && BuildConfig.DEMO) { onNavigation("requested"); onNavigation("accepted") }
         else runCatching { navigation.request(place.getDouble("latitude"), place.getDouble("longitude"), place.getString("name")) }.onFailure {
-            state.routeFailed(); showError(it)
+            navigationHandoff.cancel(); state.routeFailed(); showError(it)
         }
         renderPlan()
     }
@@ -1064,23 +1111,29 @@ class MainActivity : Activity() {
             event == "connected" -> navStatus = "Pleos 서비스 연결됨 · 경로 요청 전"
             event == "requested" -> navStatus = if (simulate) "시뮬레이션 · 요청 발생" else "Pleos 요청 전송됨 · 경로 수락 미확인"
             event == "accepted" -> { state.routeAccepted(); navStatus = if (simulate) "시뮬레이션 · 경로 탐색 완료 이벤트" else "Pleos 경로 탐색 완료 이벤트 수신" }
-            event == "arrived" -> { state.arrived(); navStatus = "목적지 도착 이벤트 수신 · 사용자의 할 일 완료 확인 필요" }
-            event.startsWith("error:") -> { navStatus = event.removePrefix("error:"); state.routeFailed(navStatus) }
+            event == "arrived" -> { navigationHandoff.cancel(); mapMessage=null; state.arrived(); navStatus = "목적지 도착 이벤트 수신 · 사용자의 할 일 완료 확인 필요" }
+            event.startsWith("error:") -> { navigationHandoff.cancel(); mapMessage=null; navStatus = event.removePrefix("error:"); state.routeFailed(navStatus) }
         }
         renderPlan(); persist()
+        if (event=="accepted" && navigationHandoff.take(state.revision,
+                state.activeId?.takeIf { state.arrivedId==null },state.guidanceAccepted,
+                foreground && flow.screen==JourneyScreen.ROUTE, vehicle, fixture || simulate)) showVehicleNavigation()
     }
     private fun cancelOwnedNavigation() {
+        navigationHandoff.cancel(); mapMessage=null
         if (::navigation.isInitialized && allowed() && navigation.hasActiveRequest) navigation.cancelPending()
     }
     private fun persist() {
         prefs.edit().putString("request", request?.toString()).putString("plan", plan?.toString()).putString("errands", errands.toString())
             .putBoolean("fixture", fixture).putBoolean("requiresParse", requiresParse).putStringSet("completed", state.completed.toSet()).apply()
+        prefs.edit().putBoolean("guidance-unresolved", navigationRecovery || !fixture && state.activeId!=null && state.arrivedId==null).apply()
         prefs.edit().putString("review-notes", reviewNotes).putString("intent-review", intentReview?.toJson()).apply()
     }
     private fun restore() {
         runCatching {
             voiceExample = BuildConfig.DEMO && prefs.getBoolean("voice-example", false) && prefs.getString("input", "") == VoiceInputSession.EXAMPLE_TEXT
             fixture = prefs.getBoolean("fixture", false)
+            navigationRecovery = !fixture && prefs.getBoolean("guidance-unresolved", false)
             if (fixture && BuildConfig.DEMO) prefs.edit().putBoolean("sample-experience", true).apply()
             requiresParse = prefs.getBoolean("requiresParse", false)
             reviewNotes = prefs.getString("review-notes", null)

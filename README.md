@@ -242,8 +242,8 @@ recognition. A final transcript automatically starts interpretation and route
 preparation. Missing conditions can be answered by speech; generic flexible shops
 are proposed automatically, while exact pickup venues require confirmation.
 The compact summary shows ordered venues, dwell/completion deadlines and home ETA. Original text, answers and detailed evidence stay under **요청 · 일정 자세히**. Live and sample use the same main labels/layout; only a small source badge distinguishes synthetic data. Simulation event utilities live in settings.
-**확인하고 출발** approves only the current fresh destination; speech never
-starts navigation by itself. Cancel, background and driving restrictions stop the
+Explicit spoken departure or **확인하고 출발** approves only the current fresh
+next destination; interpretation alone never starts navigation. Cancel, background and driving restrictions stop the
 speech session and release the microphone.
 
 For a key-free presentation, explicitly choose **설정 → 샘플로 둘러보기**, then use the same **말로 부탁하기** action.
@@ -285,7 +285,7 @@ validation. Exact commands, revisions and caveats are in the
 | Check | Recorded evidence |
 | --- | --- |
 | Backend | 67 Python tests passed; provider HTTP mocked, including venue identity, availability evidence and conditional proposals |
-| Android | 101 unit tests per variant passed, including venue review, elapsed deadline slack, request ownership/timeout and approval/completion boundaries |
+| Android | 106 unit tests per variant passed, including venue review, elapsed deadline slack, request ownership/timeout and approval/completion boundaries |
 | Builds | Demo/live debug and signed release builds passed; release v3 signatures verified |
 | Actual Pleos demo | Pinned example pickup → HTTP plan → arrival stays incomplete → three explicit completions with automatic previews → separately approved simulated home |
 | Actual vehicle restrictions | Drive / 30 km/h locked actions and dismissed an open editor; Park / 0 restored |
@@ -343,3 +343,14 @@ review ZIP predate the new UI and need regeneration before sharing. Keep project
 materials anonymous; identity and signatures belong in the operational form.
 Repository access grants, public publication and final email submission require
 the owner's authorization.
+
+
+## Native navigation screen
+
+Approved live routes now request the official Pleos Navigation screen after actual
+route acceptance, with explicit parked retry and interrupted-guidance recovery.
+Synthetic/simulated routes never open native navigation. Actual SDK foreground
+and recovery-button dispatch were verified on the official AVD. Its native tile
+server returned HTTP401 and the map canvas was blank; successful tile rendering,
+live planned-route acceptance and actual arrival remain unverified. No additional
+provider keys were used. [Flow, safety boundaries and evidence](docs/navigation-handoff.md).
