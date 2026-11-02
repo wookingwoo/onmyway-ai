@@ -1,5 +1,59 @@
 # Delivery ledger
 
+## 2026-11-03 — replace illustrated edits with actual native Pleos recordings
+
+The owner clarified that product screens must be recorded directly on Pleos.
+The preceding illustrated-interface film is superseded, not a native recording.
+Added an isolated `film` flavor/package `ai.onmyway.car.film`; live/demo launchers
+are unchanged. Native FilmActivity renders real Android Views/Canvas and buttons
+inside official Pleos Connect2.1.0/API34. It is an authorized authored filming
+prototype, with clean product wording as expressly requested. It does not call
+live AI/STT/traffic/navigation providers, and its route illustration and arrival
+signals do not establish production navigation success. Editorial ElevenLabs
+voices and captions are reused without another paid generation.
+
+Booted the existing official OnMyWay_Pleos AVD without wiping it, installed only
+the separate film debug APK, and operated13 real UI stages. Recorded Android
+screenrecord raw footage from the2560x1440 display at1920x1080. Native vehicle
+panel/status/climate bars remain visible in every main-film scene. Short product
+shots are whole-display inserts or crops of these same actual captures, with
+original comic bumpers outside product screens. No illustrated cockpit pixels
+replace native footage. Raw files, UI XML, snapshots, manifest, APK and both final
+films stay local under ignored artifacts/final-films/pleos/.
+
+Vehicle gate is the real CarUxRestrictions service, with UNKNOWN/RESTRICTED
+blocked. Bundled Virtual Console runs inside the AVD on8088; forwarded that port,
+registered an owned heartbeat session, set real Drive/30, captured the actual OS
+distraction blocker, then restored speed0/Park and closed the session. Shell
+CarService injection is unsupported on this user build; no root or restriction
+bypass was used. Arrival remains incomplete until explicit receipt confirmation;
+both mandatory laundry and medicine precede separate home approval. No live/demo
+app data were cleared or real navigation destinations sent.
+
+Regression checks: new film policy tests were RED before implementation, then
+119 demo +119 live +119 film unit tests passed,0 failures/errors. All three debug
+APK builds passed (129 Gradle tasks,43s). After visual waveform sizing, film
+unit/build rerun passed (43 tasks,19s). Existing source/SDK/window-API/native-symbol
+warnings remain. Python API67 passed/0.84s with provider HTTP mocked. Media40
+passed/0.223s, including native manifest/hash,1x trim and restricted-window tests.
+CI now also compiles/tests the film flavor and runs the pure native-media tests.
+
+Independent whole-source review found two edit timing defects: a2s Short approval
+window ended before the real tap, and the initial driving trim used a late
+post-snapshot Park timestamp. Shifted Short approval to1.8–3.8s (decoded actual
+guidance visible at2.8/3.8) and main home approval to1.2–4.2s. Current driving raw
+SHA903fb7248c95b4d925f9ffad767d8e8e47968dc1af77298e6682974fe97fe85d has a reviewed
+locked interval11.2–19.8s; selected main11.2–19.7s. Start/middle/end independently
+decoded as actual OS lock with D/30. Missing/short reviewed intervals now fail
+closed, with a RED→GREEN regression. Future recorder directly records its
+post-Drive-ready/before-Park timestamps. Re-review found no important open issue.
+
+Final native film/Short hashes, complete-decode checks, actual final-frame review
+and full unmuted playback evidence are in docs/submission/final-films-verification.json.
+Delivery paths and current scope are in docs/submission/final-films-ko.md. PR11
+is updated to the native result; media remain excluded and no merge/publication/
+external access grant/final contest submission is performed.
+
 ## 2026-11-03 — final product film and viral Short
 
 User explicitly delegated conception, premium ElevenLabs speech generation,

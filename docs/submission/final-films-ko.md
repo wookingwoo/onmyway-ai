@@ -1,7 +1,9 @@
-# OnMyWay AI 최종 제품 소개 영상과 쇼츠
+# OnMyWay AI 최종 Pleos 화면 녹화 본편과 쇼츠
 
 제작·규정 확인: 2026-11-03 KST. 로컬 검토용 최종 편집본이며 공개 게시·공모전
-접수는 수행하지 않았습니다. 본편과 쇼츠는 목적에 맞춰 별도로 연출했습니다.
+접수는 수행하지 않았습니다. **사용자 수정 요청에 따라 실제 공식 Pleos 화면을
+직접 녹화한 버전으로 교체했습니다.** 이전의 그래픽 화면 편집본은 최종 전달 대상에서 제외합니다.
+본편과 쇼츠는 목적에 맞춰 별도로 연출했습니다.
 
 ## 바로 확인할 파일
 
@@ -10,13 +12,13 @@
 
 | 결과 | 로컬 파일 | 길이 · 화면 |
 | --- | --- | --- |
-| 본편 | `artifacts/final-films/main/OnMyWay_AI_Product_Film_Final.mp4` | 2분 13.5초 · 1920×1080 |
-| 쇼츠 | `artifacts/final-films/short/OnMyWay_AI_Shorts_Final.mp4` | 50초 · 1080×1920 |
-| 통합 플레이어 | `artifacts/final-films/player.html` | 두 영상·저장 링크 |
-| 본편 자막 | `artifacts/final-films/main/OnMyWay_AI_Product_Film_Final.srt` | 음성 타이밍 기준 43개 |
-| 쇼츠 자막 | `artifacts/final-films/short/OnMyWay_AI_Shorts_Final.srt` | 음성 타이밍 기준 23개 |
-| 포스터·전체 장면표 | 각 폴더의 `poster.jpg`, `contact-sheet.jpg` | 로컬 검수 |
-| 상세 검증 | 각 폴더의 `verification.json` | 해시·규격·음량·출처 |
+| 본편 | `artifacts/final-films/pleos/OnMyWay_AI_Pleos_Final.mp4` | 2분 13.5초 · 1920×1080 |
+| 쇼츠 | `artifacts/final-films/pleos/OnMyWay_AI_Pleos_Shorts_Final.mp4` | 50초 · 1080×1920 |
+| 통합 플레이어 | `artifacts/final-films/pleos/player.html` | 두 영상·저장 링크 |
+| 본편 자막 | `artifacts/final-films/pleos/OnMyWay_AI_Pleos_Final.srt` | 음성 타이밍 기준 43개 |
+| 쇼츠 자막 | `artifacts/final-films/pleos/OnMyWay_AI_Pleos_Shorts_Final.srt` | 음성 타이밍 기준 23개 |
+| 전체 장면표 | `pleos/main/`, `pleos/short/`의 `native-decoded-contact-sheet.jpg` | 로컬 검수 |
+| 원본·검증 | `pleos/native-capture-manifest.json`, 각 편집 폴더의 `verification.json` | 해시·원본 구간·규격·음량·출처 |
 
 영상에 한국어 자막이 이미 포함됩니다. 외부 플레이어에서 SRT까지 켜면 중복될 수
 있습니다. 브라우저 검수는 최종 파일과 같은 해시의 영상을 소리를 켜고 끝까지
@@ -88,10 +90,20 @@ ElevenLabs 목록과 로컬 키의 실제 음성 조회로 사용 가능한 한�
 
 ## 제작 범위와 실제 앱 증거
 
-이번 파일은 사용자가 허용한 **홍보용 인터페이스 연출·제품 프로토타입**입니다.
-화면은 직접 렌더링했고, 지도는 직접 그린 개념 동선이며, 장소·시간은 작성한
-시나리오입니다. 영상에는 별도의 데모 배지를 넣지 않았습니다. 실제 Android 화면
-녹화·실시간 AI/STT/도로/내비 결과 또는 출시·입점 완료의 증거로 사용하지 않습니다.
+이번 파일은 공식 **Pleos Connect 2.1.0 · API34**의 `OnMyWay_Pleos` AVD에서
+별도 `ai.onmyway.car.film` 네이티브 앱을 설치하고 실제 버튼을 눌러 녹화했습니다.
+원본은 2560×1440 디스플레이를 Android screenrecord로 1920×1080에 저장했습니다.
+본편은 차량 패널·시스템 바를 포함한 전체 화면을 유지하고, 쇼츠는 같은 실제
+원본의 전체 화면·앱 확대 컷을 사용합니다. UI를 그림으로 대체한 장면은 없습니다.
+우유 캐릭터와 쇼츠 문구는 제품 화면 밖의 설명·코미디 인서트입니다.
+
+촬영용 화면과 시나리오는 사용자가 허용한 **네이티브 홍보 프로토타입**입니다.
+지도는 앱의 Canvas에 그린 개념 동선이며 장소·시간·도착 신호는 작성한 시나리오입니다.
+live/demo 앱의 런처와 기능은 변경하지 않았습니다. 실제 CarUxRestrictions를 읽으며,
+실제 Virtual Console의 Drive/30 상태에서 OS 자체 주행 차단과 Park 복구를 녹화했습니다.
+모든 계획 조작은 실제 정차 상태에서만 가능합니다. 영상에 별도 데모 배지를 넣지
+않는 것은 사용자의 명시적 연출 지시입니다. 실시간 AI/STT/도로/내비 결과 또는
+출시·입점 완료의 증거로 사용하지 않습니다.
 비서 음성도 영상 편집용 ElevenLabs 출력이며 네이티브 Pleos TTS 실행 결과가 아닙니다.
 실제 앱 구현·공식 AVD 검증 범위는 기존 README와 각 screenshots/README를 따릅니다.
 
@@ -119,7 +131,12 @@ ElevenLabs 목록과 로컬 키의 실제 음성 조회로 사용 가능한 한�
 ```powershell
 python -m pip install -r scripts/requirements-final-films.txt
 python -X utf8 services/api/tools/generate_film_audio.py --track all
-python -X utf8 scripts/build-final-films.py --track all
+cd apps/automotive
+.\gradlew.bat testFilmDebugUnitTest assembleFilmDebug
+cd ../..
+# Official Pleos AVD + installed film APK required. Does not clear other apps.
+python -X utf8 scripts/record-native-film.py --adb <local-adb-path>
+python -X utf8 scripts/build-native-films.py
 python -m unittest discover -s scripts/tests -q
 python -m http.server 8767 --bind 127.0.0.1 --directory artifacts/final-films
 ```

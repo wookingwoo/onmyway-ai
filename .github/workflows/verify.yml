@@ -24,6 +24,7 @@ jobs:
       - run: python -m unittest discover -s scripts/tests -p test_native_demo_audio.py
       - run: python -m unittest discover -s scripts/tests -p test_spoken_demo.py
       - run: python -m unittest discover -s scripts/tests -p test_final_film.py
+      - run: python -m unittest discover -s scripts/tests -p test_native_film.py
   android:
     runs-on: ubuntu-latest
     defaults:
@@ -37,4 +38,4 @@ jobs:
           java-version: '17'
       - uses: gradle/actions/setup-gradle@v4
       - run: chmod +x gradlew
-      - run: ./gradlew testDemoDebugUnitTest testLiveDebugUnitTest assembleDemoDebug assembleLiveDebug assembleDemoDebugAndroidTest
+      - run: ./gradlew testDemoDebugUnitTest testLiveDebugUnitTest testFilmDebugUnitTest assembleDemoDebug assembleLiveDebug assembleFilmDebug assembleDemoDebugAndroidTest

@@ -15,11 +15,13 @@ Current contest positioning and honest differentiation:
 [demo guide](docs/demo-guide-ko.md), [five-minute pitch and Q&A](docs/submission/pitch-and-demo-ko.md).
 [2026-10-28 briefing review](docs/submission/briefing-review-ko.md) maps timestamped
 organizer guidance to current evidence, technical Q&A and remaining priorities.
-The latest [product film and viral Short](docs/submission/final-films-ko.md)
-are local editorial prototypes: a 133.5-second cinematic product story and a
-50-second original quest/milk comedy, with timed ElevenLabs speech and music.
-Open `artifacts/final-films/player.html` locally. Their illustrated interface is
-presentation artwork, separate from native implementation evidence below.
+The latest [Pleos film and viral Short](docs/submission/final-films-ko.md)
+use actual official Pleos AVD screen recordings of an installed native `film`
+flavor: a 133.5-second product story and a 50-second original quest/milk comedy,
+with timed ElevenLabs editorial speech and music. Open
+`artifacts/final-films/pleos/player.html` locally. The film package is an isolated
+authored prototype; it does not prove live providers or production navigation.
+The earlier illustrated-screen edit was rejected and is superseded.
 See [media verification](docs/submission/final-films-verification.json).
 
 The earlier recorded story film follows one natural-language request, automatic route
