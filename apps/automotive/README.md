@@ -1,5 +1,10 @@
 # OnMyWay native vehicle app
 
+Fresh Pleos FusedLocation 1.1.3 departure and explicit home setup:
+[behavior, actual AVD evidence and live acceptance procedure](../../docs/location-setup.md).
+Source provenance, freshness, permission/lifecycle and active-guidance gates apply
+to all location saves. Keyword home search is not residential-address geocoding.
+
 Kotlin Android Views, API 28–35, JDK 17, Gradle 8.9, AGP 8.7.3, Kotlin 2.0.21. Native UI and typed Pleos NaviHelper 3.0.5 integration; no web wrapper. SDK data dependency is navi-data 3.0.4 as published by Pleos.
 
 From this directory, after installing the licensed Android SDK 35 and Build Tools 35.0.0:

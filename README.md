@@ -13,6 +13,8 @@ deadline for getting home.
 Current contest positioning and honest differentiation:
 [Korean strategy](docs/contest-strategy-ko.md). Presenter/recovery instructions:
 [demo guide](docs/demo-guide-ko.md), [five-minute pitch and Q&A](docs/submission/pitch-and-demo-ko.md).
+[2026-10-28 briefing review](docs/submission/briefing-review-ko.md) maps timestamped
+organizer guidance to current evidence, technical Q&A and remaining priorities.
 The current story film follows one natural-language request, automatic route
 preparation and a spoken 30-minute pharmacy refinement, preserving mandatory
 pickup, optional milk omission and separately approved home. Every native chapter
@@ -312,8 +314,11 @@ have been checked on the emulator. Successful final Korean transcription remains
 unverified. Pleos ON_DEVICE Korean plan output has been implemented and actually
 recorded on the official AVD. Spoken refinement and explicit departure/home
 approval use the same guarded native flow. Successful real Korean recognition
-and live provider/navigation results still require validation. Automatic location
-acquisition is not implemented. See [spoken conversation](docs/spoken-conversation.md).
+and live provider/navigation results still require validation. Native setup now
+uses fresh Pleos vehicle location with explicit departure/home confirmation and
+optional keyword-place selection; manual entry remains an explicit fallback.
+[Location behavior and actual AVD evidence](docs/location-setup.md) ·
+[spoken conversation](docs/spoken-conversation.md).
 
 No measured time savings, current users or retention results are claimed.
 [Current readiness and next verification steps](docs/readiness.md).

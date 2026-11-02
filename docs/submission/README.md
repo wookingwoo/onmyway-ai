@@ -1,6 +1,7 @@
 # Submission drafts
 
-Current sources checked 2026-10-24; nothing has been submitted or published.
+Official briefing transcript, judging, submission, development, FAQ and notices
+rechecked 2026-11-03 KST. Nothing has been submitted or published by this work.
 Korean project text and presentation screens contain no entrant identity.
 Identity, consent, signature, access grants and final submission remain user actions.
 
@@ -11,21 +12,29 @@ Identity, consent, signature, access grants and final submission remain user act
 - `../demo-guide-ko.md`: current key-free operation, reset, recovery and recording.
 - `checklist-ko.md`: evidence, anonymity and user-controlled submission gates.
 - `email-draft-ko.md`: unsent draft with placeholders; recheck all filenames first.
+- `briefing-review-ko.md`: timestamped briefing findings, evidence gaps and technical Q&A cards.
 
-Current local deliverables (excluded from Git):
+Historical submission/media paths below are excluded from Git and absent from
+this worktree; playback/signatures were not reverified. New debug/unsigned release
+APKs were built under apps/automotive/app/build/outputs/apk. See
+[location implementation and actual checks](../location-setup.md).
 
-- `artifacts/evidence/intent-demo/OnMyWay_AI_intent_demo.mp4`: 107.667 seconds,
-  actual latest app, synthetic interpretation/route and simulated guidance,
-  actual driving restriction, labelled 2x, permanent Korean disclosure.
-- `artifacts/evidence/intent-demo/media-verification.json`: hashes, full decode,
-  scene review and actual browser playback to the end.
+- `artifacts/evidence/spoken-plan/OnMyWay_AI_spoken_demo.mp4`: 164.355542 seconds,
+  actual Pleos ON_DEVICE Korean output, offline prepared user speech and synthetic
+  places/roads/simulated guidance. Full Pleos surface, matching 1x cuts, abbreviated
+  operation waits. It predates the subsequent native navigation handoff changes;
+  compare it with the final APK before submission.
+- `artifacts/evidence/spoken-plan/media-verification.json`: recorded decode,
+  scene review and uninterrupted unmuted browser playback evidence.
 - `artifacts/pitch/current/index.html`: seven self-contained Korean slides with
   five embedded actual screenshots, generated with `scripts/build-pitch.py`.
 - `apk/OnMyWay_AI_demo_release.apk` and `apk/OnMyWay_AI_live_release.apk`:
-  current signed local releases. Check latest hashes in progress/evidence.
+  recorded signed local releases. Rebuild the final chosen source and recheck hashes.
 
-Latest implementation checks: Python 30 tests, Android 41 per variant, demo/live
-builds/lint, actual full simulated journey, day/night and Drive/Park checks.
+Recorded 2026-10-26 checks: Python 67 tests, Android 106 per variant, demo/live
+debug/release builds and release lint-vital, simulated journey and Drive/Park.
+Native navigation screen dispatch/foreground was observed; tiles returned HTTP401
+and the map was blank. This is not accepted-route or arrival evidence.
 No final Korean STT, live OpenAI/Kakao call, actual route acceptance/arrival,
 physical-vehicle test, user research or measured benefit is asserted.
 See `../readiness.md` and `../progress.md` for exact scope.

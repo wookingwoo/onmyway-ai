@@ -1,5 +1,98 @@
 # Delivery ledger
 
+## 2026-11-03 — briefing review and native departure/home setup
+
+Created `feature/briefing-readiness` from `0dc426e` in the existing isolated
+worktree. User prioritized first-place competitiveness, selected completing the
+existing errand/home concept, then explicitly approved the written design.
+Reviewed the 2026-10-28 YouTube Korean transcript and official judging,
+submission, development, FAQ and notices. Timestamped findings/technical cards
+are in `docs/submission/briefing-review-ko.md`. Reconciled the application,
+pitch, strategy and checklist with the 164.355542-second spoken film and later
+navigation evidence. Prior film/signed submission APK/office binaries were not
+regenerated; new debug and unsigned release outputs remain local.
+
+Added Pleos FusedLocation1.1.3, its dangerous runtime permission and a bounded
+foreground adapter. Published AAR signatures were inspected, including
+`LocationData.timestampMillis`. Actual installed location service version1.0.0
+worked on official Pleos Connect2.1.0/API34. New Korean setup supports fresh
+device departure, explicitly confirmed home, keyword-place home selection via
+existing `/v1/places`, and explicit manual fallback. It adds no endpoint,
+background tracking, Google location library or client credential.
+
+Source freshness is <=60 seconds with <=5 seconds future tolerance; acquisition
+is bounded to10 seconds. Every save rechecks foreground/native Park, current
+revision/epoch, non-synthetic source and absence of owned/unresolved guidance.
+Location edits invalidate approval. Confirmed real home persists independently
+of fixture drafts. Missing provenance and old completed-stop origins cannot
+silently become a new journey's current position. Actual user-facing cancellation
+and permission-result status are handled without automatically retrying/saving.
+
+TDD evidence: initial8 location cases failed against unimplemented methods, then
+passed. A live-interpretation origin-clearing regression failed before its fix.
+Fresh whole-branch review identified2 Important issues: absent metadata accepted
+as manual provenance, and completed-stop origin surviving a genuinely new parse.
+Both were observed RED as assertion failures, fixed, then verified GREEN in the
+full suites. Reviewer reported no Critical issues and no other material findings;
+author handled actual SDK/AVD validation and evidence prose separately.
+
+Actual isolated **read-only** official AVD checks:
+
+- Runtime permission denied/allowed; permission grant alone did not acquire or
+  save. Permission recovery text now survives callback-before-resume timing.
+- Actual fresh SDK fix produced explicit origin/home confirmation; both saved
+  only on confirmation. Home remained after restart and a later permission denial.
+- A stale confirmation was rejected; home remained unset until a fresh new save.
+- Actual Virtual Console Drive/30 dismissed an open SDK-position confirmation;
+  Park/0 did not reopen it. Console state restored to Park/0 in `finally`.
+- Explicit app switch to actual native Navigation, with its foreground separately
+  observed, then return dismissed the position confirmation. The vehicle HOME key
+  alone was not treated as proof of background lifecycle. Completed/cancelled
+  acquisition progress text was subsequently cleared in the final UI revision.
+- SDK native-screen instrumentation smoke passed without sending a destination;
+  native Navigation3.3.2-rc5-hotfix.3 was foreground. Map remained blank. A sanitized
+  current-process scan found0 tile HTTP401 lines; the old401 is historical, not
+  newly reproduced. No supported authentication remedy was established. No raw
+  native logs, URLs or tokens were saved/published.
+
+Selected full native PNGs under `docs/screenshots/location-setup/` were visually
+reviewed and copied byte-identically with SHA256 provenance. They show virtual
+device state, not physical GPS, live providers or a completed live errand.
+Original signed apps conflicted with debug signatures; only the isolated read-only
+AVD's app installations were replaced. Original persistent AVD state is not saved.
+
+Final verification from this checkout:
+
+- API: original configured Python environment, `-m pytest -q` in `services/api`:
+  **67 passed /1.59s**. Provider HTTP mocked; no live provider result.
+- `evaluate-errand-decisions.py --check`: **3/3** literal hand-calculated synthetic
+  cases passed. No traffic/user-performance claim.
+- Gradle8.9/JDK17 with existing licensed Android SDK35:
+  `testDemoDebugUnitTest testLiveDebugUnitTest assembleDemoDebug assembleLiveDebug
+  assembleDemoRelease assembleLiveRelease lintDemoDebug lintLiveDebug
+  assembleDemoDebugAndroidTest --offline --no-daemon --no-watch-fs`:
+  **BUILD SUCCESSFUL /1m25s /227 tasks**. Unit XML: **116 per variant**, zero
+  failures/errors/skips. Debug lint: **0 errors /9 warnings per variant**;
+  release lint-vital passed. Release APKs are unsigned, not submission releases.
+- Standalone `safety-tests test`: **116 passed**, zero failures/errors/skips;
+  BUILD SUCCESSFUL /23s. Its source include list now includes LocationSetup.
+- **89** relative Markdown links across18 documents resolve; `git diff --check`
+  clean. Existing SDK XML/deprecated-window/native-library strip and lint warnings
+  remain. No warning-free claim.
+
+Environment failures were diagnosed before product changes: sandboxed asyncio
+blocked in socketpair creation, and Gradle could not load its native Windows DLL.
+Approved execution outside the sandbox passed; neither required a product fix.
+No credentials were inspected/provisioned. No public post, access grant, email,
+source-history cleanup or repository visibility change was performed.
+
+Open requirements: actual final Korean STT, live home-place/OpenAI/Kakao results,
+map rendering and actual planned-route acceptance/arrival. Physical usability,
+user observation, measured benefits and final signed-APK/film/form alignment also
+remain. `docs/location-setup.md` gives the concrete live acceptance procedure for
+when the user supplies server keys. Winning and live launch readiness are not
+claimed by this feature.
+
 ## 2026-10-25 — reconcile the Short with latest main
 
 - Merged main `a4b24cd` (contest-core PR #7) into the existing Short branch at
