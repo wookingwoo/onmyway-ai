@@ -8,7 +8,7 @@ sourceSets {
             "**/JourneyDrafts.kt", "**/VoiceInputSession.kt", "**/IntentReview.kt", "**/PlanExplanation.kt",
             "**/PlaceReview.kt", "**/PlanTiming.kt", "**/NavigationRequestState.kt", "**/NavigationHandoff.kt",
             "**/VoiceJourney.kt", "**/CockpitTheme.kt", "**/CockpitPresentation.kt", "**/SpokenPlan.kt",
-            "**/SpokenCommand.kt", "**/SpokenExchange.kt", "**/LocationSetup.kt", "**/FilmJourney.kt")
+            "**/SpokenCommand.kt", "**/SpokenExchange.kt", "**/LocationSetup.kt")
     }
     test { kotlin.srcDir("../app/src/test/java") }
 }

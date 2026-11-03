@@ -1,5 +1,35 @@
 # Delivery ledger
 
+## 2026-11-04 — recapture the existing OnMyWay app on Pleos
+
+The owner asked to keep the existing app theme. Retired the dedicated filming
+flavor and filmed the installed `ai.onmyway.car.demo` MainActivity in its original
+daytime theme on the official Pleos Connect 2.1.0 API 34 AVD. The recording uses
+the signed October 26 demo APK (SHA-256
+`a4fbb9ba3ad34431a544625eb130b119bb3df8e7c1e1047a01712864777f48b4`). The
+new debug build had a different signing certificate, so the signed install and
+its data were kept. The current demo and live sources were built and tested
+separately.
+
+Selected the app's explicit example. The baseline returns at 18:40 with pharmacy
+first. A 30-minute pharmacy visit moves laundry first, defers optional milk and
+puts home at 18:53. Captured the actual Drive/30 OS restriction, restored
+Park/0, confirmed both mandatory receipts after separate simulated arrivals,
+then approved the home leg. The scenario uses local sample data and staged
+guidance/arrival. Every final shot has a raw clip digest and source interval.
+
+Exported the 87.5-second landscape film and 42.5-second vertical Short with
+Eleven v4 Korean dialogue. BIN, Taehyung and Lunita voice narration, driver and
+assistant. Used brief sound cues and omitted music. Full H.264/AAC decoding
+and final chapter frame review passed for both exports. See
+[verification](submission/final-films-verification.json). Captures, audio,
+player and MP4s are local.
+
+Checks passed: 40 media tests, 67 API tests, 116 Android unit tests per
+demo/live variant and both debug builds. Independent capture review confirmed
+the recorded states and identified a hardcoded refinement button label. The
+editor now reads the verified label from the capture manifest.
+
 ## 2026-11-03 — replace illustrated edits with actual native Pleos recordings
 
 The owner clarified that product screens must be recorded directly on Pleos.

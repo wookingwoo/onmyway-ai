@@ -16,18 +16,20 @@ from dotenv import dotenv_values
 
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0,str(ROOT/"scripts"))
-from final_film import audio_fingerprint, alignment_cues, validate_story, cached_record
+from final_film import audio_fingerprint, alignment_cues, validate_story, validate_utterances, cached_record
 
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument("--track",choices=["auditions","main","short","all"],default="auditions")
+    p.add_argument("--mainactivity", action="store_true", help="Use the existing-app cut and its separate audio cache")
     args=p.parse_args()
-    data=json.loads((ROOT/"scripts/final_film_story.json").read_text(encoding="utf-8"))
-    validate_story(data)
+    filename = "mainactivity_film_story.json" if args.mainactivity else "final_film_story.json"
+    data=json.loads((ROOT/"scripts"/filename).read_text(encoding="utf-8"))
+    (validate_utterances if args.mainactivity else validate_story)(data)
     key=dotenv_values(ROOT/".env").get("ELEVENLABS_API_KEY","")
     if not key: raise SystemExit("Missing local ELEVENLABS_API_KEY; no fallback generated")
-    out=ROOT/"artifacts/final-films/audio"
+    out=ROOT/ ("artifacts/final-films/mainactivity/audio" if args.mainactivity else "artifacts/final-films/audio")
     out.mkdir(parents=True,exist_ok=True)
     tracks=["main","short"] if args.track=="all" else [args.track]
     with httpx.Client(base_url="https://api.elevenlabs.io",headers={"xi-api-key":key},timeout=120) as client:

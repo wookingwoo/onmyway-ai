@@ -15,7 +15,6 @@ android {
     productFlavors {
         create("demo") { dimension = "mode"; applicationIdSuffix = ".demo"; buildConfigField("boolean", "DEMO", "true") }
         create("live") { dimension = "mode"; buildConfigField("boolean", "DEMO", "false") }
-        create("film") { dimension = "mode"; applicationIdSuffix = ".film"; buildConfigField("boolean", "DEMO", "true") }
     }
     buildFeatures { buildConfig = true }
     compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }

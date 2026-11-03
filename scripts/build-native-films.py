@@ -1,153 +1,173 @@
-"""Edit actual official Pleos recordings; never render a replacement cockpit."""
-from hashlib import sha256
+"""Cut existing MainActivity recordings with time-aligned Eleven v4 dialogue."""
 import argparse
+from hashlib import sha256
 import importlib.util
 import json
-import math
 from pathlib import Path
 import subprocess
 
-from PIL import Image,ImageDraw
-from final_film import srt
-from final_film_visuals import text,box,wrap,font,BG,MINT,MUTED
-from final_short_visuals import render_short,INK,PAPER,LIME
-from native_film import source_window,validate_native_capture,restricted_window
+from PIL import Image
 
-ROOT=Path(__file__).resolve().parents[1]
-OUT=ROOT/'artifacts/final-films/pleos'
-spec=importlib.util.spec_from_file_location('film_builder',ROOT/'scripts/build-final-films.py')
-b=importlib.util.module_from_spec(spec);spec.loader.exec_module(b)
+from final_film import srt, validate_utterances
+from final_film_visuals import text
+from native_film import restricted_window, source_window, validate_native_capture
 
-MAIN={
- 'm01':('request',0.4),'m02':('request',8),'m03':('clarify',0.2),'m04':('clarify',9),
- 'm05':('baseline',0.2),'m06':('baseline',11),'m07':('change',0.2),'m08':('change',8),
- 'm09':('revised',0.2),'m10':('guidance-laundry',0.2),'m11':('guidance-laundry','drive'),
- 'm12':('arrival-laundry',0.2),'m13':('next-medicine',0.2),'m14':('next-medicine',9),
- 'm14b':('home',0.2),'m15':('home',8),'m16':('guidance-home',1.2),
- 'm17':('finished',0.2),'m18':('finished',11)}
-SHORT={
- 'v02':('request',5),'v03':('baseline',7),'v04':('baseline',12),'v05':('change',1.7),
- 'v06':('change',8),'v08':('revised',5),'v10':('guidance-laundry',1.8),
- 'v11':('guidance-laundry','drive'),'v12':('arrival-laundry',5),
- 'v13':('guidance-home',0.2),'v14':('finished',8)}
+ROOT = Path(__file__).resolve().parents[1]
+OUT = ROOT / 'artifacts/final-films/mainactivity'
+CAPTURE = OUT / 'capture'
+spec = importlib.util.spec_from_file_location('film_builder', ROOT / 'scripts/build-final-films.py')
+builder = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(builder)
+
+APPROVALS = {'laundry-approval': '확인하고 출발', 'home-approval': '집으로 출발'}
+TRANSITIONS = {'voice-home': '말로 부탁하기', 'voice-request': '계획 준비하기'}
+FULL_SHORT_SHOTS = {'voice-home', 'driving-lock', 'home-arrival'}
 
 
-def source(scene,track,captures):
-    key,start=(MAIN if track=='main' else SHORT)[scene['id']]
-    c=captures[key];path=OUT/c['file']
-    duration=float(b.probe(path)['format']['duration'])
-    if start=='drive':
-        start,_=restricted_window(c,scene['seconds'])
-    a,z=source_window(start,scene['seconds'],duration)
-    return path,a,z
+def find_source(scene, chapters):
+    name = scene['beat']
+    matches = [(chapter, beat) for chapter in chapters for beat in chapter['beats'] if beat['name'] == name]
+    if len(matches) != 1:
+        raise ValueError(f'Expected exactly one verified native shot for {name}')
+    chapter, beat = matches[0]
+    path = CAPTURE / chapter['raw']
+    available = float(builder.probe(path)['format']['duration'])
+    duration = scene['seconds']
+    start = beat['at'] + .12
+    if name == 'driving-lock':
+        start, end = restricted_window(chapter, duration)
+        if end > available:
+            raise ValueError('Locked window exceeds raw footage')
+        return path, start, end, chapter['sha256']
+    if name in APPROVALS:
+        tap = next(item['at'] for item in chapter['beats'] if item['name'] == 'tap' and
+                   item['at'] > beat['at'] and item.get('label') == APPROVALS[name])
+        # End the line on the actual tap. Leave time to see the accepted state.
+        start = tap - min(duration - 1.05, scene['offset'] + scene['audio_seconds'])
+    elif name in TRANSITIONS or name == 'spoken-refinement':
+        label = beat['expected'] if name == 'spoken-refinement' else TRANSITIONS[name]
+        tap = next(item['at'] for item in chapter['beats'] if item['name'] == 'tap' and
+                   item['at'] > beat['at'] and item.get('label') == label)
+        start = tap - duration + .55
+    elif name == 'automatic-next':
+        tap = max(item['at'] for item in chapter['beats'] if item['name'] == 'tap' and
+                  item['at'] < beat['at'] and item.get('label') == '완료했어요')
+        start = max(0, tap - .7)
+    start, end = source_window(start, duration, available)
+    return path, start, end, chapter['sha256']
 
 
-def caption(im,cue,portrait):
-    if not cue:return
-    size=35 if portrait else 32
-    lines=wrap(cue,size,870 if portrait else 1800)
-    if len(lines)>(2 if portrait else 1):raise ValueError('Native caption safe band overflow')
-    y=1590 if portrait else 1022
-    for i,line in enumerate(lines):
-        width=ImageDraw.Draw(im).textlength(line,font=font(size));cx=im.width/2
-        box(im,(cx-width/2-18,y+i*53-7,cx+width/2+18,y+i*53+47),BG,8)
-        text(im,(cx,y+i*53),line,size,PAPER,center=True)
+def captions(path, scene, short):
+    def ass_time(seconds):
+        ticks = round(seconds * 100)
+        return f'{ticks//360000}:{ticks//6000%60:02}:{ticks//100%60:02}.{ticks%100:02}'
+
+    w, h, size, margin = (1080, 1920, 42, 335) if short else (1920, 1080, 32, 17)
+    header = f'''[Script Info]
+ScriptType: v4.00+
+PlayResX: {w}
+PlayResY: {h}
+WrapStyle: 0
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Malgun Gothic,{size},&H00FFFFFF,&H00FFFFFF,&H00171310,&H00171310,0,0,0,0,100,100,0,0,3,10,0,2,70,70,{margin},1
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+'''
+    events = []
+    for start, end, cue in scene['cues']:
+        if any(char in cue for char in '{}\\\r\n'):
+            raise ValueError('Caption contains ASS control characters')
+        events.append(f"Dialogue: 0,{ass_time(start+scene['offset'])},{ass_time(end+scene['offset'])},Default,,0,0,0,,{cue}")
+    path.write_text(header + '\n'.join(events) + '\n', encoding='utf-8-sig')
 
 
-def compose(raw,scene,t,track,i,count):
-    cue=b.cue_at(scene,t)
-    if track=='main':
-        im=Image.new('RGB',(1920,1080),BG)
-        # Whole native display, including Pleos vehicle panel and system bars.
-        im.paste(raw.resize((1778,1000),Image.Resampling.LANCZOS),(71,0))
-        caption(im,cue,False)
-        return im
-    if raw is None:return render_short(scene,t,scene['seconds'],cue,i,count)
-    # Editorial headlines/comedy remain outside the actual captured app pixels.
-    im=render_short(scene,t,scene['seconds'],None,i,count)
-    ImageDraw.Draw(im).rectangle((45,585,1035,1520),fill=INK)
-    if scene['kind'] in {'quests','driving','closing'}:
-        im.paste(raw.resize((936,526),Image.Resampling.LANCZOS),(72,635))
-        if scene['kind']=='driving':
-            crop=raw.crop((650,250,1895,700)).resize((936,338),Image.Resampling.LANCZOS)
-            im.paste(crop,(72,1190))
+def encode_shot(folder, scene, source, start, short, stem):
+    captions(folder / f'{stem}.ass', scene, short)
+    cmd = ['ffmpeg', '-y', '-v', 'error', '-ss', str(start), '-i', str(source)]
+    if short:
+        # Neutral editorial margins follow the existing app's daytime palette.
+        card = Image.new('RGB', (1080, 1920), '#f5f6f7')
+        text(card, (64, 174), 'OnMyWay AI', 35, '#62676c', True)
+        text(card, (64, 268), scene['heading'], 74, '#202124', True, width=952)
+        card.save(folder / f'{stem}.png')
+        if scene['beat'] in FULL_SHORT_SHOTS:
+            crop, scale, y = '', '960:540', 640
         else:
-            text(im,(72,1250),'OnMyWay AI',52,PAPER,True)
-            text(im,(72,1350),'가는 길에, 할 일까지.',36,LIME,True)
+            crop, scale, y = 'crop=1256:906:640:68,', '960:692', 570
+        cmd += ['-loop', '1', '-framerate', '30', '-i', f'{stem}.png', '-filter_complex_threads', '2',
+                '-filter_complex', f'[0:v]fps=30,{crop}scale={scale}:flags=lanczos[screen];'
+                f'[1:v][screen]overlay=60:{y}:shortest=1,ass={stem}.ass']
     else:
-        app=raw.crop((640,68,1900,975)).resize((936,674),Image.Resampling.LANCZOS)
-        im.paste(app,(72,670))
-        text(im,(72,1400),'내가 확인하고, 다음 할 일로.',27,MUTED)
-    caption(im,cue,True)
-    return im
+        cmd += ['-vf', f'fps=30,scale=1778:1000:flags=lanczos,pad=1920:1080:71:0:color=0x11161a,ass={stem}.ass']
+    cmd += ['-frames:v', str(round(scene['seconds'] * 30)), '-an', '-c:v', 'libx264',
+            '-preset', 'fast', '-crf', '18', '-pix_fmt', 'yuv420p', '-threads', '4', f'{stem}.mp4']
+    result = subprocess.run(cmd, cwd=folder, capture_output=True)
+    if result.returncode:
+        raise RuntimeError(result.stderr.decode('utf-8', errors='replace'))
+    encoded = builder.probe(folder / f'{stem}.mp4')['streams'][0]
+    if int(encoded['nb_frames']) != round(scene['seconds'] * 30):
+        raise ValueError(f'Insufficient source frames for {scene["id"]}')
 
 
-def build(track,story,manifest):
-    scenes,cues,seconds=b.load_track(story,track)
-    captures={c['id']:c for c in manifest['captures']}
-    folder=OUT/track;folder.mkdir(exist_ok=True)
-    w,h=(1920,1080) if track=='main' else (1080,1920)
-    picture=folder/'native-picture.mp4'
-    err=(folder/'encode.log').open('wb')
-    enc=subprocess.Popen(['ffmpeg','-y','-v','error','-f','rawvideo','-pix_fmt','rgb24','-s',f'{w}x{h}','-r','30','-i','-',
-        '-an','-c:v','libx264','-preset','fast','-crf','18','-pix_fmt','yuv420p','-threads','4',str(picture)],stdin=subprocess.PIPE,stderr=err)
-    provenance=[]
-    try:
-        for i,c in enumerate(scenes):
-            dec=None;window=None
-            mapping=MAIN if track=='main' else SHORT
-            if c['id'] in mapping:
-                path,a,z=source(c,track,captures);window=[a,z]
-                dec=subprocess.Popen(['ffmpeg','-v','error','-ss',str(a),'-i',str(path),'-t',str(c['seconds']),
-                    '-vf','fps=30,scale=1920:1080','-f','rawvideo','-pix_fmt','rgb24','-'],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-                provenance.append({'scene':c['id'],'source':path.name,'window':window,'rate':1,'sha256':sha256(path.read_bytes()).hexdigest()})
-            print(f'Native edit {track} {i+1}/{len(scenes)} {c["id"]}',flush=True)
-            try:
-                for f in range(round(c['seconds']*30)):
-                    raw=None
-                    if dec:
-                        data=dec.stdout.read(1920*1080*3)
-                        if len(data)!=1920*1080*3:raise ValueError('Native source exhausted; no invented frame substitution')
-                        raw=Image.frombytes('RGB',(1920,1080),data)
-                    im=compose(raw,c,f/30,track,i,len(scenes));enc.stdin.write(im.tobytes())
-            finally:
-                if dec:
-                    dec.stdout.close();dec.wait(timeout=20)
-        enc.stdin.close()
-        if enc.wait()!=0:raise RuntimeError('Native encode failed')
-    except BaseException:
-        enc.kill();enc.wait();raise
-    finally:err.close()
-    mix=folder/'mix.wav';b.mix_audio(scenes,seconds,mix)
-    final=OUT/('OnMyWay_AI_Pleos_Final.mp4' if track=='main' else 'OnMyWay_AI_Pleos_Shorts_Final.mp4')
-    b.run('ffmpeg','-y','-v','error','-i',picture,'-i',mix,'-map','0:v:0','-map','1:a:0','-c:v','copy',
-        '-af','loudnorm=I=-16:TP=-1.5:LRA=8','-ar','48000','-c:a','aac','-b:a','192k','-map_metadata','-1','-movflags','+faststart',final)
-    final.with_suffix('.srt').write_text(srt(cues),encoding='utf-8')
-    verification={**b.verify(final,track,seconds),'scope':manifest['scope'],'native_sources':provenance,
-        'voice_scope':'ElevenLabs editorial narration and dialogue, not live STT/native output',
-        'illustrated_product_screens':0,'visual_review':'pending','playback_review':'pending'}
-    (folder/'verification.json').write_text(json.dumps(verification,ensure_ascii=False,indent=2),encoding='utf-8')
-    tw,th=(480,270) if track=='main' else (270,480);cols=3 if track=='main' else 4
-    sheet=Image.new('RGB',(cols*tw,math.ceil(len(scenes)/cols)*(th+27)),BG)
-    for i,c in enumerate(scenes):
-        path=folder/(c['id']+'.jpg');b.run('ffmpeg','-y','-v','error','-ss',c['at']+c['seconds']*.5,'-i',final,'-frames:v','1',path)
-        thumb=Image.open(path).resize((tw,th));x=i%cols*tw;y=i//cols*(th+27);sheet.paste(thumb,(x,y));text(sheet,(x+8,y+th+4),c['id'],16,MUTED)
-    sheet.save(folder/'native-decoded-contact-sheet.jpg',quality=95)
-    print(json.dumps({k:verification[k] for k in ['file','seconds','bytes','sha256','full_decode']},ensure_ascii=True),flush=True)
+def build(track, story, manifest):
+    scenes, cues, seconds = builder.load_track(story, track, OUT / 'audio')
+    folder = OUT / track
+    folder.mkdir(exist_ok=True)
+    cuts = []
+    for index, scene in enumerate(scenes):
+        source, start, end, digest = find_source(scene, manifest['chapters'])
+        stem = f'{index:02d}'
+        print(f'{track} {scene["id"]} {scene["beat"]}: {start:.2f}–{end:.2f}', flush=True)
+        encode_shot(folder, scene, source, start, track == 'short', stem)
+        cuts.append({'scene': scene['id'], 'beat': scene['beat'], 'source': source.name,
+                     'sha256': digest, 'source_window': [start, end], 'at': scene['at'],
+                     'duration': scene['seconds']})
+    listing = folder / 'cuts.txt'
+    listing.write_text(''.join(f"file '{i:02d}.mp4'\n" for i in range(len(scenes))), encoding='ascii')
+    mix = folder / 'mix.wav'
+    builder.mix_audio(scenes, seconds, mix, background_music=False)
+    final = OUT / ('OnMyWay_AI_Pleos_Product.mp4' if track == 'main' else 'OnMyWay_AI_Pleos_Product_Shorts.mp4')
+    builder.run('ffmpeg', '-y', '-v', 'error', '-f', 'concat', '-safe', '0', '-i', listing,
+                '-i', mix, '-map', '0:v:0', '-map', '1:a:0', '-c:v', 'copy',
+                '-af', 'loudnorm=I=-16:TP=-1.5:LRA=8', '-ar', '48000', '-c:a', 'aac', '-b:a', '192k',
+                '-map_metadata', '-1', '-movflags', '+faststart', final)
+    final.with_suffix('.srt').write_text(srt(cues), encoding='utf-8')
+    verification = {**builder.verify(final, track, seconds), 'source': 'MainActivity on official Pleos AVD',
+                    'model': 'eleven_v4', 'voices': story['voices'], 'background_music': False,
+                    'caption_count': len(cues), 'cuts': cuts}
+    tw, th, cols = (480, 270, 3) if track == 'main' else (270, 480, 3)
+    sheet = Image.new('RGB', (cols*tw, ((len(cuts)+cols-1)//cols)*(th+25)), '#11161a')
+    for i, cut in enumerate(cuts):
+        frame = folder / (cut['scene'] + '.jpg')
+        builder.run('ffmpeg', '-y', '-v', 'error', '-ss', cut['at']+cut['duration']*.6,
+                    '-i', final, '-frames:v', '1', frame)
+        x, y = (i%cols)*tw, (i//cols)*(th+25)
+        with Image.open(frame) as im:
+            sheet.paste(im.resize((tw, th)), (x, y))
+        text(sheet, (x+6, y+th+2), cut['beat'], 15, '#f5f6f7')
+    sheet.save(folder / 'contact.jpg', quality=94)
+    (folder/'verification.json').write_text(json.dumps(verification, ensure_ascii=False, indent=2), encoding='utf-8')
+    print(f'{final.name} {seconds}s {verification["sha256"]}', flush=True)
 
 
 def main():
-    parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--track',choices=['main','short','all'],default='all')
-    args=parser.parse_args()
-    story=json.loads((ROOT/'scripts/final_film_story.json').read_text(encoding='utf-8'))
-    manifest=json.loads((OUT/'native-capture-manifest.json').read_text(encoding='utf-8'))
-    validate_native_capture(manifest,OUT)
-    for track in (['main','short'] if args.track=='all' else [args.track]):build(track,story,manifest)
-    (OUT/'player.html').write_text('''<!doctype html><html lang="ko"><meta charset="utf-8"><title>OnMyWay AI · Pleos 최종본</title>
-<style>body{background:#0f171d;color:#f2f6f3;font:18px sans-serif;margin:32px}main{display:grid;grid-template-columns:2.4fr 1fr;gap:32px}video{width:100%;max-height:80vh}a{color:#a6e7cc}</style>
-<h1>OnMyWay AI · Pleos 화면 녹화 최종본</h1><main><section><h2>본편 · 2분13.5초</h2><video id="main" controls src="OnMyWay_AI_Pleos_Final.mp4"></video><p><a href="OnMyWay_AI_Pleos_Final.mp4" download>본편 저장</a></p></section>
-<section><h2>쇼츠 · 50초</h2><video id="short" controls src="OnMyWay_AI_Pleos_Shorts_Final.mp4"></video><p><a href="OnMyWay_AI_Pleos_Shorts_Final.mp4" download>쇼츠 저장</a></p></section></main></html>''',encoding='utf-8')
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--track', choices=['main', 'short', 'all'], default='all')
+    args = parser.parse_args()
+    story = json.loads((ROOT/'scripts/mainactivity_film_story.json').read_text(encoding='utf-8'))
+    manifest = json.loads((CAPTURE/'capture-manifest.json').read_text(encoding='utf-8'))
+    validate_utterances(story)
+    validate_native_capture(manifest, CAPTURE)
+    for track in ['main', 'short'] if args.track == 'all' else [args.track]:
+        build(track, story, manifest)
+    (OUT/'player.html').write_text('''<!doctype html><meta charset="utf-8"><title>OnMyWay AI · Pleos 녹화본</title>
+<style>body{background:#f5f6f7;color:#202124;font:18px sans-serif;margin:32px}main{display:grid;grid-template-columns:2.4fr 1fr;gap:32px}video{width:100%;max-height:80vh;background:#11161a}</style>
+<h1>OnMyWay AI · 기존 앱 Pleos 녹화본</h1><main>
+<section><h2>본편</h2><video id="main" controls preload="metadata" src="OnMyWay_AI_Pleos_Product.mp4"></video><p><a href="OnMyWay_AI_Pleos_Product.mp4" download>본편 저장</a></p></section>
+<section><h2>쇼츠</h2><video id="short" controls preload="metadata" src="OnMyWay_AI_Pleos_Product_Shorts.mp4"></video><p><a href="OnMyWay_AI_Pleos_Product_Shorts.mp4" download>쇼츠 저장</a></p></section>
+</main>''', encoding='utf-8')
 
 
-if __name__=='__main__':main()
+if __name__ == '__main__':
+    main()

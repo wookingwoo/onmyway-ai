@@ -1,457 +1,457 @@
 {
-  "verified_on": "2026-11-03 KST",
-  "scope": "Actual official Pleos AVD screen recording of installed isolated native film flavor; authored scenario, staged arrival, real CarUxRestrictions/OS blocker. Editorial ElevenLabs speech.",
+  "verified_on": "2026-11-04 KST",
+  "capture": {
+    "platform": "Official Pleos Connect 2.1.0 API 34 AVD",
+    "component": "ai.onmyway.car.demo/ai.onmyway.car.MainActivity",
+    "theme": "Existing daytime theme",
+    "installed_apk_sha256": "a4fbb9ba3ad34431a544625eb130b119bb3df8e7c1e1047a01712864777f48b4",
+    "manifest_sha256": "1117e5e7f3ebb939bf286d74ff35e9580f4971b6110ca7196693d21cb1fcd638",
+    "scope": "actual native UI; explicit synthetic example; simulated guidance/arrival; actual AVD driving restriction",
+    "scenario": {
+      "departure": "18:00",
+      "deadline": "19:00",
+      "pickup_deadline": "18:30",
+      "baseline_home": "18:40",
+      "pharmacy_minutes": 30,
+      "revised_order": [
+        "laundry",
+        "medicine"
+      ],
+      "optional_omission": "groceries",
+      "revised_home": "18:53"
+    },
+    "chapters": 9,
+    "restored_gear": "Park",
+    "restored_speed_kph": 0
+  },
   "tests": {
     "api": 67,
     "media": 40,
-    "android_demo": 119,
-    "android_live": 119,
-    "android_film": 119,
-    "all_debug_builds": "passed"
+    "android_demo": 116,
+    "android_live": 116,
+    "demo_and_live_debug_builds": "passed"
   },
+  "visual_review": "Final frame from each chapter and selected native tap/restriction frames reviewed",
   "media": {
     "main": {
       "width": 1920,
       "height": 1080,
       "fps": 30,
-      "seconds": 133.5,
+      "seconds": 87.5,
       "audio_streams": 1,
-      "file": "OnMyWay_AI_Pleos_Final.mp4",
-      "sha256": "2da28f65fa3da58d349c8bbec317a064e36adc714c9af97c90b4f336e6ebb77e",
-      "bytes": 7177752,
+      "file": "OnMyWay_AI_Pleos_Product.mp4",
+      "sha256": "7947c58ae125573a7217b045a656becedbc4e7033c31d668e3875618fdcf6f18",
+      "bytes": 4539423,
       "video_codec": "h264",
       "pixel_format": "yuv420p",
       "audio_codec": "aac",
       "audio_channels": 2,
-      "frames": 4005,
+      "frames": 2625,
       "full_decode": "passed",
       "loudness": {
-        "input_i": "-15.95",
-        "input_tp": "-1.48",
-        "input_lra": "8.40",
-        "input_thresh": "-28.20",
-        "output_i": "-16.43",
+        "input_i": "-16.08",
+        "input_tp": "-2.04",
+        "input_lra": "4.60",
+        "input_thresh": "-26.73",
+        "output_i": "-15.96",
         "output_tp": "-1.50",
-        "output_lra": "7.70",
-        "output_thresh": "-28.26",
+        "output_lra": "5.00",
+        "output_thresh": "-26.59",
         "normalization_type": "dynamic",
-        "target_offset": "0.43"
+        "target_offset": "-0.04"
       },
-      "scope": "Actual official Pleos screen recording of isolated native filming prototype; authored scenario, staged arrival, real restrictions",
-      "native_sources": [
-        {
-          "scene": "m01",
-          "source": "request.mp4",
-          "window": [
-            0.4,
-            7.4
-          ],
-          "rate": 1,
-          "sha256": "766d3c3cd73e1bcf7acb68f58b0761e52f852eb55250d08eec919f5004722af6"
+      "source": "MainActivity on official Pleos AVD",
+      "model": "eleven_v4",
+      "voices": {
+        "narrator": {
+          "voice_id": "jB1Cifc2UQbq1gR3wnb0",
+          "name": "BIN",
+          "model_id": "eleven_v4",
+          "language_code": "ko",
+          "voice_settings": {
+            "stability": 0.55,
+            "similarity_boost": 0.75
+          }
         },
-        {
-          "scene": "m02",
-          "source": "request.mp4",
-          "window": [
-            8,
-            18
-          ],
-          "rate": 1,
-          "sha256": "766d3c3cd73e1bcf7acb68f58b0761e52f852eb55250d08eec919f5004722af6"
+        "driver": {
+          "voice_id": "m3gJBS8OofDJfycyA2Ip",
+          "name": "Taehyung",
+          "model_id": "eleven_v4",
+          "language_code": "ko",
+          "voice_settings": {
+            "stability": 0.48,
+            "similarity_boost": 0.75
+          }
         },
-        {
-          "scene": "m03",
-          "source": "clarify.mp4",
-          "window": [
-            0.2,
-            7.2
-          ],
-          "rate": 1,
-          "sha256": "7447a008a67aca2fdc60cbce33777afc57afe96ea8c37d25d244e112623d1b25"
-        },
-        {
-          "scene": "m04",
-          "source": "clarify.mp4",
-          "window": [
-            9,
-            12.5
-          ],
-          "rate": 1,
-          "sha256": "7447a008a67aca2fdc60cbce33777afc57afe96ea8c37d25d244e112623d1b25"
-        },
-        {
-          "scene": "m05",
-          "source": "baseline.mp4",
-          "window": [
-            0.2,
-            9.7
-          ],
-          "rate": 1,
-          "sha256": "24becbf1f94ab31c89c53eabf8aa386d2a8e7782a225cb2ca6ca311e32ef5fb9"
-        },
-        {
-          "scene": "m06",
-          "source": "baseline.mp4",
-          "window": [
-            11,
-            19
-          ],
-          "rate": 1,
-          "sha256": "24becbf1f94ab31c89c53eabf8aa386d2a8e7782a225cb2ca6ca311e32ef5fb9"
-        },
-        {
-          "scene": "m07",
-          "source": "change.mp4",
-          "window": [
-            0.2,
-            5.2
-          ],
-          "rate": 1,
-          "sha256": "ab0900a3dcfcc6dbc8819c3f2538a2a3c0d1c768d802c5c481573c79caa93979"
-        },
-        {
-          "scene": "m08",
-          "source": "change.mp4",
-          "window": [
-            8,
-            14.5
-          ],
-          "rate": 1,
-          "sha256": "ab0900a3dcfcc6dbc8819c3f2538a2a3c0d1c768d802c5c481573c79caa93979"
-        },
-        {
-          "scene": "m09",
-          "source": "revised.mp4",
-          "window": [
-            0.2,
-            11.2
-          ],
-          "rate": 1,
-          "sha256": "1086b1df80378d3d750b957ceca15362536da6d9397140c1dffbdef6f1e38438"
-        },
-        {
-          "scene": "m10",
-          "source": "guidance-laundry.mp4",
-          "window": [
-            0.2,
-            5.2
-          ],
-          "rate": 1,
-          "sha256": "903fb7248c95b4d925f9ffad767d8e8e47968dc1af77298e6682974fe97fe85d"
-        },
-        {
-          "scene": "m11",
-          "source": "guidance-laundry.mp4",
-          "window": [
-            11.2,
-            19.7
-          ],
-          "rate": 1,
-          "sha256": "903fb7248c95b4d925f9ffad767d8e8e47968dc1af77298e6682974fe97fe85d"
-        },
-        {
-          "scene": "m12",
-          "source": "arrival-laundry.mp4",
-          "window": [
-            0.2,
-            6.2
-          ],
-          "rate": 1,
-          "sha256": "be5342fe417d6bc325495844f78de085ba99254cc06d80c0053e099f217455f7"
-        },
-        {
-          "scene": "m13",
-          "source": "next-medicine.mp4",
-          "window": [
-            0.2,
-            7.2
-          ],
-          "rate": 1,
-          "sha256": "09352022101c80fee46289bac575d895eae64c2a06740abc61c8d38a3e4d1740"
-        },
-        {
-          "scene": "m14",
-          "source": "next-medicine.mp4",
-          "window": [
-            9,
-            17.0
-          ],
-          "rate": 1,
-          "sha256": "09352022101c80fee46289bac575d895eae64c2a06740abc61c8d38a3e4d1740"
-        },
-        {
-          "scene": "m14b",
-          "source": "home.mp4",
-          "window": [
-            0.2,
-            6.2
-          ],
-          "rate": 1,
-          "sha256": "ef45586b8ca96e74196eb26d7b1774ef8c624e4be082f8bb3db14990a069efc7"
-        },
-        {
-          "scene": "m15",
-          "source": "home.mp4",
-          "window": [
-            8,
-            14
-          ],
-          "rate": 1,
-          "sha256": "ef45586b8ca96e74196eb26d7b1774ef8c624e4be082f8bb3db14990a069efc7"
-        },
-        {
-          "scene": "m16",
-          "source": "guidance-home.mp4",
-          "window": [
-            1.2,
-            4.2
-          ],
-          "rate": 1,
-          "sha256": "9701b8c8f11b38ca42d17108c16fc2ce10d8bd0477e2311f1fa365851f37ed87"
-        },
-        {
-          "scene": "m17",
-          "source": "finished.mp4",
-          "window": [
-            0.2,
-            8.7
-          ],
-          "rate": 1,
-          "sha256": "b3a94498553c2634056e9be93a03bfd5675afdad6bb2fc44cdc07e64b4ecd92c"
-        },
-        {
-          "scene": "m18",
-          "source": "finished.mp4",
-          "window": [
-            11,
-            19
-          ],
-          "rate": 1,
-          "sha256": "b3a94498553c2634056e9be93a03bfd5675afdad6bb2fc44cdc07e64b4ecd92c"
+        "assistant": {
+          "voice_id": "kZJ3sOVD7WvNyF75aJZW",
+          "name": "Lunita",
+          "model_id": "eleven_v4",
+          "language_code": "ko",
+          "voice_settings": {
+            "stability": 0.58,
+            "similarity_boost": 0.75
+          }
         }
-      ],
-      "voice_scope": "ElevenLabs editorial narration and dialogue, not live STT/native output",
-      "illustrated_product_screens": 0,
-      "visual_review": {
-        "state": "passed",
-        "decoded_scene_samples": 19,
-        "whole_pleos_frame": true,
-        "unexpected_black_intervals": [],
-        "reviewed_driving_window": [
-          11.2,
-          19.7
-        ]
       },
-      "playback_review": {
-        "start": 1793661387219,
-        "seeks": 0,
-        "errors": [],
-        "samples": [
-          0.179184,
-          10.287479,
-          20.37195,
-          30.46258,
-          40.584735,
-          50.718779,
-          60.830823,
-          70.928166,
-          81.010316,
-          91.124198,
-          101.224396,
-          111.346317,
-          121.432895,
-          131.551957
-        ],
-        "ended": true,
-        "time": 133.5,
-        "end": 1793661520815,
-        "muted": false,
-        "rate": 1,
-        "scope": "Actual continuous unmuted browser playback; not subjective listening certification"
-      },
-      "srt_cues": 43
+      "background_music": false,
+      "caption_count": 29,
+      "cuts": [
+        {
+          "scene": "n01",
+          "beat": "voice-home",
+          "source": "clarify.mp4",
+          "sha256": "b23fbe7ee6323ffb76b2dd982bb488743b01ade5fc11de2e54f1fe024c742a09",
+          "source_window": [
+            7.733,
+            14.733
+          ],
+          "at": 0,
+          "duration": 7.0
+        },
+        {
+          "scene": "n02",
+          "beat": "voice-request",
+          "source": "clarify.mp4",
+          "sha256": "b23fbe7ee6323ffb76b2dd982bb488743b01ade5fc11de2e54f1fe024c742a09",
+          "source_window": [
+            25.753000000000004,
+            36.253
+          ],
+          "at": 7.0,
+          "duration": 10.5
+        },
+        {
+          "scene": "n03b",
+          "beat": "baseline-plan",
+          "source": "baseline.mp4",
+          "sha256": "9e7cbd6b1b25d10e3b587e1a422e30e7c057999cf6e0c152cfe5526a0fb602ec",
+          "source_window": [
+            7.5440000000000005,
+            16.544
+          ],
+          "at": 17.5,
+          "duration": 9.0
+        },
+        {
+          "scene": "n04",
+          "beat": "spoken-refinement",
+          "source": "change.mp4",
+          "sha256": "5508317db3c1702cfdecf0f47da363980e36186bfa970d606494dcecffbf3438",
+          "source_window": [
+            11.940999999999999,
+            20.941
+          ],
+          "at": 26.5,
+          "duration": 9.0
+        },
+        {
+          "scene": "n05b",
+          "beat": "revised-summary",
+          "source": "decision.mp4",
+          "sha256": "b9c4596ff562953b2ed0f489d97635e7d8169c7dfd8842655e0a0ec5c316caf3",
+          "source_window": [
+            5.329,
+            14.829
+          ],
+          "at": 35.5,
+          "duration": 9.5
+        },
+        {
+          "scene": "n06",
+          "beat": "laundry-approval",
+          "source": "decision.mp4",
+          "sha256": "b9c4596ff562953b2ed0f489d97635e7d8169c7dfd8842655e0a0ec5c316caf3",
+          "source_window": [
+            28.288999999999998,
+            32.289
+          ],
+          "at": 45.0,
+          "duration": 4
+        },
+        {
+          "scene": "n07",
+          "beat": "driving-lock",
+          "source": "driving.mp4",
+          "sha256": "5012407d9e6d0914d1548f89adc4dea7a4b19e7518fdc81cb394a6ab91c995c2",
+          "source_window": [
+            5.865,
+            11.865
+          ],
+          "at": 49.0,
+          "duration": 6.0
+        },
+        {
+          "scene": "n08",
+          "beat": "laundry-arrival",
+          "source": "laundry.mp4",
+          "sha256": "cca04e80791ccae26fa7fbdabf48d014be93b788734b60c07d5df812bb203849",
+          "source_window": [
+            7.509,
+            14.009
+          ],
+          "at": 55.0,
+          "duration": 6.5
+        },
+        {
+          "scene": "n09",
+          "beat": "automatic-next",
+          "source": "laundry.mp4",
+          "sha256": "cca04e80791ccae26fa7fbdabf48d014be93b788734b60c07d5df812bb203849",
+          "source_window": [
+            29.131,
+            36.631
+          ],
+          "at": 61.5,
+          "duration": 7.5
+        },
+        {
+          "scene": "n10",
+          "beat": "medicine-arrival",
+          "source": "medicine.mp4",
+          "sha256": "592d65d64ed95a19fbb718a6ff6cbadad5570d5b6ae93714c68667e0ac86b733",
+          "source_window": [
+            9.716999999999999,
+            14.716999999999999
+          ],
+          "at": 69.0,
+          "duration": 5.0
+        },
+        {
+          "scene": "n11",
+          "beat": "home-approval",
+          "source": "home.mp4",
+          "sha256": "0948b4744e96bfec73109c25e0f465aadab2030f3913b03bb021d9e85e65a0a8",
+          "source_window": [
+            9.780000000000001,
+            15.280000000000001
+          ],
+          "at": 74.0,
+          "duration": 5.5
+        },
+        {
+          "scene": "n12",
+          "beat": "home-arrival",
+          "source": "home.mp4",
+          "sha256": "0948b4744e96bfec73109c25e0f465aadab2030f3913b03bb021d9e85e65a0a8",
+          "source_window": [
+            21.21,
+            29.21
+          ],
+          "at": 79.5,
+          "duration": 8.0
+        }
+      ]
     },
     "short": {
       "width": 1080,
       "height": 1920,
       "fps": 30,
-      "seconds": 50.0,
+      "seconds": 42.5,
       "audio_streams": 1,
-      "file": "OnMyWay_AI_Pleos_Shorts_Final.mp4",
-      "sha256": "f4dce679e122b03b57afbbd82025a1d7ace4d2bdaa4dff84a1ef6737ddb6482c",
-      "bytes": 2212397,
+      "file": "OnMyWay_AI_Pleos_Product_Shorts.mp4",
+      "sha256": "95bf892e326876307f494e8d666e4a104b9502653c2a3afc599ea20debf70fdf",
+      "bytes": 1519451,
       "video_codec": "h264",
       "pixel_format": "yuv420p",
       "audio_codec": "aac",
       "audio_channels": 2,
-      "frames": 1500,
+      "frames": 1275,
       "full_decode": "passed",
       "loudness": {
-        "input_i": "-15.94",
-        "input_tp": "-1.50",
-        "input_lra": "3.80",
-        "input_thresh": "-27.85",
-        "output_i": "-16.09",
-        "output_tp": "-1.50",
-        "output_lra": "3.40",
-        "output_thresh": "-27.94",
+        "input_i": "-15.91",
+        "input_tp": "-2.39",
+        "input_lra": "3.30",
+        "input_thresh": "-26.62",
+        "output_i": "-16.02",
+        "output_tp": "-2.30",
+        "output_lra": "3.20",
+        "output_thresh": "-26.70",
         "normalization_type": "dynamic",
-        "target_offset": "0.09"
+        "target_offset": "0.02"
       },
-      "scope": "Actual official Pleos screen recording of isolated native filming prototype; authored scenario, staged arrival, real restrictions",
-      "native_sources": [
-        {
-          "scene": "v02",
-          "source": "request.mp4",
-          "window": [
-            5,
-            8
-          ],
-          "rate": 1,
-          "sha256": "766d3c3cd73e1bcf7acb68f58b0761e52f852eb55250d08eec919f5004722af6"
+      "source": "MainActivity on official Pleos AVD",
+      "model": "eleven_v4",
+      "voices": {
+        "narrator": {
+          "voice_id": "jB1Cifc2UQbq1gR3wnb0",
+          "name": "BIN",
+          "model_id": "eleven_v4",
+          "language_code": "ko",
+          "voice_settings": {
+            "stability": 0.55,
+            "similarity_boost": 0.75
+          }
         },
-        {
-          "scene": "v03",
-          "source": "baseline.mp4",
-          "window": [
-            7,
-            10
-          ],
-          "rate": 1,
-          "sha256": "24becbf1f94ab31c89c53eabf8aa386d2a8e7782a225cb2ca6ca311e32ef5fb9"
+        "driver": {
+          "voice_id": "m3gJBS8OofDJfycyA2Ip",
+          "name": "Taehyung",
+          "model_id": "eleven_v4",
+          "language_code": "ko",
+          "voice_settings": {
+            "stability": 0.48,
+            "similarity_boost": 0.75
+          }
         },
-        {
-          "scene": "v04",
-          "source": "baseline.mp4",
-          "window": [
-            12,
-            16.0
-          ],
-          "rate": 1,
-          "sha256": "24becbf1f94ab31c89c53eabf8aa386d2a8e7782a225cb2ca6ca311e32ef5fb9"
-        },
-        {
-          "scene": "v05",
-          "source": "change.mp4",
-          "window": [
-            1.7,
-            4.7
-          ],
-          "rate": 1,
-          "sha256": "ab0900a3dcfcc6dbc8819c3f2538a2a3c0d1c768d802c5c481573c79caa93979"
-        },
-        {
-          "scene": "v06",
-          "source": "change.mp4",
-          "window": [
-            8,
-            12
-          ],
-          "rate": 1,
-          "sha256": "ab0900a3dcfcc6dbc8819c3f2538a2a3c0d1c768d802c5c481573c79caa93979"
-        },
-        {
-          "scene": "v08",
-          "source": "revised.mp4",
-          "window": [
-            5,
-            11.0
-          ],
-          "rate": 1,
-          "sha256": "1086b1df80378d3d750b957ceca15362536da6d9397140c1dffbdef6f1e38438"
-        },
-        {
-          "scene": "v10",
-          "source": "guidance-laundry.mp4",
-          "window": [
-            1.8,
-            3.8
-          ],
-          "rate": 1,
-          "sha256": "903fb7248c95b4d925f9ffad767d8e8e47968dc1af77298e6682974fe97fe85d"
-        },
-        {
-          "scene": "v11",
-          "source": "guidance-laundry.mp4",
-          "window": [
-            11.2,
-            15.7
-          ],
-          "rate": 1,
-          "sha256": "903fb7248c95b4d925f9ffad767d8e8e47968dc1af77298e6682974fe97fe85d"
-        },
-        {
-          "scene": "v12",
-          "source": "arrival-laundry.mp4",
-          "window": [
-            5,
-            8.5
-          ],
-          "rate": 1,
-          "sha256": "be5342fe417d6bc325495844f78de085ba99254cc06d80c0053e099f217455f7"
-        },
-        {
-          "scene": "v13",
-          "source": "guidance-home.mp4",
-          "window": [
-            0.2,
-            3.2
-          ],
-          "rate": 1,
-          "sha256": "9701b8c8f11b38ca42d17108c16fc2ce10d8bd0477e2311f1fa365851f37ed87"
-        },
-        {
-          "scene": "v14",
-          "source": "finished.mp4",
-          "window": [
-            8,
-            12
-          ],
-          "rate": 1,
-          "sha256": "b3a94498553c2634056e9be93a03bfd5675afdad6bb2fc44cdc07e64b4ecd92c"
+        "assistant": {
+          "voice_id": "kZJ3sOVD7WvNyF75aJZW",
+          "name": "Lunita",
+          "model_id": "eleven_v4",
+          "language_code": "ko",
+          "voice_settings": {
+            "stability": 0.58,
+            "similarity_boost": 0.75
+          }
         }
-      ],
-      "voice_scope": "ElevenLabs editorial narration and dialogue, not live STT/native output",
-      "illustrated_product_screens": 0,
-      "visual_review": {
-        "state": "passed",
-        "decoded_scene_samples": 15,
-        "whole_pleos_frame": false,
-        "unexpected_black_intervals": [],
-        "reviewed_driving_window": [
-          11.2,
-          15.7
-        ]
       },
-      "playback_review": {
-        "start": 1793661520815,
-        "seeks": 0,
-        "errors": [],
-        "samples": [
-          0.180775,
-          10.27327,
-          20.357513,
-          30.46394,
-          40.546216
-        ],
-        "ended": true,
-        "time": 50,
-        "end": 1793661570934,
-        "muted": false,
-        "rate": 1,
-        "scope": "Actual continuous unmuted browser playback; not subjective listening certification"
-      },
-      "srt_cues": 23
+      "background_music": false,
+      "caption_count": 16,
+      "cuts": [
+        {
+          "scene": "p01",
+          "beat": "voice-home",
+          "source": "clarify.mp4",
+          "sha256": "b23fbe7ee6323ffb76b2dd982bb488743b01ade5fc11de2e54f1fe024c742a09",
+          "source_window": [
+            10.733,
+            14.733
+          ],
+          "at": 0,
+          "duration": 4
+        },
+        {
+          "scene": "p02",
+          "beat": "voice-request",
+          "source": "clarify.mp4",
+          "sha256": "b23fbe7ee6323ffb76b2dd982bb488743b01ade5fc11de2e54f1fe024c742a09",
+          "source_window": [
+            30.253000000000004,
+            36.253
+          ],
+          "at": 4,
+          "duration": 6.0
+        },
+        {
+          "scene": "p03",
+          "beat": "spoken-refinement",
+          "source": "change.mp4",
+          "sha256": "5508317db3c1702cfdecf0f47da363980e36186bfa970d606494dcecffbf3438",
+          "source_window": [
+            16.441,
+            20.941
+          ],
+          "at": 10.0,
+          "duration": 4.5
+        },
+        {
+          "scene": "p04b",
+          "beat": "revised-summary",
+          "source": "decision.mp4",
+          "sha256": "b9c4596ff562953b2ed0f489d97635e7d8169c7dfd8842655e0a0ec5c316caf3",
+          "source_window": [
+            5.329,
+            12.329
+          ],
+          "at": 14.5,
+          "duration": 7.0
+        },
+        {
+          "scene": "p05",
+          "beat": "laundry-approval",
+          "source": "decision.mp4",
+          "sha256": "b9c4596ff562953b2ed0f489d97635e7d8169c7dfd8842655e0a0ec5c316caf3",
+          "source_window": [
+            28.668999999999997,
+            32.669
+          ],
+          "at": 21.5,
+          "duration": 4
+        },
+        {
+          "scene": "p06",
+          "beat": "driving-lock",
+          "source": "driving.mp4",
+          "sha256": "5012407d9e6d0914d1548f89adc4dea7a4b19e7518fdc81cb394a6ab91c995c2",
+          "source_window": [
+            5.865,
+            9.865
+          ],
+          "at": 25.5,
+          "duration": 4
+        },
+        {
+          "scene": "p07",
+          "beat": "automatic-next",
+          "source": "laundry.mp4",
+          "sha256": "cca04e80791ccae26fa7fbdabf48d014be93b788734b60c07d5df812bb203849",
+          "source_window": [
+            29.131,
+            34.131
+          ],
+          "at": 29.5,
+          "duration": 5
+        },
+        {
+          "scene": "p08",
+          "beat": "home-approval",
+          "source": "home.mp4",
+          "sha256": "0948b4744e96bfec73109c25e0f465aadab2030f3913b03bb021d9e85e65a0a8",
+          "source_window": [
+            11.280000000000001,
+            15.280000000000001
+          ],
+          "at": 34.5,
+          "duration": 4
+        },
+        {
+          "scene": "p09",
+          "beat": "home-arrival",
+          "source": "home.mp4",
+          "sha256": "0948b4744e96bfec73109c25e0f465aadab2030f3913b03bb021d9e85e65a0a8",
+          "source_window": [
+            21.21,
+            25.21
+          ],
+          "at": 38.5,
+          "duration": 4
+        }
+      ]
     }
   },
-  "native_capture": {
-    "avd": "OnMyWay_Pleos",
-    "package": "ai.onmyway.car.film",
-    "clips": 13,
-    "complete": true,
-    "apk_sha256": "747004a0bbd28dc8ada146f22711a3eabe9e0d2e15bd3d15edfe44a8d0500c7c",
-    "manifest_sha256": "e8e968048b5f2fe02e339f3f152a95ac223afd5141fafee1621da871784d6110",
-    "restored_gear": "Park",
-    "restored_speed_kph": 0
+  "browser_playback": {
+    "main": {
+      "samples": [
+        10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70,
+        80
+      ],
+      "seeks": 0,
+      "errors": [],
+      "ended": true,
+      "at": 87.5,
+      "duration": 87.5,
+      "rate": 1,
+      "muted": false
+    },
+    "short": {
+      "samples": [
+        10,
+        20,
+        30,
+        40
+      ],
+      "seeks": 0,
+      "errors": [],
+      "ended": true,
+      "at": 42.5,
+      "duration": 42.5,
+      "rate": 1,
+      "muted": false
+    }
   }
 }

@@ -33,10 +33,10 @@ def probe(path):
     return json.loads(run('ffprobe','-v','error','-show_streams','-show_format','-of','json',path).stdout)
 
 
-def load_track(story,track):
+def load_track(story,track,audio_dir=None):
     result=[]; cursor=0; allcues=[]
     for c in story[track]:
-        path=OUT/'audio'/(c['id']+'.mp3')
+        path=(audio_dir if audio_dir is not None else OUT/'audio')/(c['id']+'.mp3')
         record=json.loads(path.with_suffix('.json').read_text(encoding='utf-8'))
         voice=story['voices'][c['role']]
         payload={k:v for k,v in voice.items() if k not in {'name','voice_id'}}
@@ -88,19 +88,19 @@ def stills(scenes,track):
     poster.save(folder/'poster.jpg',quality=95)
 
 
-def mix_audio(scenes,seconds,path):
+def mix_audio(scenes,seconds,path,background_music=True):
     n=round(seconds*RATE); t=np.arange(n,dtype=np.float64)/RATE
     music=np.zeros(n,dtype=np.float64)
     # Original restrained pulse/chord composition, not a downloaded backing track.
     chords=[(146.832,220,293.665),(130.813,195.998,261.626),(164.814,220,329.628),(146.832,195.998,293.665)]
     span=8.0
-    for k,start in enumerate(np.arange(0,seconds,span)):
+    for k,start in enumerate(np.arange(0,seconds,span) if background_music else ()):
         end=min(seconds,start+span); a,b=round(start*RATE),round(end*RATE); tt=t[a:b]-start
         env=np.minimum(1,tt/1.4)*np.minimum(1,(end-start-tt)/1.6)
         for freq in chords[k%len(chords)]:
             music[a:b]+=.0055*env*(np.sin(2*np.pi*freq*tt)+.22*np.sin(2*np.pi*freq*2*tt))
     beat=60/(114 if any(c['id'].startswith('v') for c in scenes) else 100)
-    for at in np.arange(0,seconds,beat):
+    for at in np.arange(0,seconds,beat) if background_music else ():
         a=round(at*RATE); b=min(n,a+round(.19*RATE)); tt=np.arange(b-a)/RATE
         music[a:b]+=.020*np.sin(2*np.pi*(57*tt+1.4*(1-np.exp(-tt*20))))*np.exp(-tt*22)
     voice=np.zeros(n); duck=np.ones(n)

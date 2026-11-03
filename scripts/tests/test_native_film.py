@@ -18,11 +18,17 @@ class NativeFilmBoundaries(unittest.TestCase):
     def test_short_or_untrusted_capture_cannot_substitute_a_drawn_screen(self):
         with tempfile.TemporaryDirectory() as d:
             root=Path(d);(root/'request.mp4').write_bytes(b'actual capture bytes')
-            record={'id':'request','file':'request.mp4','sha256':sha256(b'actual capture bytes').hexdigest()}
-            manifest={'complete':True,'avd':'OnMyWay_Pleos','package':'ai.onmyway.car.film','captures':[record]}
+            (root/'captures').mkdir()
+            xml = root/'captures/request.xml'
+            xml.write_text('<hierarchy><node package="ai.onmyway.car.demo" text="Request"/></hierarchy>')
+            record={'id':'request','raw':'request.mp4','sha256':sha256(b'actual capture bytes').hexdigest(),
+                    'beats':[{'name':'request','expected':'Request'}]}
+            manifest={'result':'pass','restored_gear':'Park','restored_speed_kph':0,'chapters':[record]}
             validate_native_capture(manifest,root)
-            for change in ({'complete':False},{'package':'other.app'},{'avd':'generic'}):
+            for change in ({'result':'fail'},{'restored_gear':'Drive'},{'restored_speed_kph':30}):
                 with self.assertRaises(ValueError): validate_native_capture({**manifest,**change},root)
+            xml.write_text('<hierarchy><node package="ai.onmyway.car.film" text="Request"/></hierarchy>')
+            with self.assertRaises(ValueError): validate_native_capture(manifest,root)
             (root/'request.mp4').write_bytes(b'changed')
             with self.assertRaises(ValueError): validate_native_capture(manifest,root)
 

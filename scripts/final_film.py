@@ -80,6 +80,10 @@ def validate_story(story):
         raise ValueError("Mandatory or final deadline missed")
     if s["mandatory"] != ["laundry","medicine"] or s["omitted"] != ["milk"]:
         raise ValueError("Only optional milk may be omitted")
+    validate_utterances(story)
+
+
+def validate_utterances(story):
     ids = [c["id"] for track in ("main","short","auditions") for c in story[track]]
     if len(ids) != len(set(ids)) or any(not re.fullmatch(r"[a-z0-9-]+",i) for i in ids):
         raise ValueError("Unsafe or duplicate utterance ID")
