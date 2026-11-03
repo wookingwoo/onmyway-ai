@@ -1,0 +1,457 @@
+{
+  "verified_on": "2026-11-04 KST",
+  "capture": {
+    "platform": "Official Pleos Connect 2.1.0 API 34 AVD",
+    "component": "ai.onmyway.car.demo/ai.onmyway.car.MainActivity",
+    "theme": "Existing daytime theme",
+    "installed_apk_sha256": "a4fbb9ba3ad34431a544625eb130b119bb3df8e7c1e1047a01712864777f48b4",
+    "manifest_sha256": "1117e5e7f3ebb939bf286d74ff35e9580f4971b6110ca7196693d21cb1fcd638",
+    "scope": "actual native UI; explicit synthetic example; simulated guidance/arrival; actual AVD driving restriction",
+    "scenario": {
+      "departure": "18:00",
+      "deadline": "19:00",
+      "pickup_deadline": "18:30",
+      "baseline_home": "18:40",
+      "pharmacy_minutes": 30,
+      "revised_order": [
+        "laundry",
+        "medicine"
+      ],
+      "optional_omission": "groceries",
+      "revised_home": "18:53"
+    },
+    "chapters": 9,
+    "restored_gear": "Park",
+    "restored_speed_kph": 0
+  },
+  "tests": {
+    "api": 67,
+    "media": 40,
+    "android_demo": 116,
+    "android_live": 116,
+    "demo_and_live_debug_builds": "passed"
+  },
+  "visual_review": "Final frame from each chapter and selected native tap/restriction frames reviewed",
+  "media": {
+    "main": {
+      "width": 1920,
+      "height": 1080,
+      "fps": 30,
+      "seconds": 87.5,
+      "audio_streams": 1,
+      "file": "OnMyWay_AI_Pleos_Product.mp4",
+      "sha256": "7947c58ae125573a7217b045a656becedbc4e7033c31d668e3875618fdcf6f18",
+      "bytes": 4539423,
+      "video_codec": "h264",
+      "pixel_format": "yuv420p",
+      "audio_codec": "aac",
+      "audio_channels": 2,
+      "frames": 2625,
+      "full_decode": "passed",
+      "loudness": {
+        "input_i": "-16.08",
+        "input_tp": "-2.04",
+        "input_lra": "4.60",
+        "input_thresh": "-26.73",
+        "output_i": "-15.96",
+        "output_tp": "-1.50",
+        "output_lra": "5.00",
+        "output_thresh": "-26.59",
+        "normalization_type": "dynamic",
+        "target_offset": "-0.04"
+      },
+      "source": "MainActivity on official Pleos AVD",
+      "model": "eleven_v4",
+      "voices": {
+        "narrator": {
+          "voice_id": "jB1Cifc2UQbq1gR3wnb0",
+          "name": "BIN",
+          "model_id": "eleven_v4",
+          "language_code": "ko",
+          "voice_settings": {
+            "stability": 0.55,
+            "similarity_boost": 0.75
+          }
+        },
+        "driver": {
+          "voice_id": "m3gJBS8OofDJfycyA2Ip",
+          "name": "Taehyung",
+          "model_id": "eleven_v4",
+          "language_code": "ko",
+          "voice_settings": {
+            "stability": 0.48,
+            "similarity_boost": 0.75
+          }
+        },
+        "assistant": {
+          "voice_id": "kZJ3sOVD7WvNyF75aJZW",
+          "name": "Lunita",
+          "model_id": "eleven_v4",
+          "language_code": "ko",
+          "voice_settings": {
+            "stability": 0.58,
+            "similarity_boost": 0.75
+          }
+        }
+      },
+      "background_music": false,
+      "caption_count": 29,
+      "cuts": [
+        {
+          "scene": "n01",
+          "beat": "voice-home",
+          "source": "clarify.mp4",
+          "sha256": "b23fbe7ee6323ffb76b2dd982bb488743b01ade5fc11de2e54f1fe024c742a09",
+          "source_window": [
+            7.733,
+            14.733
+          ],
+          "at": 0,
+          "duration": 7.0
+        },
+        {
+          "scene": "n02",
+          "beat": "voice-request",
+          "source": "clarify.mp4",
+          "sha256": "b23fbe7ee6323ffb76b2dd982bb488743b01ade5fc11de2e54f1fe024c742a09",
+          "source_window": [
+            25.753000000000004,
+            36.253
+          ],
+          "at": 7.0,
+          "duration": 10.5
+        },
+        {
+          "scene": "n03b",
+          "beat": "baseline-plan",
+          "source": "baseline.mp4",
+          "sha256": "9e7cbd6b1b25d10e3b587e1a422e30e7c057999cf6e0c152cfe5526a0fb602ec",
+          "source_window": [
+            7.5440000000000005,
+            16.544
+          ],
+          "at": 17.5,
+          "duration": 9.0
+        },
+        {
+          "scene": "n04",
+          "beat": "spoken-refinement",
+          "source": "change.mp4",
+          "sha256": "5508317db3c1702cfdecf0f47da363980e36186bfa970d606494dcecffbf3438",
+          "source_window": [
+            11.940999999999999,
+            20.941
+          ],
+          "at": 26.5,
+          "duration": 9.0
+        },
+        {
+          "scene": "n05b",
+          "beat": "revised-summary",
+          "source": "decision.mp4",
+          "sha256": "b9c4596ff562953b2ed0f489d97635e7d8169c7dfd8842655e0a0ec5c316caf3",
+          "source_window": [
+            5.329,
+            14.829
+          ],
+          "at": 35.5,
+          "duration": 9.5
+        },
+        {
+          "scene": "n06",
+          "beat": "laundry-approval",
+          "source": "decision.mp4",
+          "sha256": "b9c4596ff562953b2ed0f489d97635e7d8169c7dfd8842655e0a0ec5c316caf3",
+          "source_window": [
+            28.288999999999998,
+            32.289
+          ],
+          "at": 45.0,
+          "duration": 4
+        },
+        {
+          "scene": "n07",
+          "beat": "driving-lock",
+          "source": "driving.mp4",
+          "sha256": "5012407d9e6d0914d1548f89adc4dea7a4b19e7518fdc81cb394a6ab91c995c2",
+          "source_window": [
+            5.865,
+            11.865
+          ],
+          "at": 49.0,
+          "duration": 6.0
+        },
+        {
+          "scene": "n08",
+          "beat": "laundry-arrival",
+          "source": "laundry.mp4",
+          "sha256": "cca04e80791ccae26fa7fbdabf48d014be93b788734b60c07d5df812bb203849",
+          "source_window": [
+            7.509,
+            14.009
+          ],
+          "at": 55.0,
+          "duration": 6.5
+        },
+        {
+          "scene": "n09",
+          "beat": "automatic-next",
+          "source": "laundry.mp4",
+          "sha256": "cca04e80791ccae26fa7fbdabf48d014be93b788734b60c07d5df812bb203849",
+          "source_window": [
+            29.131,
+            36.631
+          ],
+          "at": 61.5,
+          "duration": 7.5
+        },
+        {
+          "scene": "n10",
+          "beat": "medicine-arrival",
+          "source": "medicine.mp4",
+          "sha256": "592d65d64ed95a19fbb718a6ff6cbadad5570d5b6ae93714c68667e0ac86b733",
+          "source_window": [
+            9.716999999999999,
+            14.716999999999999
+          ],
+          "at": 69.0,
+          "duration": 5.0
+        },
+        {
+          "scene": "n11",
+          "beat": "home-approval",
+          "source": "home.mp4",
+          "sha256": "0948b4744e96bfec73109c25e0f465aadab2030f3913b03bb021d9e85e65a0a8",
+          "source_window": [
+            9.780000000000001,
+            15.280000000000001
+          ],
+          "at": 74.0,
+          "duration": 5.5
+        },
+        {
+          "scene": "n12",
+          "beat": "home-arrival",
+          "source": "home.mp4",
+          "sha256": "0948b4744e96bfec73109c25e0f465aadab2030f3913b03bb021d9e85e65a0a8",
+          "source_window": [
+            21.21,
+            29.21
+          ],
+          "at": 79.5,
+          "duration": 8.0
+        }
+      ]
+    },
+    "short": {
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "seconds": 42.5,
+      "audio_streams": 1,
+      "file": "OnMyWay_AI_Pleos_Product_Shorts.mp4",
+      "sha256": "95bf892e326876307f494e8d666e4a104b9502653c2a3afc599ea20debf70fdf",
+      "bytes": 1519451,
+      "video_codec": "h264",
+      "pixel_format": "yuv420p",
+      "audio_codec": "aac",
+      "audio_channels": 2,
+      "frames": 1275,
+      "full_decode": "passed",
+      "loudness": {
+        "input_i": "-15.91",
+        "input_tp": "-2.39",
+        "input_lra": "3.30",
+        "input_thresh": "-26.62",
+        "output_i": "-16.02",
+        "output_tp": "-2.30",
+        "output_lra": "3.20",
+        "output_thresh": "-26.70",
+        "normalization_type": "dynamic",
+        "target_offset": "0.02"
+      },
+      "source": "MainActivity on official Pleos AVD",
+      "model": "eleven_v4",
+      "voices": {
+        "narrator": {
+          "voice_id": "jB1Cifc2UQbq1gR3wnb0",
+          "name": "BIN",
+          "model_id": "eleven_v4",
+          "language_code": "ko",
+          "voice_settings": {
+            "stability": 0.55,
+            "similarity_boost": 0.75
+          }
+        },
+        "driver": {
+          "voice_id": "m3gJBS8OofDJfycyA2Ip",
+          "name": "Taehyung",
+          "model_id": "eleven_v4",
+          "language_code": "ko",
+          "voice_settings": {
+            "stability": 0.48,
+            "similarity_boost": 0.75
+          }
+        },
+        "assistant": {
+          "voice_id": "kZJ3sOVD7WvNyF75aJZW",
+          "name": "Lunita",
+          "model_id": "eleven_v4",
+          "language_code": "ko",
+          "voice_settings": {
+            "stability": 0.58,
+            "similarity_boost": 0.75
+          }
+        }
+      },
+      "background_music": false,
+      "caption_count": 16,
+      "cuts": [
+        {
+          "scene": "p01",
+          "beat": "voice-home",
+          "source": "clarify.mp4",
+          "sha256": "b23fbe7ee6323ffb76b2dd982bb488743b01ade5fc11de2e54f1fe024c742a09",
+          "source_window": [
+            10.733,
+            14.733
+          ],
+          "at": 0,
+          "duration": 4
+        },
+        {
+          "scene": "p02",
+          "beat": "voice-request",
+          "source": "clarify.mp4",
+          "sha256": "b23fbe7ee6323ffb76b2dd982bb488743b01ade5fc11de2e54f1fe024c742a09",
+          "source_window": [
+            30.253000000000004,
+            36.253
+          ],
+          "at": 4,
+          "duration": 6.0
+        },
+        {
+          "scene": "p03",
+          "beat": "spoken-refinement",
+          "source": "change.mp4",
+          "sha256": "5508317db3c1702cfdecf0f47da363980e36186bfa970d606494dcecffbf3438",
+          "source_window": [
+            16.441,
+            20.941
+          ],
+          "at": 10.0,
+          "duration": 4.5
+        },
+        {
+          "scene": "p04b",
+          "beat": "revised-summary",
+          "source": "decision.mp4",
+          "sha256": "b9c4596ff562953b2ed0f489d97635e7d8169c7dfd8842655e0a0ec5c316caf3",
+          "source_window": [
+            5.329,
+            12.329
+          ],
+          "at": 14.5,
+          "duration": 7.0
+        },
+        {
+          "scene": "p05",
+          "beat": "laundry-approval",
+          "source": "decision.mp4",
+          "sha256": "b9c4596ff562953b2ed0f489d97635e7d8169c7dfd8842655e0a0ec5c316caf3",
+          "source_window": [
+            28.668999999999997,
+            32.669
+          ],
+          "at": 21.5,
+          "duration": 4
+        },
+        {
+          "scene": "p06",
+          "beat": "driving-lock",
+          "source": "driving.mp4",
+          "sha256": "5012407d9e6d0914d1548f89adc4dea7a4b19e7518fdc81cb394a6ab91c995c2",
+          "source_window": [
+            5.865,
+            9.865
+          ],
+          "at": 25.5,
+          "duration": 4
+        },
+        {
+          "scene": "p07",
+          "beat": "automatic-next",
+          "source": "laundry.mp4",
+          "sha256": "cca04e80791ccae26fa7fbdabf48d014be93b788734b60c07d5df812bb203849",
+          "source_window": [
+            29.131,
+            34.131
+          ],
+          "at": 29.5,
+          "duration": 5
+        },
+        {
+          "scene": "p08",
+          "beat": "home-approval",
+          "source": "home.mp4",
+          "sha256": "0948b4744e96bfec73109c25e0f465aadab2030f3913b03bb021d9e85e65a0a8",
+          "source_window": [
+            11.280000000000001,
+            15.280000000000001
+          ],
+          "at": 34.5,
+          "duration": 4
+        },
+        {
+          "scene": "p09",
+          "beat": "home-arrival",
+          "source": "home.mp4",
+          "sha256": "0948b4744e96bfec73109c25e0f465aadab2030f3913b03bb021d9e85e65a0a8",
+          "source_window": [
+            21.21,
+            25.21
+          ],
+          "at": 38.5,
+          "duration": 4
+        }
+      ]
+    }
+  },
+  "browser_playback": {
+    "main": {
+      "samples": [
+        10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70,
+        80
+      ],
+      "seeks": 0,
+      "errors": [],
+      "ended": true,
+      "at": 87.5,
+      "duration": 87.5,
+      "rate": 1,
+      "muted": false
+    },
+    "short": {
+      "samples": [
+        10,
+        20,
+        30,
+        40
+      ],
+      "seeks": 0,
+      "errors": [],
+      "ended": true,
+      "at": 42.5,
+      "duration": 42.5,
+      "rate": 1,
+      "muted": false
+    }
+  }
+}

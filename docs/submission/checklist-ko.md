@@ -18,6 +18,12 @@
 
 ## 개발 증거
 
+**최신 홍보 편집본:** [본편·쇼츠 제작 및 검수 안내](final-films-ko.md).
+87.5초 본편과 42.5초 세로 쇼츠는 공식 Pleos AVD에서 기존 앱의 `MainActivity`와
+주간 테마를 직접 조작·녹화한 버전입니다. 앱에서 명시적으로 선택한 예시와 모의
+도착을 사용했고, 주행 잠금은 AVD의 Drive/30 전환으로 확인했습니다. 음성은
+Eleven v4로 합성했습니다. 영상·음성은 `artifacts/final-films/mainactivity/`에 보관합니다.
+
 **현재 영상 기록:** artifacts/evidence/spoken-plan/OnMyWay_AI_spoken_demo.mp4(164.355542초). 실제 Pleos ON_DEVICE 한국어 계획 음성·오프라인 준비 사용자 대사·전체 Pleos 화면·예시/모의 고지를 포함합니다. 대본은 [spoken-demo-ko.md](spoken-demo-ko.md)입니다. 영상은 후속 내비 변경 전 녹화이므로 최종 APK와 다시 대조해야 합니다. 183.3초 story-demo·107.667초 intent-demo 및 HTML 발표·DOCX·PPTX·ZIP은 이전 자료입니다.
 
 아래 항목은 결과 파일·명령·환경·날짜가 확보된 경우에만 체크합니다. 다른 개발 작업의 진행 여부를 추정해서 체크하지 않습니다.

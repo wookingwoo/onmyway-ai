@@ -1,5 +1,160 @@
 # Delivery ledger
 
+## 2026-11-04 — recapture the existing OnMyWay app on Pleos
+
+The owner asked to keep the existing app theme. Retired the dedicated filming
+flavor and filmed the installed `ai.onmyway.car.demo` MainActivity in its original
+daytime theme on the official Pleos Connect 2.1.0 API 34 AVD. The recording uses
+the signed October 26 demo APK (SHA-256
+`a4fbb9ba3ad34431a544625eb130b119bb3df8e7c1e1047a01712864777f48b4`). The
+new debug build had a different signing certificate, so the signed install and
+its data were kept. The current demo and live sources were built and tested
+separately.
+
+Selected the app's explicit example. The baseline returns at 18:40 with pharmacy
+first. A 30-minute pharmacy visit moves laundry first, defers optional milk and
+puts home at 18:53. Captured the actual Drive/30 OS restriction, restored
+Park/0, confirmed both mandatory receipts after separate simulated arrivals,
+then approved the home leg. The scenario uses local sample data and staged
+guidance/arrival. Every final shot has a raw clip digest and source interval.
+
+Exported the 87.5-second landscape film and 42.5-second vertical Short with
+Eleven v4 Korean dialogue. BIN, Taehyung and Lunita voice narration, driver and
+assistant. Used brief sound cues and omitted music. Full H.264/AAC decoding
+and final chapter frame review passed for both exports. See
+[verification](submission/final-films-verification.json). Captures, audio,
+player and MP4s are local.
+
+Checks passed: 40 media tests, 67 API tests, 116 Android unit tests per
+demo/live variant and both debug builds. Independent capture review confirmed
+the recorded states and identified a hardcoded refinement button label. The
+editor now reads the verified label from the capture manifest.
+
+## 2026-11-03 — replace illustrated edits with actual native Pleos recordings
+
+The owner clarified that product screens must be recorded directly on Pleos.
+The preceding illustrated-interface film is superseded, not a native recording.
+Added an isolated `film` flavor/package `ai.onmyway.car.film`; live/demo launchers
+are unchanged. Native FilmActivity renders real Android Views/Canvas and buttons
+inside official Pleos Connect2.1.0/API34. It is an authorized authored filming
+prototype, with clean product wording as expressly requested. It does not call
+live AI/STT/traffic/navigation providers, and its route illustration and arrival
+signals do not establish production navigation success. Editorial ElevenLabs
+voices and captions are reused without another paid generation.
+
+Booted the existing official OnMyWay_Pleos AVD without wiping it, installed only
+the separate film debug APK, and operated13 real UI stages. Recorded Android
+screenrecord raw footage from the2560x1440 display at1920x1080. Native vehicle
+panel/status/climate bars remain visible in every main-film scene. Short product
+shots are whole-display inserts or crops of these same actual captures, with
+original comic bumpers outside product screens. No illustrated cockpit pixels
+replace native footage. Raw files, UI XML, snapshots, manifest, APK and both final
+films stay local under ignored artifacts/final-films/pleos/.
+
+Vehicle gate is the real CarUxRestrictions service, with UNKNOWN/RESTRICTED
+blocked. Bundled Virtual Console runs inside the AVD on8088; forwarded that port,
+registered an owned heartbeat session, set real Drive/30, captured the actual OS
+distraction blocker, then restored speed0/Park and closed the session. Shell
+CarService injection is unsupported on this user build; no root or restriction
+bypass was used. Arrival remains incomplete until explicit receipt confirmation;
+both mandatory laundry and medicine precede separate home approval. No live/demo
+app data were cleared or real navigation destinations sent.
+
+Regression checks: new film policy tests were RED before implementation, then
+119 demo +119 live +119 film unit tests passed,0 failures/errors. All three debug
+APK builds passed (129 Gradle tasks,43s). After visual waveform sizing, film
+unit/build rerun passed (43 tasks,19s). Existing source/SDK/window-API/native-symbol
+warnings remain. Python API67 passed/0.84s with provider HTTP mocked. Media40
+passed/0.223s, including native manifest/hash,1x trim and restricted-window tests.
+CI now also compiles/tests the film flavor and runs the pure native-media tests.
+
+Independent whole-source review found two edit timing defects: a2s Short approval
+window ended before the real tap, and the initial driving trim used a late
+post-snapshot Park timestamp. Shifted Short approval to1.8–3.8s (decoded actual
+guidance visible at2.8/3.8) and main home approval to1.2–4.2s. Current driving raw
+SHA903fb7248c95b4d925f9ffad767d8e8e47968dc1af77298e6682974fe97fe85d has a reviewed
+locked interval11.2–19.8s; selected main11.2–19.7s. Start/middle/end independently
+decoded as actual OS lock with D/30. Missing/short reviewed intervals now fail
+closed, with a RED→GREEN regression. Future recorder directly records its
+post-Drive-ready/before-Park timestamps. Re-review found no important open issue.
+
+Final native film/Short hashes, complete-decode checks, actual final-frame review
+and full unmuted playback evidence are in docs/submission/final-films-verification.json.
+Delivery paths and current scope are in docs/submission/final-films-ko.md. PR11
+is updated to the native result; media remain excluded and no merge/publication/
+external access grant/final contest submission is performed.
+
+## 2026-11-03 — final product film and viral Short
+
+User explicitly delegated conception, premium ElevenLabs speech generation,
+polished presentation-only screens, local-only videos and a feature PR from main.
+Verified remote main50c74a759c7e8d94b55989f86cb1d7524116ac2a through the connected
+GitHub API, then created feature/final-contest-films in this existing worktree.
+Rechecked official submission/rules/judging/Shorts pages. First-round mockups and
+prototypes are accepted; Short requires vertical30–60s and designated hashtag,
+with an independent award and no main-award link bonus. No public upload or
+contest submission performed.
+
+Produced original illustrated cockpit art and a single consistent errand scenario
+for the main film. On subsequent owner direction, the Short became an independent
+quest/milk comedy rather than a cropped main film. Main uses Min-woo/Minjun/Yun;
+Short uses KKC/Minjun/Yun/Aria. Actual local-key voice listing and paid timestamped
+speech generation succeeded. User endpoint401 was missing user-read permission,
+not an invalid key; voices and generation worked. Three short main-role auditions
+and19 final main +15 final Short utterances were generated. Earlier12 Short
+utterances remain local superseded takes. Model:eleven_multilingual_v2. Original
+synthesized chord/pulse bed and UI tones; no borrowed music or voice cloning.
+
+Scene arithmetic counts travel, opening wait, dwell and home: depart17:50,
+laundry18:05 before18:30 cutoff; baseline home18:40. Changing pharmacy dwell5→30
+produces home19:05 with milk, or18:53 when only optional milk is omitted. Mandatory
+laundry/medicine, approval after current revised proposal, driving lock,
+arrival/completion distinction, explicit medicine completion and separate home
+approval remain visible. Rendered screens, schematic roads and authored times are
+editorial prototypes, not live provider data or Android footage. ElevenLabs
+assistant audio does not establish native Pleos TTS or live Korean STT success.
+No product/runtime feature or successful deployment is claimed by this change.
+
+Final local files (all ignored, never staged):
+- Main:artifacts/final-films/main/OnMyWay_AI_Product_Film_Final.mp4;
+  133.5s,1920x1080,CFR30,4005 frames,H.264/yuv420p,AAC stereo,
+  5,997,007bytes; SHA256313a09756f4d48ddf11971125b1ab71ed6c77090e7077d3fb23197dd0f385f27.
+- Short:artifacts/final-films/short/OnMyWay_AI_Shorts_Final.mp4;
+  50s,1080x1920,CFR30,1500 frames,H.264/yuv420p,AAC stereo,
+  2,195,508bytes; SHA256d3a3603770cda37001cbc3c51abf07f6f1fbcde4f9e966499949ae306d1afb13.
+- Burned captions and separate SRTs:43 main/23 Short cues from actual provider
+  character alignment. The local player, audio provenance, posters, source/decoded
+  contact sheets and detailed verification JSON remain under the same ignored root.
+
+Both complete FFmpeg decodes passed. Measured main-15.95LUFS/-1.48dBTP;
+Short-15.94LUFS/-1.50dBTP. Reviewed19+15 decoded scene samples, including conflict,
+current approval, arrival, both completions and home; no material text overlap.
+Blackdetect found no full-black interval>=0.1s at pix_th0.03/pic_th0.98. Browser
+playback ran main0→133.5 and Short0→50 at1x without seeking, ended=true,
+muted=false,volume0.7,error=null for both. This is technical playback verification,
+not subjective listening certification or a measured viral result. Main regenerated
+after cache hardening retained exactly the same bytes/hash.
+
+Actual checks on this branch: Python API67 passed/0.76s (provider HTTP mocked);
+all media37 passed/0.206s, including7 new cache/timing/scenario/delivery tests;
+Android demo116 and live116 unit tests,0 failures/errors/skips; both debug APKs
+built successfully,Gradle86 tasks/40s. Initial Windows JDK Unix-domain loopback
+failure was traced to its temporary socket path, resolved by adding
+`-Djdk.net.unixdomain.tmpdir=C:\Users\Public\Documents\ESTsoft\CreatorTemp`
+alongside the existing WindowsSelectorProvider setting. Existing SDK XML,
+deprecated window API and packaged native-library symbol warnings remain. No
+release signing or fresh device/live-provider/physical-vehicle validation performed.
+
+Independent whole-source review caught incomplete paid-cache rebilling and
+ambiguous '+30분' wording. The generator now writes a pending marker before POST,
+preserves the complete successful response before postprocessing, rejects partial
+or interrupted cache state and never automatically retries a paid request.
+Short wording is '총30분'. Regression observed RED then GREEN; re-review found no
+remaining material finding. CI now runs the new7 pure media boundary tests.
+Final production notes and sanitized verification are in docs/submission/final-films*.
+Git exclusions explicitly cover artifacts/final-films/ and the local.env.
+Final PR/head CI are reported in the PR; no merge, access grant or publication.
+
 ## 2026-11-03 — briefing review and native departure/home setup
 
 Created `feature/briefing-readiness` from `0dc426e` in the existing isolated

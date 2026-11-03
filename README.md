@@ -15,14 +15,21 @@ Current contest positioning and honest differentiation:
 [demo guide](docs/demo-guide-ko.md), [five-minute pitch and Q&A](docs/submission/pitch-and-demo-ko.md).
 [2026-10-28 briefing review](docs/submission/briefing-review-ko.md) maps timestamped
 organizer guidance to current evidence, technical Q&A and remaining priorities.
-The current story film follows one natural-language request, automatic route
+The latest [Pleos film and Short](docs/submission/final-films-ko.md) show the
+existing OnMyWay `MainActivity` and daytime theme on the official Pleos AVD.
+The 87.5-second main film and 42.5-second Short use Korean Eleven v4 dialogue
+over the app's explicitly selected example flow and the observed Drive lock.
+Open `artifacts/final-films/mainactivity/player.html` locally.
+See [media verification](docs/submission/final-films-verification.json).
+
+The earlier recorded story film follows one natural-language request, automatic route
 preparation and a spoken 30-minute pharmacy refinement, preserving mandatory
 pickup, optional milk omission and separately approved home. Every native chapter
 shows the **full Pleos surface including the left vehicle panel**. See the [Korean scenario](docs/submission/story-demo-ko.md)
 and [local production instructions](scripts/STORY_DEMO.md). Video/audio stay local;
 selected [actual service-cockpit frames](docs/screenshots/pleos-cockpit/README.md) provide review evidence.
 The previous silent film and HTML pitch are historical; readiness records their scope.
-A separate [vertical motion Short](docs/submission/shortform-ko.md) remains available;
+A historical [silent vertical motion Short](docs/submission/shortform-ko.md) remains available;
 it uses earlier footage and has its own verification scope.
 
 > **Current status:** The native app, deterministic planner and explicitly
