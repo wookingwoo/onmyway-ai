@@ -1,5 +1,35 @@
 # Delivery ledger
 
+## 2026-11-04 — record a native Pleos route and distinguish the vehicle voice
+
+The remote feature branch starts at the PR #11 merge commit
+`e7c3a2e1ede06938b2a9634c091b50285558cce7`. GitHub reported no file changes
+between that merge and `ff3742b`, the verified local base tree used when direct
+Git fetch returned 403.
+
+Re-ran the installed SDK screen smoke on the official Pleos Connect 2.1.0
+AVD. Native Navigation became foreground. Searched for Seoul's 63 Building in
+the native app and initiated its route while parked. It displayed three route
+options, a 26-minute/25-km selected route, and actual next-turn guidance.
+Background tiles remained blank, and the native-process diagnostic count
+included HTTP 401 responses. Ended guidance and returned to OnMyWay with the
+vehicle at Park/0. The 8-second insert is marked as a separate route example.
+The app's errand approval and the native 63 Building request are separate
+captures, so the insert establishes neither automatic errand handoff nor arrival.
+
+Created a private synthetic Korean voice design and generated five vehicle AI
+lines with Eleven v4. The mix applies a short chime and digital coloration only
+to that role. First cues carry a visible speaker label. The driver and narrator
+dialogue caches were reused, with one new narrator line for the insert. The main
+film is 97.5 seconds and the Short is 42.5 seconds. Both full decodes and the
+selected native and caption frame reviews passed. See the
+[verification record](submission/final-films-verification.json).
+
+Media tests passed (40), and API tests passed (67). Android demo/live debug
+unit/build tasks passed with all 86 tasks up to date. The initial Gradle daemon
+attempt could not bind loopback, and the no-daemon invocation succeeded. Raw
+recordings, audio and final video remain local.
+
 ## 2026-11-04 — recapture the existing OnMyWay app on Pleos
 
 The owner asked to keep the existing app theme. Retired the dedicated filming

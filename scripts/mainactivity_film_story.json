@@ -2,24 +2,25 @@
   "voices": {
     "narrator": {"voice_id":"jB1Cifc2UQbq1gR3wnb0", "name":"BIN", "model_id":"eleven_v4", "language_code":"ko", "voice_settings":{"stability":0.55,"similarity_boost":0.75}},
     "driver": {"voice_id":"m3gJBS8OofDJfycyA2Ip", "name":"Taehyung", "model_id":"eleven_v4", "language_code":"ko", "voice_settings":{"stability":0.48,"similarity_boost":0.75}},
-    "assistant": {"voice_id":"kZJ3sOVD7WvNyF75aJZW", "name":"Lunita", "model_id":"eleven_v4", "language_code":"ko", "voice_settings":{"stability":0.58,"similarity_boost":0.75}}
+    "assistant": {"voice_id": "TFJXFbIbxjlS1xWvxiog", "name": "OnMyWay In-Car AI KO", "model_id": "eleven_v4", "language_code": "ko", "voice_settings": {"stability": 0.65, "similarity_boost": 0.82}}
   },
   "auditions": [
     {"id":"try-bin","role":"narrator","text":"퇴근길에 들를 곳이 세 군데. 오늘도 일곱 시까지 집에 갈 수 있을까요?"},
     {"id":"try-taehyung","role":"driver","text":"아, 약국에서 상담도 해야 해. 한 삼십 분은 걸릴 것 같아."},
-    {"id":"try-lunita","role":"assistant","text":"세탁소랑 약국은 그대로 갈게요. 우유만 다음으로 미루면, 여섯 시 오십삼 분쯤 집에 도착해요."}
+    {"id":"try-car-ai","role":"assistant","text":"경로를 다시 계산했습니다. 우유를 미루면 여섯 시 오십삼 분쯤 도착합니다."}
   ],
   "main": [
     {"id":"n01","kind":"opening","role":"narrator","min_seconds":6,"beat":"voice-home","heading":"퇴근길에 들를 곳이 세 군데.","text":"퇴근길에 들를 곳이 세 군데. 오늘도 일곱 시까지 집에 갈 수 있을까요?"},
     {"id":"n02","kind":"request","role":"driver","min_seconds":10,"beat":"voice-request","heading":"할 일과 마감을 한 번에","text":"약국은 꼭 들러야 해. 세탁물은 한결세탁소에서 여섯 시 반 전에 찾고, 우유는 시간 되면 사자. 집엔 일곱 시까지."},
-    {"id":"n03b","kind":"plan","role":"assistant","min_seconds":7,"beat":"baseline-plan","heading":"첫 계획 · 18:40 귀가 예상","text":"약국부터 들러도 세탁물 마감에 맞아요. 마트까지 들르면 여섯 시 사십 분쯤 집에 도착해요."},
+    {"id":"n03-ai","kind":"plan","role":"assistant","min_seconds":7,"beat":"baseline-plan","heading":"첫 계획 · 18:40 귀가 예상","text":"첫 경로입니다. 약국부터 들러도 세탁물 마감에 맞습니다. 귀가 예정 시각, 여섯 시 사십 분입니다."},
     {"id":"n04","kind":"change","role":"driver","min_seconds":6,"beat":"spoken-refinement","heading":"약국 상담 · 30분으로 변경","text":"아, 약국에서 상담도 해야 해. 한 삼십 분은 걸릴 것 같아. 다른 건 그대로 두고 다시 맞춰줘."},
-    {"id":"n05b","kind":"revised","role":"assistant","min_seconds":8,"beat":"revised-summary","heading":"필수 용무 유지 · 18:53 귀가 예상","text":"이번엔 세탁소 먼저, 그다음 약국이에요. 우유를 미루면, 여섯 시 오십삼 분쯤 집에 도착해요."},
+    {"id":"n05-ai","kind":"revised","role":"assistant","min_seconds":8,"beat":"revised-summary","heading":"필수 용무 유지 · 18:53 귀가 예상","text":"경로를 다시 계산했습니다. 세탁소 먼저, 다음은 약국입니다. 우유를 미루면 여섯 시 오십삼 분 도착 예정입니다."},
     {"id":"n06","kind":"approve","role":"driver","min_seconds":4,"beat":"laundry-approval","heading":"운전자가 확인한 뒤 출발","text":"좋아. 이 순서로 가자."},
+    {"id":"navi63","kind":"navigation","role":"narrator","min_seconds":6.5,"beat":"native-navigation-example","heading":"별도 경로 예시 · 서울 63빌딩","text":"서울 육삼빌딩까지. 플레오스 기본 내비에서 경로와 다음 회전을 확인합니다."},
     {"id":"n07","kind":"driving","role":"narrator","min_seconds":5,"beat":"driving-lock","heading":"주행 중에는 조작 잠금","text":"차가 움직이면, 화면 조작은 정차할 때까지 잠깁니다."},
-    {"id":"n08","kind":"arrival","role":"assistant","min_seconds":5,"beat":"laundry-arrival","heading":"도착과 수령 완료를 구분","text":"세탁소에 도착했어요. 세탁물을 찾으면 완료를 눌러 주세요."},
+    {"id":"n08-ai","kind":"arrival","role":"assistant","min_seconds":5,"beat":"laundry-arrival","heading":"도착과 수령 완료를 구분","text":"세탁소에 도착했습니다. 수령을 마치면 완료를 눌러 주세요."},
     {"id":"n09","kind":"complete","role":"narrator","min_seconds":6,"beat":"automatic-next","heading":"완료한 일은 빼고 다음으로","text":"수령을 마치면 다음 할 일인 약국이 올라옵니다. 약은 여전히 필수예요."},
-    {"id":"n10","kind":"arrival","role":"assistant","min_seconds":4,"beat":"medicine-arrival","heading":"약 수령까지 직접 확인","text":"상담하고 약까지 받으셨으면 완료해 주세요."},
+    {"id":"n10-ai","kind":"arrival","role":"assistant","min_seconds":4,"beat":"medicine-arrival","heading":"약 수령까지 직접 확인","text":"약을 받으셨으면 완료를 눌러 주세요."},
     {"id":"n11","kind":"homeapprove","role":"driver","min_seconds":5,"beat":"home-approval","heading":"필수 두 건 완료 · 귀가 승인","text":"세탁물도 찾았고, 약도 받았네. 이제 집으로 가자."},
     {"id":"n12","kind":"closing","role":"narrator","min_seconds":6,"beat":"home-arrival","heading":"가는 길에, 할 일까지.","text":"할 일은 마치고, 마지막 목적지는 집. 가는 길에, 할 일까지. 온마이웨이."}
   ],
@@ -27,7 +28,7 @@
     {"id":"p01","kind":"hook","role":"driver","min_seconds":4,"beat":"voice-home","heading":"퇴근은 했는데\n할 일이 세 개?","text":"퇴근은 했는데, 할 일이 세 개?"},
     {"id":"p02","kind":"request","role":"driver","min_seconds":5,"beat":"voice-request","heading":"세탁물, 약, 우유.\n집엔 7시까지.","text":"세탁물 찾고, 약 받고, 우유까지. 집엔 일곱 시까지 가야 돼."},
     {"id":"p03","kind":"change","role":"driver","min_seconds":4,"beat":"spoken-refinement","heading":"잠깐, 약국에서\n상담까지 30분.","text":"잠깐, 약국 상담까지 하면 삼십 분은 걸리겠는데?"},
-    {"id":"p04b","kind":"revised","role":"assistant","min_seconds":6,"beat":"revised-summary","heading":"필수 두 건은 그대로.\n우유만 다음에.","text":"우유는 다음에요. 세탁물과 약을 챙기고, 여섯 시 오십삼 분쯤 집에 도착해요."},
+    {"id":"p04-ai","kind":"revised","role":"assistant","min_seconds":6,"beat":"revised-summary","heading":"필수 두 건은 그대로.\n우유만 다음에.","text":"경로를 다시 계산했습니다. 세탁물과 약은 그대로, 우유는 다음에요."},
     {"id":"p05","kind":"approve","role":"driver","min_seconds":4,"beat":"laundry-approval","heading":"내가 확인한 뒤\n출발.","text":"좋아. 이걸로 출발."},
     {"id":"p06","kind":"driving","role":"narrator","min_seconds":4,"beat":"driving-lock","heading":"달릴 땐\n조작 잠금.","text":"주행 중에는 조작을 잠가요."},
     {"id":"p07","kind":"complete","role":"narrator","min_seconds":5,"beat":"automatic-next","heading":"도착과 완료는\n다르니까.","text":"찾았으면 완료. 그러면 다음 할 일이 올라와요."},

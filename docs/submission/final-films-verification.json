@@ -27,38 +27,38 @@
   "tests": {
     "api": 67,
     "media": 40,
+    "demo_live_debug_unit_build": "passed (86 Gradle tasks up to date)",
     "android_demo": 116,
-    "android_live": 116,
-    "demo_and_live_debug_builds": "passed"
+    "android_live": 116
   },
-  "visual_review": "Final frame from each chapter and selected native tap/restriction frames reviewed",
+  "visual_review": "Native route options, guidance, and AI caption frames reviewed",
   "media": {
     "main": {
       "width": 1920,
       "height": 1080,
       "fps": 30,
-      "seconds": 87.5,
+      "seconds": 97.5,
       "audio_streams": 1,
       "file": "OnMyWay_AI_Pleos_Product.mp4",
-      "sha256": "7947c58ae125573a7217b045a656becedbc4e7033c31d668e3875618fdcf6f18",
-      "bytes": 4539423,
+      "sha256": "b27bbfe1f07badd26e6776bb03614d3cd9d6eba4bd7a4dcb21c93c28c374444f",
+      "bytes": 5087299,
       "video_codec": "h264",
       "pixel_format": "yuv420p",
       "audio_codec": "aac",
       "audio_channels": 2,
-      "frames": 2625,
+      "frames": 2925,
       "full_decode": "passed",
       "loudness": {
-        "input_i": "-16.08",
-        "input_tp": "-2.04",
-        "input_lra": "4.60",
-        "input_thresh": "-26.73",
-        "output_i": "-15.96",
+        "input_i": "-16.07",
+        "input_tp": "-1.51",
+        "input_lra": "5.00",
+        "input_thresh": "-26.68",
+        "output_i": "-15.88",
         "output_tp": "-1.50",
-        "output_lra": "5.00",
-        "output_thresh": "-26.59",
+        "output_lra": "4.90",
+        "output_thresh": "-26.48",
         "normalization_type": "dynamic",
-        "target_offset": "-0.04"
+        "target_offset": "-0.12"
       },
       "source": "MainActivity on official Pleos AVD",
       "model": "eleven_v4",
@@ -84,18 +84,19 @@
           }
         },
         "assistant": {
-          "voice_id": "kZJ3sOVD7WvNyF75aJZW",
-          "name": "Lunita",
+          "voice_id": "TFJXFbIbxjlS1xWvxiog",
+          "name": "OnMyWay In-Car AI KO",
           "model_id": "eleven_v4",
           "language_code": "ko",
           "voice_settings": {
-            "stability": 0.58,
-            "similarity_boost": 0.75
+            "stability": 0.65,
+            "similarity_boost": 0.82
           }
         }
       },
       "background_music": false,
-      "caption_count": 29,
+      "assistant_filter": "highpass=f=210,lowpass=f=6100,equalizer=f=1900:t=q:w=1.2:g=3,tremolo=f=46:d=0.26",
+      "caption_count": 32,
       "cuts": [
         {
           "scene": "n01",
@@ -122,16 +123,16 @@
           "duration": 10.5
         },
         {
-          "scene": "n03b",
+          "scene": "n03-ai",
           "beat": "baseline-plan",
           "source": "baseline.mp4",
           "sha256": "9e7cbd6b1b25d10e3b587e1a422e30e7c057999cf6e0c152cfe5526a0fb602ec",
           "source_window": [
-            7.5440000000000005,
+            6.5440000000000005,
             16.544
           ],
           "at": 17.5,
-          "duration": 9.0
+          "duration": 10.0
         },
         {
           "scene": "n04",
@@ -142,20 +143,20 @@
             11.940999999999999,
             20.941
           ],
-          "at": 26.5,
+          "at": 27.5,
           "duration": 9.0
         },
         {
-          "scene": "n05b",
+          "scene": "n05-ai",
           "beat": "revised-summary",
           "source": "decision.mp4",
           "sha256": "b9c4596ff562953b2ed0f489d97635e7d8169c7dfd8842655e0a0ec5c316caf3",
           "source_window": [
             5.329,
-            14.829
+            16.329
           ],
-          "at": 35.5,
-          "duration": 9.5
+          "at": 36.5,
+          "duration": 11.0
         },
         {
           "scene": "n06",
@@ -166,8 +167,20 @@
             28.288999999999998,
             32.289
           ],
-          "at": 45.0,
+          "at": 47.5,
           "duration": 4
+        },
+        {
+          "scene": "navi63",
+          "beat": "native-navigation-example",
+          "source": "public-route.mp4",
+          "sha256": "ad447efde4d255ecc1436218ee89dabdf01884cd7641d0cd80729960f3e10f9e",
+          "source_window": [
+            4.9,
+            12.9
+          ],
+          "at": 51.5,
+          "duration": 8.0
         },
         {
           "scene": "n07",
@@ -178,11 +191,11 @@
             5.865,
             11.865
           ],
-          "at": 49.0,
+          "at": 59.5,
           "duration": 6.0
         },
         {
-          "scene": "n08",
+          "scene": "n08-ai",
           "beat": "laundry-arrival",
           "source": "laundry.mp4",
           "sha256": "cca04e80791ccae26fa7fbdabf48d014be93b788734b60c07d5df812bb203849",
@@ -190,7 +203,7 @@
             7.509,
             14.009
           ],
-          "at": 55.0,
+          "at": 65.5,
           "duration": 6.5
         },
         {
@@ -202,20 +215,20 @@
             29.131,
             36.631
           ],
-          "at": 61.5,
+          "at": 72.0,
           "duration": 7.5
         },
         {
-          "scene": "n10",
+          "scene": "n10-ai",
           "beat": "medicine-arrival",
           "source": "medicine.mp4",
           "sha256": "592d65d64ed95a19fbb718a6ff6cbadad5570d5b6ae93714c68667e0ac86b733",
           "source_window": [
             9.716999999999999,
-            14.716999999999999
+            14.216999999999999
           ],
-          "at": 69.0,
-          "duration": 5.0
+          "at": 79.5,
+          "duration": 4.5
         },
         {
           "scene": "n11",
@@ -226,7 +239,7 @@
             9.780000000000001,
             15.280000000000001
           ],
-          "at": 74.0,
+          "at": 84.0,
           "duration": 5.5
         },
         {
@@ -238,7 +251,7 @@
             21.21,
             29.21
           ],
-          "at": 79.5,
+          "at": 89.5,
           "duration": 8.0
         }
       ]
@@ -250,8 +263,8 @@
       "seconds": 42.5,
       "audio_streams": 1,
       "file": "OnMyWay_AI_Pleos_Product_Shorts.mp4",
-      "sha256": "95bf892e326876307f494e8d666e4a104b9502653c2a3afc599ea20debf70fdf",
-      "bytes": 1519451,
+      "sha256": "aec9808d0c7c86eca33c7082cdf0eabaeae07b6f4e78cf2774ad41ae686f91c0",
+      "bytes": 1513596,
       "video_codec": "h264",
       "pixel_format": "yuv420p",
       "audio_codec": "aac",
@@ -259,16 +272,16 @@
       "frames": 1275,
       "full_decode": "passed",
       "loudness": {
-        "input_i": "-15.91",
+        "input_i": "-15.87",
         "input_tp": "-2.39",
-        "input_lra": "3.30",
-        "input_thresh": "-26.62",
-        "output_i": "-16.02",
+        "input_lra": "3.10",
+        "input_thresh": "-26.63",
+        "output_i": "-15.94",
         "output_tp": "-2.30",
-        "output_lra": "3.20",
-        "output_thresh": "-26.70",
+        "output_lra": "3.10",
+        "output_thresh": "-26.67",
         "normalization_type": "dynamic",
-        "target_offset": "0.02"
+        "target_offset": "-0.06"
       },
       "source": "MainActivity on official Pleos AVD",
       "model": "eleven_v4",
@@ -294,18 +307,19 @@
           }
         },
         "assistant": {
-          "voice_id": "kZJ3sOVD7WvNyF75aJZW",
-          "name": "Lunita",
+          "voice_id": "TFJXFbIbxjlS1xWvxiog",
+          "name": "OnMyWay In-Car AI KO",
           "model_id": "eleven_v4",
           "language_code": "ko",
           "voice_settings": {
-            "stability": 0.58,
-            "similarity_boost": 0.75
+            "stability": 0.65,
+            "similarity_boost": 0.82
           }
         }
       },
       "background_music": false,
-      "caption_count": 16,
+      "assistant_filter": "highpass=f=210,lowpass=f=6100,equalizer=f=1900:t=q:w=1.2:g=3,tremolo=f=46:d=0.26",
+      "caption_count": 15,
       "cuts": [
         {
           "scene": "p01",
@@ -344,7 +358,7 @@
           "duration": 4.5
         },
         {
-          "scene": "p04b",
+          "scene": "p04-ai",
           "beat": "revised-summary",
           "source": "decision.mp4",
           "sha256": "b9c4596ff562953b2ed0f489d97635e7d8169c7dfd8842655e0a0ec5c316caf3",
@@ -418,40 +432,41 @@
       ]
     }
   },
+  "navigation_insert": {
+    "destination": "63빌딩",
+    "sha256": "ad447efde4d255ecc1436218ee89dabdf01884cd7641d0cd80729960f3e10f9e",
+    "reviewed_window": [
+      4.9,
+      15.0
+    ],
+    "scope": "Native Pleos Navigation destination selected in its own UI",
+    "basemap": "blank",
+    "route": "three alternatives, route line, next turns and ETA shown",
+    "state": "Park, 0 km/h, guidance ended after capture",
+    "sdk_screen_dispatch": "passed",
+    "official_navigation_foreground": true,
+    "native_search": "63빌딩 returned",
+    "displayed_route_minutes": 26,
+    "displayed_route_km": 25,
+    "background_tile_http_401_seen": true,
+    "returned_to_onmyway": true
+  },
   "browser_playback": {
     "main": {
-      "samples": [
-        10,
-        20,
-        30,
-        40,
-        50,
-        60,
-        70,
-        80
-      ],
-      "seeks": 0,
       "errors": [],
-      "ended": true,
-      "at": 87.5,
-      "duration": 87.5,
-      "rate": 1,
-      "muted": false
+      "seeks": 0,
+      "end": 97.5,
+      "duration": 97.5,
+      "muted": false,
+      "rate": 1
     },
     "short": {
-      "samples": [
-        10,
-        20,
-        30,
-        40
-      ],
-      "seeks": 0,
       "errors": [],
-      "ended": true,
-      "at": 42.5,
+      "seeks": 0,
+      "end": 42.5,
       "duration": 42.5,
-      "rate": 1,
-      "muted": false
+      "muted": false,
+      "rate": 1
     }
   }
 }

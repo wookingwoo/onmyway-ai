@@ -88,7 +88,7 @@ def stills(scenes,track):
     poster.save(folder/'poster.jpg',quality=95)
 
 
-def mix_audio(scenes,seconds,path,background_music=True):
+def mix_audio(scenes,seconds,path,background_music=True,assistant_filter=None):
     n=round(seconds*RATE); t=np.arange(n,dtype=np.float64)/RATE
     music=np.zeros(n,dtype=np.float64)
     # Original restrained pulse/chord composition, not a downloaded backing track.
@@ -105,7 +105,9 @@ def mix_audio(scenes,seconds,path,background_music=True):
         music[a:b]+=.020*np.sin(2*np.pi*(57*tt+1.4*(1-np.exp(-tt*20))))*np.exp(-tt*22)
     voice=np.zeros(n); duck=np.ones(n)
     for c in scenes:
-        raw=run('ffmpeg','-v','error','-i',c['audio'],'-f','f32le','-ac','1','-ar',RATE,'-').stdout
+        is_filtered_assistant = assistant_filter and c['role'] == 'assistant'
+        filters = ('-af', assistant_filter) if is_filtered_assistant else ()
+        raw=run('ffmpeg','-v','error','-i',c['audio'],*filters,'-f','f32le','-ac','1','-ar',RATE,'-').stdout
         speech=np.frombuffer(raw,dtype='<f4').astype(np.float64)
         rms=float(np.sqrt(np.mean(speech**2)))
         if rms<.002: raise ValueError('Unexpected silent utterance: '+c['id'])
@@ -117,6 +119,10 @@ def mix_audio(scenes,seconds,path,background_music=True):
         if b>n: raise ValueError('Speech exceeds final mix')
         voice[a:b]+=speech
         da=max(0,a-round(.15*RATE)); db=min(n,b+round(.25*RATE)); duck[da:db]=.34
+        if is_filtered_assistant:
+            cue = t[:round(.14*RATE)]
+            start = a-round(.18*RATE)
+            music[start:start+len(cue)] += .028*np.sin(2*np.pi*(840*cue+1550*cue**2))*np.sin(np.pi*cue/.14)**2
         # Soft confirmation tone for state-changing shots only.
         if c['kind'] in {'approve','complete','homeapprove','revised'}:
             aa=round((c['at']+.12)*RATE); bb=min(n,aa+round(.24*RATE)); tt=np.arange(bb-aa)/RATE

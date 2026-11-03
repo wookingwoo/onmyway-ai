@@ -15,6 +15,7 @@ from native_film import restricted_window, source_window, validate_native_captur
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'artifacts/final-films/mainactivity'
 CAPTURE = OUT / 'capture'
+NAVIGATION = OUT / 'navigation-check'
 spec = importlib.util.spec_from_file_location('film_builder', ROOT / 'scripts/build-final-films.py')
 builder = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(builder)
@@ -22,10 +23,27 @@ spec.loader.exec_module(builder)
 APPROVALS = {'laundry-approval': '확인하고 출발', 'home-approval': '집으로 출발'}
 TRANSITIONS = {'voice-home': '말로 부탁하기', 'voice-request': '계획 준비하기'}
 FULL_SHORT_SHOTS = {'voice-home', 'driving-lock', 'home-arrival'}
+ASSISTANT_FILTER = 'highpass=f=210,lowpass=f=6100,equalizer=f=1900:t=q:w=1.2:g=3,tremolo=f=46:d=0.26'
+
+
+def navigation_example(duration):
+    manifest = json.loads((NAVIGATION / 'manifest.json').read_text(encoding='utf-8'))
+    path = NAVIGATION / 'public-route.mp4'
+    digest = sha256(path.read_bytes()).hexdigest()
+    if digest != manifest['sha256'] or manifest['destination'] != '63빌딩':
+        raise ValueError('Verified native Pleos navigation capture required')
+    start, limit = manifest['reviewed_window']
+    available = float(builder.probe(path)['format']['duration'])
+    end = round(start + duration, 6)
+    if not 0 <= start < end <= min(limit, available):
+        raise ValueError('Navigation scene exceeds the reviewed native route interval')
+    return path, start, end, digest
 
 
 def find_source(scene, chapters):
     name = scene['beat']
+    if name == 'native-navigation-example':
+        return navigation_example(scene['seconds'])
     matches = [(chapter, beat) for chapter in chapters for beat in chapter['beats'] if beat['name'] == name]
     if len(matches) != 1:
         raise ValueError(f'Expected exactly one verified native shot for {name}')
@@ -75,10 +93,15 @@ Style: Default,Malgun Gothic,{size},&H00FFFFFF,&H00FFFFFF,&H00171310,&H00171310,
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 '''
     events = []
-    for start, end, cue in scene['cues']:
+    for i, (start, end, cue) in enumerate(scene['cues']):
         if any(char in cue for char in '{}\\\r\n'):
             raise ValueError('Caption contains ASS control characters')
+        if i == 0 and scene['role'] == 'assistant':
+            cue = '차량 AI  ·  ' + cue
         events.append(f"Dialogue: 0,{ass_time(start+scene['offset'])},{ass_time(end+scene['offset'])},Default,,0,0,0,,{cue}")
+    if scene['kind'] == 'navigation':
+        events.append(f"Dialogue: 0,0:00:00.00,{ass_time(scene['seconds'])},Default,,0,0,0,,"
+                      "{\\an8\\pos(1450,84)}" + scene['heading'])
     path.write_text(header + '\n'.join(events) + '\n', encoding='utf-8-sig')
 
 
@@ -126,7 +149,7 @@ def build(track, story, manifest):
     listing = folder / 'cuts.txt'
     listing.write_text(''.join(f"file '{i:02d}.mp4'\n" for i in range(len(scenes))), encoding='ascii')
     mix = folder / 'mix.wav'
-    builder.mix_audio(scenes, seconds, mix, background_music=False)
+    builder.mix_audio(scenes, seconds, mix, background_music=False, assistant_filter=ASSISTANT_FILTER)
     final = OUT / ('OnMyWay_AI_Pleos_Product.mp4' if track == 'main' else 'OnMyWay_AI_Pleos_Product_Shorts.mp4')
     builder.run('ffmpeg', '-y', '-v', 'error', '-f', 'concat', '-safe', '0', '-i', listing,
                 '-i', mix, '-map', '0:v:0', '-map', '1:a:0', '-c:v', 'copy',
@@ -135,7 +158,7 @@ def build(track, story, manifest):
     final.with_suffix('.srt').write_text(srt(cues), encoding='utf-8')
     verification = {**builder.verify(final, track, seconds), 'source': 'MainActivity on official Pleos AVD',
                     'model': 'eleven_v4', 'voices': story['voices'], 'background_music': False,
-                    'caption_count': len(cues), 'cuts': cuts}
+                    'assistant_filter': ASSISTANT_FILTER, 'caption_count': len(cues), 'cuts': cuts}
     tw, th, cols = (480, 270, 3) if track == 'main' else (270, 480, 3)
     sheet = Image.new('RGB', (cols*tw, ((len(cuts)+cols-1)//cols)*(th+25)), '#11161a')
     for i, cut in enumerate(cuts):
