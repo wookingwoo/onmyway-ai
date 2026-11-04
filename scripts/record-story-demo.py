@@ -24,6 +24,7 @@ def main():
     parser.add_argument("--output", default="artifacts/evidence/pleos-service-demo")
     parser.add_argument("--hold-seconds", type=float, default=1.2, help="Hold checked native states for editing")
     parser.add_argument("--voice-motion", action="store_true", help="Capture sample transcript playback and native AI briefing transitions")
+    parser.add_argument("--moving-overview", action="store_true", help="Check the read-only activity state in Drive. Review the recording separately for a Pleos system overlay.")
     parser.add_argument("--resume-driving", action="store_true", help="Keep verified first five chapters; require the same pending synthetic laundry journey")
     parser.add_argument("--resume-decision", action="store_true", help="Keep four hash-verified chapters; require the same revised synthetic preview before approval")
     parser.add_argument("--resume-refinement", action="store_true", help="Keep three verified chapters and resume from the initial plan")
@@ -69,6 +70,12 @@ def main():
     def find(label, root, contains=False):
         return next((n for n in root.iter("node") if
                      (label in n.get("text", "") if contains else n.get("text") == label)), None)
+
+    def example(root):
+        banners = {f"{label} · {mode}" for label in ("예시 일정", "샘플 데이터")
+                   for mode in ("모의 안내", "실제 내비 요청 없음")}
+        return any(node.get("package") == "ai.onmyway.car.demo" and node.get("text") in banners
+                   for node in root.iter("node"))
 
     def bounds(node):
         return list(map(int, re.findall(r"\d+", node.get("bounds", ""))))
@@ -195,7 +202,7 @@ def main():
         adb("shell", "am", "start", "--user", "current", "-n", "ai.onmyway.car.demo/ai.onmyway.car.MainActivity")
         root = tree()
         if find("안내 연결", root) is not None:
-            assert find("샘플 데이터", root, True) is not None, "Only a labelled fixture may resume simulated guidance"
+            assert example(root), "Only a labelled fixture may resume simulated guidance"
             click("안내 연결")
             root = tree()
         if args.resume_refinement or args.resume_driving or args.resume_decision:
@@ -210,7 +217,7 @@ def main():
             if args.resume_refinement and find("말 전달하기", tree()) is not None:
                 click("취소")
             root = wait("안내 중 · 차량 내비게이션을 확인해 주세요" if args.resume_driving else "확인하고 출발")
-            assert find("샘플 데이터", root, True) is not None
+            assert example(root)
             expected = "18:40 / 19:00" if args.resume_refinement else "18:53 / 19:00"
             assert find("한결세탁소", root, args.resume_refinement) is not None and find(expected, root) is not None
         else:
@@ -227,13 +234,13 @@ def main():
             click("닫기"); click("돌아가기")
             root = tree()
             if find("가는 길에, 무엇을 할까요?", root) is None:
-                assert find("샘플 데이터", root, True) is not None, "Refusing to reset a live journey"
+                assert example(root), "Refusing to reset a live journey"
                 click("설정"); click("새 일정 시작"); click("새로 시작")
             click("설정")
             if find("샘플로 둘러보기", tree()) is not None:
                 click("샘플로 둘러보기")
             click("돌아가기")
-            assert find("샘플 데이터", tree(), True) is not None, "Sample source must be independently selected"
+            assert example(tree()), "Sample source must be independently selected"
             with recording("clarify"):
                 shot("voice-home", "가는 길에, 무엇을 할까요?")
                 click("말로 부탁하기")
@@ -285,12 +292,20 @@ def main():
                 click("확인하고 출발")
                 shot("departure-accepted", "안내 중 · 차량 내비게이션을 확인해 주세요")
         with recording("driving"):
+            if args.moving_overview:
+                click("이동 현황 보기")
+                shot("parked-overview", "정차 중 · 이동 현황")
             request("/vehicle/gear?gear=Drive", "PUT")
             request("/vehicle/controls?speed=30&accelerator=0&brake=0&steering=0", "PUT")
             time.sleep(2.5)
             state = request("/vehicle/state")
             assert state["gear"]["actual"]["value"] == "Drive" and state["controls"]["speed_kph"] == 30
-            root = shot("driving-lock", "정차 후 이용해 주세요")
+            root = shot("driving-lock", "주행 중 · 읽기 전용" if args.moving_overview else "정차 후 이용해 주세요")
+            if args.moving_overview:
+                assert find("한결세탁소", root) is not None and find("18:06", root) is not None
+                assert not any(n.get("package") == "ai.onmyway.car.demo" and
+                               n.get("clickable") == "true" and n.get("enabled") == "true"
+                               for n in root.iter("node")), "Driving overview contains an active control"
             assert not any(n.get("class") == "android.widget.EditText" and n.get("enabled") == "true" for n in root.iter("node"))
             assert not any(n.get("text") in {"확인하고 출발", "집으로 출발", "완료했어요", "말로 부탁하기"}
                            and n.get("enabled") == "true" for n in root.iter("node"))
@@ -318,7 +333,9 @@ def main():
             shot("home-arrival", "집에 도착했어요")
         state = request("/vehicle/state")
         assert state["gear"]["actual"]["value"] == "Park" and state["controls"]["speed_kph"] == 0
-        manifest = {"result": "pass", "voice_motion": args.voice_motion, "scope": "actual native UI; explicit synthetic example; simulated guidance/arrival; actual AVD driving restriction",
+        manifest = {"result": "pass", "voice_motion": args.voice_motion, "moving_overview": args.moving_overview,
+                    "scope": "actual native UI; explicit synthetic example; simulated guidance/arrival; actual AVD driving restriction",
+                    "overview_check": "App accessibility tree only. Review visible pixels for a system overlay.",
                     "scenario": {"departure": "18:00", "deadline": "19:00", "pickup_deadline": "18:30", "baseline_home": "18:40",
                                  "pharmacy_minutes": 30, "revised_order": ["laundry", "medicine"], "optional_omission": "groceries", "revised_home": "18:53"},
                     "restored_gear": "Park", "restored_speed_kph": 0, "chapters": records}

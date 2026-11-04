@@ -36,6 +36,11 @@ def probe(path):
 def load_track(story,track,audio_dir=None):
     result=[]; cursor=0; allcues=[]
     for c in story[track]:
+        if c.get('visual_only'):
+            duration=c['min_seconds']
+            result.append({**c,'audio':None,'audio_seconds':0,'seconds':duration,'offset':0,'cues':[],'at':cursor})
+            cursor+=duration
+            continue
         path=(audio_dir if audio_dir is not None else OUT/'audio')/(c.get('audio_id', c['id'])+'.mp3')
         record=json.loads(path.with_suffix('.json').read_text(encoding='utf-8'))
         voice=story['voices'][c['role']]
@@ -46,7 +51,9 @@ def load_track(story,track,audio_dir=None):
         seconds=float(probe(path)['format']['duration'])
         cues=alignment_cues(record['alignment'],c['text'],seconds)
         duration=scene_seconds(c['min_seconds'],seconds) if track=='main' else max(c['min_seconds'],math.ceil((seconds+.65)*2)/2)
-        offset=.55 if track=='main' else .25
+        offset=c.get('audio_offset', .55 if track=='main' else .25)
+        if 'audio_offset' in c:
+            duration=max(duration, math.ceil((offset+seconds+.55)*2)/2)
         scene={**c,'audio':path,'audio_seconds':seconds,'seconds':duration,'offset':offset,'cues':cues,'at':cursor}
         if offset+seconds>duration: raise ValueError('Speech crosses cut')
         allcues.extend([[cursor+offset+a,cursor+offset+b,t] for a,b,t in cues])
@@ -105,6 +112,8 @@ def mix_audio(scenes,seconds,path,background_music=True,assistant_filter=None,in
         music[a:b]+=.020*np.sin(2*np.pi*(57*tt+1.4*(1-np.exp(-tt*20))))*np.exp(-tt*22)
     voice=np.zeros(n); duck=np.ones(n)
     for c in scenes:
+        if c['audio'] is None:
+            continue
         is_filtered_assistant = assistant_filter and c['role'] == 'assistant'
         filters = ('-af', assistant_filter) if is_filtered_assistant else ()
         raw=run('ffmpeg','-v','error','-i',c['audio'],*filters,'-f','f32le','-ac','1','-ar',RATE,'-').stdout
@@ -123,10 +132,11 @@ def mix_audio(scenes,seconds,path,background_music=True,assistant_filter=None,in
             # A quiet earcon for the interaction itself, separated from the dialogue.
             cue_at, notes = {
                 'listen': (.12, [(0, .12, 590, .024), (.07, .12, 790, .019)]),
-                'reply': (.08, [(0, .18, 510, .022)]),
+                'reply': (max(.08, c['offset']-.24), [(0, .18, 510, .022)]),
                 'arrive': (.10, [(0, .17, 690, .024), (.10, .19, 870, .020)]),
                 'complete': (.72, [(0, .18, 780, .025)]),
             }[c['cue']]
+            cue_at = c.get('cue_offset', cue_at)
             for delay, length, frequency, level in notes:
                 start = round((c['at'] + cue_at + delay) * RATE)
                 count = min(n - start, round(length * RATE))

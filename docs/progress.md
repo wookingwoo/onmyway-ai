@@ -1,5 +1,34 @@
 # Delivery ledger
 
+## 2026-11-04 — show route work in progress and recut actual Pleos guidance
+
+Planning and completion now keep a native progress card visible while the
+request runs. Only the explicit sample uses a 1.15-second presentation minimum.
+The order cards separate place, stop priority, dwell, estimated completion and
+deadline. The listening copy describes the current action and retains the
+sample's small provenance label.
+
+The trip summary opens only from an accepted, current destination while Parked.
+It has no touch actions and clears the destination when the platform state or
+route snapshot becomes invalid. The isolated activity declares distraction
+optimization. In the official Pleos Connect 2.1.0 API 34 AVD at Drive/30, the app
+accessibility tree contained the read-only summary with zero active app controls,
+but decoded frames showed the Pleos system covering it. Read-only car-service
+diagnostics listed the built-in Navigation on the system allowlist. Park/0
+restored OnMyWay. The final edit shows the OnMyWay summary in Park and separately
+recorded native 63 Building guidance in Drive/30. The native basemap remains
+blank. After capture, restored Park/0 and ended the native route in its own UI.
+
+The app journey was recorded from actual Android screenrecord frames on the
+official AVD using the explicit sample and simulated arrival. The captured APK
+predates review follow-ups that invalidate the summary on arrival, route failure
+or owner loss. The final sample and live debug APKs built with 118 passing unit
+tests each. API 67 and media 40 checks passed. The final cuts reuse the chosen
+Eleven v4 voices, with no backing track and a completion cue timed to the next
+stop appearing. See [verification](submission/final-films-verification.json) for
+verified windows, file hashes and playback. Raw footage, voice files, APKs and
+exports remain local.
+
 ## 2026-11-04 — show voice interaction in the native app and recapture on Pleos
 
 Recorded the updated OnMyWay MainActivity on a separate official Pleos Connect

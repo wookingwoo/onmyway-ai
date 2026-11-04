@@ -10,24 +10,24 @@ from PIL import Image
 
 from final_film import srt, validate_utterances
 from final_film_visuals import text
-from native_film import restricted_window, source_window, validate_native_capture
+from native_film import source_window, validate_native_capture
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'artifacts/final-films/mainactivity'
-CAPTURE = OUT / 'voice-capture'
+CAPTURE = OUT / 'cockpit-capture'
 NAVIGATION = OUT / 'navigation-check'
 spec = importlib.util.spec_from_file_location('film_builder', ROOT / 'scripts/build-final-films.py')
 builder = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(builder)
 
 APPROVALS = {'laundry-approval': '확인하고 출발', 'home-approval': '집으로 출발'}
-FULL_SHORT_SHOTS = {'voice-home', 'driving-lock', 'home-arrival'}
+FULL_SHORT_SHOTS = {'voice-home', 'native-navigation-driving', 'home-arrival'}
 ASSISTANT_FILTER = 'highpass=f=210,lowpass=f=6100,equalizer=f=1900:t=q:w=1.2:g=3,tremolo=f=46:d=0.26'
 
 
-def navigation_example(duration):
-    manifest = json.loads((NAVIGATION / 'manifest.json').read_text(encoding='utf-8'))
-    path = NAVIGATION / 'public-route.mp4'
+def navigation_example(duration, driving):
+    manifest = json.loads((NAVIGATION / ('drive-manifest.json' if driving else 'manifest.json')).read_text(encoding='utf-8'))
+    path = NAVIGATION / ('public-drive.mp4' if driving else 'public-route.mp4')
     digest = sha256(path.read_bytes()).hexdigest()
     if digest != manifest['sha256'] or manifest['destination'] != '63빌딩':
         raise ValueError('Verified native Pleos navigation capture required')
@@ -39,10 +39,19 @@ def navigation_example(duration):
     return path, start, end, digest
 
 
-def find_source(scene, chapters):
+def find_source(scene, manifest):
     name = scene['beat']
-    if name == 'native-navigation-example':
-        return navigation_example(scene['seconds'])
+    if name in {'native-navigation-example', 'native-navigation-driving'}:
+        return navigation_example(scene['seconds'], driving=name == 'native-navigation-driving')
+    chapters = manifest['chapters']
+    if name == 'parked-overview':
+        chapter = next(item for item in chapters if item['id'] == 'driving')
+        path = CAPTURE / chapter['raw']
+        start, limit = manifest['reviewed_parked_overview']
+        end = start + scene['seconds']
+        if not 0 <= start < end <= min(limit, float(builder.probe(path)['format']['duration'])):
+            raise ValueError('The parked cut exceeds the reviewed visible interval')
+        return path, start, end, chapter['sha256']
     matches = [(chapter, beat) for chapter in chapters for beat in chapter['beats'] if beat['name'] == name]
     if len(matches) != 1:
         raise ValueError(f'Expected exactly one verified native shot for {name}')
@@ -60,11 +69,6 @@ def find_source(scene, chapters):
         submit = '계획 준비하기' if name == 'baseline-plan' else '말 전달하기'
         tap = next(item['at'] for item in chapter['beats'] if item['name'] == 'tap' and item.get('label') == submit)
         start = min(beat['at'], tap + .15)
-    if name == 'driving-lock':
-        start, end = restricted_window(chapter, duration)
-        if end > available:
-            raise ValueError('Locked window exceeds raw footage')
-        return path, start, end, chapter['sha256']
     if name in APPROVALS:
         tap = next(item['at'] for item in chapter['beats'] if item['name'] == 'tap' and
                    item['at'] > beat['at'] and item.get('label') == APPROVALS[name])
@@ -110,7 +114,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
         if i == 0 and scene['role'] == 'assistant':
             cue = '차량 AI  ·  ' + cue
         events.append(f"Dialogue: 0,{ass_time(start+scene['offset'])},{ass_time(end+scene['offset'])},Default,,0,0,0,,{cue}")
-    if scene['kind'] == 'navigation':
+    if scene['kind'] in {'navigation', 'driving'} and not short:
         events.append(f"Dialogue: 0,0:00:00.00,{ass_time(scene['seconds'])},Default,,0,0,0,,"
                       "{\\an8\\pos(1450,84)}" + scene['heading'])
     path.write_text(header + '\n'.join(events) + '\n', encoding='utf-8-sig')
@@ -152,7 +156,7 @@ def build(track, story, manifest):
     folder.mkdir(exist_ok=True)
     cuts = []
     for index, scene in enumerate(scenes):
-        source, start, end, digest = find_source(scene, manifest['chapters'])
+        source, start, end, digest = find_source(scene, manifest)
         stem = f'{index:02d}'
         print(f'{track} {scene["id"]} {scene["beat"]}: {start:.2f}–{end:.2f}', flush=True)
         encode_shot(folder, scene, source, start, end, track == 'short', stem)
@@ -164,15 +168,19 @@ def build(track, story, manifest):
     mix = folder / 'mix.wav'
     builder.mix_audio(scenes, seconds, mix, background_music=False, assistant_filter=ASSISTANT_FILTER, interaction_cues=True)
     final = OUT / ('OnMyWay_AI_Pleos_Product.mp4' if track == 'main' else 'OnMyWay_AI_Pleos_Product_Shorts.mp4')
+    rendering = final.with_stem(final.stem + '.rendering')
     builder.run('ffmpeg', '-y', '-v', 'error', '-f', 'concat', '-safe', '0', '-i', listing,
                 '-i', mix, '-map', '0:v:0', '-map', '1:a:0', '-c:v', 'copy',
                 '-af', 'loudnorm=I=-16:TP=-1.5:LRA=8', '-ar', '48000', '-c:a', 'aac', '-b:a', '192k',
-                '-map_metadata', '-1', '-movflags', '+faststart', final)
+                '-map_metadata', '-1', '-movflags', '+faststart', rendering)
+    rendering.replace(final)
     final.with_suffix('.srt').write_text(srt(cues), encoding='utf-8')
-    verification = {**builder.verify(final, track, seconds), 'source': 'MainActivity on official Pleos AVD',
+    verification = {**builder.verify(final, track, seconds), 'source': 'Native OnMyWay and Navigation on official Pleos AVD',
                     'model': 'eleven_v4', 'voices': story['voices'], 'background_music': False,
                     'assistant_filter': ASSISTANT_FILTER, 'interaction_cues': [
-                        {'scene': scene['id'], 'event': scene['cue']} for scene in scenes if scene.get('cue')
+                        {'scene': scene['id'], 'event': scene['cue'],
+                         **({'offset': scene['cue_offset']} if 'cue_offset' in scene else {})}
+                        for scene in scenes if scene.get('cue')
                     ], 'caption_count': len(cues), 'cuts': cuts}
     tw, th, cols = (480, 270, 3) if track == 'main' else (270, 480, 3)
     sheet = Image.new('RGB', (cols*tw, ((len(cuts)+cols-1)//cols)*(th+25)), '#11161a')
@@ -199,6 +207,8 @@ def main():
     validate_native_capture(manifest, CAPTURE)
     if not manifest.get('voice_motion'):
         raise ValueError('Native voice-motion capture is required')
+    if not manifest.get('moving_overview'):
+        raise ValueError('Native moving overview capture is required')
     for track in ['main', 'short'] if args.track == 'all' else [args.track]:
         build(track, story, manifest)
     (OUT/'player.html').write_text('''<!doctype html><meta charset="utf-8"><title>OnMyWay AI · Pleos 녹화본</title>

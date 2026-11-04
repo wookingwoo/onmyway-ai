@@ -82,7 +82,7 @@ class VoiceInputDialog(
             orientation = LinearLayout.VERTICAL; setPadding(dp(40), dp(32), dp(40), dp(32))
             background = shape(surface)
         }
-        body.add(label(if (source == VoiceSource.EXAMPLE) "샘플 요청 · 저장된 문장" else "음성으로 요청", 19f, muted), 24)
+        body.add(label(if (source == VoiceSource.EXAMPLE) "음성 요청 · 예시 일정" else "음성 요청", 19f, muted), 24)
         val heading = LinearLayout(owner).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         val orb = object : View(owner) {
             private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -158,7 +158,7 @@ class VoiceInputDialog(
         title.text = when (phase) {
             VoicePhase.REVIEW -> "이 요청으로 준비할게요"
             VoicePhase.ERROR -> "음성 입력을 마치지 못했어요"
-            VoicePhase.LISTENING -> if (source == VoiceSource.EXAMPLE) "샘플 음성 재생 중" else "듣고 있어요"
+            VoicePhase.LISTENING -> "요청을 받아 적고 있어요"
             else -> connection
         }
         transcript.text = session.transcript.ifBlank {

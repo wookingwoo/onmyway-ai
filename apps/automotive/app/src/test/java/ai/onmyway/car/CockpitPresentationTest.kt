@@ -4,6 +4,15 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class CockpitPresentationTest {
+    @Test fun movingOverviewOpensOnlyForAnApprovedDestinationWhileParked() {
+        assertTrue(CockpitPresentation.canOpenMovingOverview("laundry", null, true, VehicleState.PARKED, false))
+        assertFalse(CockpitPresentation.canOpenMovingOverview("laundry", null, true, VehicleState.UNKNOWN, false))
+        assertFalse(CockpitPresentation.canOpenMovingOverview("laundry", null, true, VehicleState.RESTRICTED, false))
+        assertFalse(CockpitPresentation.canOpenMovingOverview("laundry", "laundry", true, VehicleState.PARKED, false))
+        assertFalse(CockpitPresentation.canOpenMovingOverview("laundry", null, false, VehicleState.PARKED, false))
+        assertFalse(CockpitPresentation.canOpenMovingOverview(null, null, true, VehicleState.PARKED, false))
+        assertFalse(CockpitPresentation.canOpenMovingOverview("laundry", null, true, VehicleState.PARKED, true))
+    }
     @Test fun arrivalUtilityCannotAffectLiveRequestsOrAnAlreadyArrivedLeg() {
         assertTrue(CockpitPresentation.canSendSampleArrival(true, true, true, "laundry", null, VehicleState.PARKED, false))
         assertFalse(CockpitPresentation.canSendSampleArrival(false, true, true, "laundry", null, VehicleState.PARKED, false))

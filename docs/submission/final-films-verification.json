@@ -2,10 +2,10 @@
   "verified_on": "2026-11-04 KST",
   "capture": {
     "platform": "Official Pleos Connect 2.1.0 API 34 AVD",
-    "component": "ai.onmyway.car.demo/ai.onmyway.car.MainActivity",
+    "component": "ai.onmyway.car.demo/ai.onmyway.car.MainActivity and ai.onmyway.car.MovingOverviewActivity",
     "theme": "Existing daytime theme",
-    "installed_apk_sha256": "fd55f9723aea689bb3d7fcc450d0d785f8aefd42a510445da3422e88164bf219",
-    "manifest_sha256": "69270e14b3fcfa311f1de450895048f4db235461b7d75d0b9746ce0e8f2f3f31",
+    "installed_apk_sha256": "1fc5cb4e33d00c4dfef6b734cc12498dd219b3ec7bb6a482d76ab3c0d9ec7fb1",
+    "manifest_sha256": "0baf74be2790326738f88a7c7a35b118d447ec4f8212507878db3811b6e38604",
     "scope": "actual native UI; explicit synthetic example; simulated guidance/arrival; actual AVD driving restriction",
     "scenario": {
       "departure": "18:00",
@@ -24,47 +24,60 @@
     "restored_gear": "Park",
     "restored_speed_kph": 0,
     "avd": "OnMyWay_Pleos_Voice_Film",
-    "final_demo_build_sha256": "7bfe82fe7c6227540b41dfeaa212566c3ff1f2bf1685bbad3934db46bac9aca3",
-    "note": "Captured build predates live narration and interrupted-stop review fixes. The recorded successful sample path is equivalent.",
-    "voice_motion": "Explicit sample text replay; animated mic state and native on-device AI briefing. Editorial Eleven v4 audio."
+    "final_demo_build_sha256": "724315de043b915bb61cce107de7c2696e814a0ec97e6e802b67f359c8a69c5c",
+    "note": "Captured build predates snapshot invalidation on arrival, route failure or owner loss. Those paths are outside the successful summary footage.",
+    "voice_motion": "Explicit sample text replay; animated mic state and native on-device AI briefing. Editorial Eleven v4 audio.",
+    "driving_overview": {
+      "park_visible": true,
+      "park_source_window": [
+        2.96,
+        4.73
+      ],
+      "drive_state": "Drive / 30 km/h",
+      "visible_in_drive": false,
+      "app_accessibility_summary": true,
+      "enabled_app_controls": 0,
+      "system_overlay": "Pleos blocked OnMyWay above the app activity; visible pixels took precedence over the accessibility tree.",
+      "park_restored": true
+    }
   },
   "tests": {
     "api": 67,
     "media": 40,
     "demo_and_live_debug_builds": "passed",
-    "android_demo": 117,
-    "android_live": 117
+    "android_demo": 118,
+    "android_live": 118
   },
-  "visual_review": "Raw and rendered early and later transcript, AI text and moving indicators, Drive lock and completion reviewed.",
+  "visual_review": "Decoded raw and final frames checked for sample transcription, planning progress, ordered stop cards, completion progress, Park summary, and visible built-in Navigation at Drive/30. OnMyWay is obscured by the Pleos system in Drive/30.",
   "media": {
     "main": {
       "width": 1920,
       "height": 1080,
       "fps": 30,
-      "seconds": 101.0,
+      "seconds": 104.2,
       "audio_streams": 1,
       "file": "OnMyWay_AI_Pleos_Product.mp4",
-      "sha256": "4d9ecbdc15ca72fe8f9ea0402d2f4bbd2be5b010719a645a4af2aee0a73d01a4",
-      "bytes": 10355642,
+      "sha256": "7e8bfc562331c189a1de11b99a9c985277e304c8c0265c4e7ea1049e57809cc2",
+      "bytes": 5234171,
       "video_codec": "h264",
       "pixel_format": "yuv420p",
       "audio_codec": "aac",
       "audio_channels": 2,
-      "frames": 3030,
+      "frames": 3126,
       "full_decode": "passed",
       "loudness": {
         "input_i": "-16.01",
-        "input_tp": "-1.50",
-        "input_lra": "4.70",
-        "input_thresh": "-26.57",
-        "output_i": "-15.84",
+        "input_tp": "-1.48",
+        "input_lra": "5.00",
+        "input_thresh": "-26.54",
+        "output_i": "-15.85",
         "output_tp": "-1.50",
-        "output_lra": "4.50",
-        "output_thresh": "-26.39",
+        "output_lra": "5.10",
+        "output_thresh": "-26.36",
         "normalization_type": "dynamic",
-        "target_offset": "-0.16"
+        "target_offset": "-0.15"
       },
-      "source": "MainActivity on official Pleos AVD",
+      "source": "Native OnMyWay and Navigation on official Pleos AVD",
       "model": "eleven_v4",
       "voices": {
         "narrator": {
@@ -115,7 +128,8 @@
         },
         {
           "scene": "n09",
-          "event": "complete"
+          "event": "complete",
+          "offset": 1.96
         }
       ],
       "caption_count": 33,
@@ -124,10 +138,10 @@
           "scene": "n01",
           "beat": "voice-home",
           "source": "clarify.mp4",
-          "sha256": "8eb674a32dc80ede74f68ebebcc6ce8b8ab2b92f42b5e34464bd2c3d367e9793",
+          "sha256": "344d6d6c82c7173f053ad7f8cffb529cbdc37717dfd42e4d3cacf2e963ba11d1",
           "source_window": [
-            7.2059999999999995,
-            14.206
+            7.135999999999999,
+            14.136
           ],
           "at": 0,
           "duration": 7.0,
@@ -137,10 +151,10 @@
           "scene": "n02-motion",
           "beat": "voice-request",
           "source": "clarify.mp4",
-          "sha256": "8eb674a32dc80ede74f68ebebcc6ce8b8ab2b92f42b5e34464bd2c3d367e9793",
+          "sha256": "344d6d6c82c7173f053ad7f8cffb529cbdc37717dfd42e4d3cacf2e963ba11d1",
           "source_window": [
-            14.206,
-            26.356
+            14.136,
+            26.286
           ],
           "at": 7.0,
           "duration": 14.5,
@@ -150,25 +164,25 @@
           "scene": "n03-brief",
           "beat": "baseline-plan",
           "source": "clarify.mp4",
-          "sha256": "8eb674a32dc80ede74f68ebebcc6ce8b8ab2b92f42b5e34464bd2c3d367e9793",
+          "sha256": "344d6d6c82c7173f053ad7f8cffb529cbdc37717dfd42e4d3cacf2e963ba11d1",
           "source_window": [
-            39.475,
-            48.375
+            39.393,
+            49.443
           ],
           "at": 21.5,
-          "duration": 9.5,
-          "native_speed": 0.9368
+          "duration": 10.5,
+          "native_speed": 0.9571
         },
         {
           "scene": "n04-motion",
           "beat": "spoken-refinement",
           "source": "change.mp4",
-          "sha256": "a4907cb6b153953b3624631e4d459d05b4370cf05f7f1344146b8d2e4e48824a",
+          "sha256": "2852a72f8b781d8328166654a12ced803d162e154c1f169e078ee375ceca8e22",
           "source_window": [
-            5.21,
-            12.01
+            5.257,
+            12.056999999999999
           ],
-          "at": 31.0,
+          "at": 32.0,
           "duration": 8.0,
           "native_speed": 0.85
         },
@@ -176,26 +190,39 @@
           "scene": "n05-brief",
           "beat": "revised-summary",
           "source": "change.mp4",
-          "sha256": "a4907cb6b153953b3624631e4d459d05b4370cf05f7f1344146b8d2e4e48824a",
+          "sha256": "2852a72f8b781d8328166654a12ced803d162e154c1f169e078ee375ceca8e22",
           "source_window": [
-            29.256,
-            39.506
+            29.339,
+            40.739
           ],
-          "at": 39.0,
-          "duration": 12.0,
-          "native_speed": 0.8542
+          "at": 40.0,
+          "duration": 12.5,
+          "native_speed": 0.912
         },
         {
           "scene": "n06",
           "beat": "laundry-approval",
           "source": "decision.mp4",
-          "sha256": "ccc5da0603d6a86cbb65d003ae8e4886973a01172fe626a70d95e60cb4aed1e3",
+          "sha256": "0b3ca0182a36dfd3d5a258b664079cb57a3b7aa5e3c1acf1941468bc2c6f381e",
           "source_window": [
-            28.36,
-            32.36
+            28.342,
+            32.342
           ],
-          "at": 51.0,
+          "at": 52.5,
           "duration": 4,
+          "native_speed": 1.0
+        },
+        {
+          "scene": "n06-overview",
+          "beat": "parked-overview",
+          "source": "driving.mp4",
+          "sha256": "e35865175a6a06431e2f9d9b55803c4d5c033a0fd13f683daabddaef44cb74e0",
+          "source_window": [
+            2.96,
+            4.66
+          ],
+          "at": 56.5,
+          "duration": 1.7,
           "native_speed": 1.0
         },
         {
@@ -207,20 +234,20 @@
             4.9,
             12.9
           ],
-          "at": 55.0,
+          "at": 58.2,
           "duration": 8.0,
           "native_speed": 1.0
         },
         {
           "scene": "n07",
-          "beat": "driving-lock",
-          "source": "driving.mp4",
-          "sha256": "2d6dfd46d997a217353a4fa368578dd241dfa423744e7b860b4bcde455ed9350",
+          "beat": "native-navigation-driving",
+          "source": "public-drive.mp4",
+          "sha256": "af929a5142ede991868565a0700f590fad762272f9978b85b8a5fe5a5cdd2935",
           "source_window": [
-            5.890000000000001,
-            11.89
+            8.0,
+            14.0
           ],
-          "at": 63.0,
+          "at": 66.2,
           "duration": 6.0,
           "native_speed": 1.0
         },
@@ -228,12 +255,12 @@
           "scene": "n08-ai",
           "beat": "laundry-arrival",
           "source": "laundry.mp4",
-          "sha256": "32b1bb4e14aa2e15209a63887e630eb7f05e8ac54c6d57e18e64cf016746f4ef",
+          "sha256": "9eae574ee3c7795cafef746782c311272b749734c91d2495c939573fc3f866f7",
           "source_window": [
-            5.114,
-            11.614
+            5.074,
+            11.574
           ],
-          "at": 69.0,
+          "at": 72.2,
           "duration": 6.5,
           "native_speed": 1.0
         },
@@ -241,12 +268,12 @@
           "scene": "n09",
           "beat": "automatic-next",
           "source": "laundry.mp4",
-          "sha256": "32b1bb4e14aa2e15209a63887e630eb7f05e8ac54c6d57e18e64cf016746f4ef",
+          "sha256": "9eae574ee3c7795cafef746782c311272b749734c91d2495c939573fc3f866f7",
           "source_window": [
-            29.316,
-            36.816
+            29.23,
+            36.730000000000004
           ],
-          "at": 75.5,
+          "at": 78.7,
           "duration": 7.5,
           "native_speed": 1.0
         },
@@ -254,12 +281,12 @@
           "scene": "n10-ai",
           "beat": "medicine-arrival",
           "source": "medicine.mp4",
-          "sha256": "dfa98d9b8e4a148e8061e80ca662fd706bbae909cdab4acb0dc5dede5c3f8d46",
+          "sha256": "3c592ab24bf55228dc8594396c19b89dfadf46d45ab8e5ca401e19d87e283d5d",
           "source_window": [
-            7.205,
-            11.705
+            7.238,
+            11.738
           ],
-          "at": 83.0,
+          "at": 86.2,
           "duration": 4.5,
           "native_speed": 1.0
         },
@@ -267,12 +294,12 @@
           "scene": "n11",
           "beat": "home-approval",
           "source": "home.mp4",
-          "sha256": "4cb697be1352f4594f5a74bf3163ee0a1eb0951bd62a649fdd3c286f20165c32",
+          "sha256": "505df4bf60c3264b2fcbefa704230586e9b4756993e373723d3701474eb3b7cc",
           "source_window": [
-            9.870999999999999,
-            15.370999999999999
+            9.812000000000001,
+            15.312000000000001
           ],
-          "at": 87.5,
+          "at": 90.7,
           "duration": 5.5,
           "native_speed": 1.0
         },
@@ -280,12 +307,12 @@
           "scene": "n12",
           "beat": "home-arrival",
           "source": "home.mp4",
-          "sha256": "4cb697be1352f4594f5a74bf3163ee0a1eb0951bd62a649fdd3c286f20165c32",
+          "sha256": "505df4bf60c3264b2fcbefa704230586e9b4756993e373723d3701474eb3b7cc",
           "source_window": [
-            18.94,
-            26.94
+            18.707,
+            26.707
           ],
-          "at": 93.0,
+          "at": 96.2,
           "duration": 8.0,
           "native_speed": 1.0
         }
@@ -295,30 +322,30 @@
       "width": 1080,
       "height": 1920,
       "fps": 30,
-      "seconds": 57.5,
+      "seconds": 59.5,
       "audio_streams": 1,
       "file": "OnMyWay_AI_Pleos_Product_Shorts.mp4",
-      "sha256": "e3ab16df01a3db447ab9302710c816bd147acc68a9e43a46559a0710c712af34",
-      "bytes": 2876657,
+      "sha256": "fd73afcad20fdd39b0fe1a35aad567f621cc4946a2257579a609f714ecabfc67",
+      "bytes": 2097957,
       "video_codec": "h264",
       "pixel_format": "yuv420p",
       "audio_codec": "aac",
       "audio_channels": 2,
-      "frames": 1725,
+      "frames": 1785,
       "full_decode": "passed",
       "loudness": {
-        "input_i": "-15.96",
-        "input_tp": "-2.17",
-        "input_lra": "3.30",
-        "input_thresh": "-26.57",
-        "output_i": "-16.01",
-        "output_tp": "-2.00",
-        "output_lra": "3.20",
-        "output_thresh": "-26.59",
+        "input_i": "-15.92",
+        "input_tp": "-1.50",
+        "input_lra": "4.40",
+        "input_thresh": "-26.54",
+        "output_i": "-15.98",
+        "output_tp": "-1.50",
+        "output_lra": "4.00",
+        "output_thresh": "-26.58",
         "normalization_type": "dynamic",
-        "target_offset": "0.01"
+        "target_offset": "-0.02"
       },
-      "source": "MainActivity on official Pleos AVD",
+      "source": "Native OnMyWay and Navigation on official Pleos AVD",
       "model": "eleven_v4",
       "voices": {
         "narrator": {
@@ -365,7 +392,8 @@
         },
         {
           "scene": "p07",
-          "event": "complete"
+          "event": "complete",
+          "offset": 1.96
         }
       ],
       "caption_count": 21,
@@ -374,10 +402,10 @@
           "scene": "p01",
           "beat": "voice-home",
           "source": "clarify.mp4",
-          "sha256": "8eb674a32dc80ede74f68ebebcc6ce8b8ab2b92f42b5e34464bd2c3d367e9793",
+          "sha256": "344d6d6c82c7173f053ad7f8cffb529cbdc37717dfd42e4d3cacf2e963ba11d1",
           "source_window": [
-            10.206,
-            14.206
+            10.136,
+            14.136
           ],
           "at": 0,
           "duration": 4,
@@ -387,10 +415,10 @@
           "scene": "p02-motion",
           "beat": "voice-request",
           "source": "clarify.mp4",
-          "sha256": "8eb674a32dc80ede74f68ebebcc6ce8b8ab2b92f42b5e34464bd2c3d367e9793",
+          "sha256": "344d6d6c82c7173f053ad7f8cffb529cbdc37717dfd42e4d3cacf2e963ba11d1",
           "source_window": [
-            14.206,
-            26.356
+            14.136,
+            26.286
           ],
           "at": 4,
           "duration": 14.0,
@@ -400,10 +428,10 @@
           "scene": "p03-motion",
           "beat": "spoken-refinement",
           "source": "change.mp4",
-          "sha256": "a4907cb6b153953b3624631e4d459d05b4370cf05f7f1344146b8d2e4e48824a",
+          "sha256": "2852a72f8b781d8328166654a12ced803d162e154c1f169e078ee375ceca8e22",
           "source_window": [
-            5.21,
-            12.01
+            5.257,
+            12.056999999999999
           ],
           "at": 18.0,
           "duration": 7.5,
@@ -413,38 +441,38 @@
           "scene": "p04-brief",
           "beat": "revised-summary",
           "source": "change.mp4",
-          "sha256": "a4907cb6b153953b3624631e4d459d05b4370cf05f7f1344146b8d2e4e48824a",
+          "sha256": "2852a72f8b781d8328166654a12ced803d162e154c1f169e078ee375ceca8e22",
           "source_window": [
-            29.256,
-            38.906
+            29.339,
+            40.138999999999996
           ],
           "at": 25.5,
-          "duration": 11.0,
-          "native_speed": 0.8773
+          "duration": 12.5,
+          "native_speed": 0.864
         },
         {
           "scene": "p05",
           "beat": "laundry-approval",
           "source": "decision.mp4",
-          "sha256": "ccc5da0603d6a86cbb65d003ae8e4886973a01172fe626a70d95e60cb4aed1e3",
+          "sha256": "0b3ca0182a36dfd3d5a258b664079cb57a3b7aa5e3c1acf1941468bc2c6f381e",
           "source_window": [
-            28.740000000000002,
-            32.74
+            28.722,
+            32.722
           ],
-          "at": 36.5,
+          "at": 38.0,
           "duration": 4,
           "native_speed": 1.0
         },
         {
           "scene": "p06",
-          "beat": "driving-lock",
-          "source": "driving.mp4",
-          "sha256": "2d6dfd46d997a217353a4fa368578dd241dfa423744e7b860b4bcde455ed9350",
+          "beat": "native-navigation-driving",
+          "source": "public-drive.mp4",
+          "sha256": "af929a5142ede991868565a0700f590fad762272f9978b85b8a5fe5a5cdd2935",
           "source_window": [
-            5.890000000000001,
-            9.89
+            8.0,
+            12.0
           ],
-          "at": 40.5,
+          "at": 42.0,
           "duration": 4,
           "native_speed": 1.0
         },
@@ -452,25 +480,25 @@
           "scene": "p07",
           "beat": "automatic-next",
           "source": "laundry.mp4",
-          "sha256": "32b1bb4e14aa2e15209a63887e630eb7f05e8ac54c6d57e18e64cf016746f4ef",
+          "sha256": "9eae574ee3c7795cafef746782c311272b749734c91d2495c939573fc3f866f7",
           "source_window": [
-            29.316,
-            34.316
+            29.23,
+            34.730000000000004
           ],
-          "at": 44.5,
-          "duration": 5,
+          "at": 46.0,
+          "duration": 5.5,
           "native_speed": 1.0
         },
         {
           "scene": "p08",
           "beat": "home-approval",
           "source": "home.mp4",
-          "sha256": "4cb697be1352f4594f5a74bf3163ee0a1eb0951bd62a649fdd3c286f20165c32",
+          "sha256": "505df4bf60c3264b2fcbefa704230586e9b4756993e373723d3701474eb3b7cc",
           "source_window": [
-            11.370999999999999,
-            15.370999999999999
+            11.312000000000001,
+            15.312000000000001
           ],
-          "at": 49.5,
+          "at": 51.5,
           "duration": 4,
           "native_speed": 1.0
         },
@@ -478,12 +506,12 @@
           "scene": "p09",
           "beat": "home-arrival",
           "source": "home.mp4",
-          "sha256": "4cb697be1352f4594f5a74bf3163ee0a1eb0951bd62a649fdd3c286f20165c32",
+          "sha256": "505df4bf60c3264b2fcbefa704230586e9b4756993e373723d3701474eb3b7cc",
           "source_window": [
-            18.94,
-            22.94
+            18.707,
+            22.707
           ],
-          "at": 53.5,
+          "at": 55.5,
           "duration": 4,
           "native_speed": 1.0
         }
@@ -507,24 +535,40 @@
     "displayed_route_minutes": 26,
     "displayed_route_km": 25,
     "background_tile_http_401_seen": true,
-    "returned_to_onmyway": true
+    "returned_to_onmyway": true,
+    "drive_capture": {
+      "destination": "63빌딩",
+      "sha256": "af929a5142ede991868565a0700f590fad762272f9978b85b8a5fe5a5cdd2935",
+      "reviewed_window": [
+        8.0,
+        17.0
+      ],
+      "gear": "Drive",
+      "speed_kph": 30,
+      "restored_gear": "Park",
+      "restored_speed_kph": 0,
+      "scope": "Actual 63 Building guidance on the built-in Pleos Navigation in Drive/30",
+      "basemap": "blank",
+      "route": "Visible route line, next-turn distance, destination and ETA",
+      "guidance_ended": true
+    }
   },
   "browser_playback": {
     "main": {
       "seeks": 0,
       "errors": [],
-      "end": 101,
-      "duration": 101,
+      "muted": false,
       "rate": 1,
-      "muted": false
+      "end": 104.2,
+      "duration": 104.2
     },
     "short": {
       "seeks": 0,
       "errors": [],
-      "end": 57.5,
-      "duration": 57.5,
+      "muted": true,
       "rate": 1,
-      "muted": true
+      "end": 59.5,
+      "duration": 59.5
     }
   }
 }

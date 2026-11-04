@@ -219,7 +219,10 @@ def main():
         root = tree()
         click("설정")
         if find("새 일정 시작", tree()) is not None:
-            assert find("샘플 데이터", root, True) is not None, "Refusing to reset a live journey"
+            assert any(n.get("package") == "ai.onmyway.car.demo" and n.get("text") in {
+                "샘플 데이터 · 모의 안내", "예시 일정 · 모의 안내",
+                "샘플 데이터 · 실제 내비 요청 없음", "예시 일정 · 실제 내비 요청 없음",
+            } for n in root.iter("node")), "Refusing to reset a live journey"
             click("새 일정 시작"); click("새로 시작"); click("설정")
         click("연결 · 위치 고급 설정")
         editors = [n for n in tree().iter("node") if n.get("class") == "android.widget.EditText"]
@@ -229,7 +232,7 @@ def main():
         click("닫기")
         if find("샘플로 둘러보기", tree()) is not None: click("샘플로 둘러보기")
         click("돌아가기")
-        assert find("샘플 데이터", tree(), True) is not None
+        assert find("예시 일정", tree(), True) is not None or find("샘플 데이터", tree(), True) is not None
         with recording("request"):
             shot("voice-home", "가는 길에, 무엇을 할까요?")
             click("말로 부탁하기"); shot("voice-request", "계획 준비하기")

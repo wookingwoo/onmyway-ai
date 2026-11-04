@@ -33,7 +33,7 @@ def main():
     out.mkdir(parents=True,exist_ok=True)
     tracks=["main","short"] if args.track=="all" else [args.track]
     with httpx.Client(base_url="https://api.elevenlabs.io",headers={"xi-api-key":key},timeout=120) as client:
-        for c in [c for t in tracks for c in data[t]]:
+        for c in [c for t in tracks for c in data[t] if not c.get("visual_only")]:
             voice=data["voices"][c["role"]]
             payload={k:v for k,v in voice.items() if k not in {"name","voice_id"}}
             payload.update(text=c["text"],apply_text_normalization="on")
