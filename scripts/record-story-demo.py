@@ -16,6 +16,10 @@ import urllib.request
 import xml.etree.ElementTree as ET
 
 
+DEPART = "이 계획으로 출발"
+HOME = "집으로 안내 시작"
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--adb", required=True)
@@ -122,6 +126,11 @@ def main():
                 break
         tap(find(label, wait(label, contains), contains))
 
+    def settings():
+        if find("더보기", tree()) is not None:
+            click("더보기")
+        click("설정")
+
     def edit(label):
         for _ in range(10):
             root = tree()
@@ -157,7 +166,7 @@ def main():
         if find("말 전달하기", root) is not None:
             click("취소")
         # Settings pauses the spoken exchange. Returning retains the current plan.
-        click("설정")
+        settings()
         click("돌아가기")
 
     @contextmanager
@@ -216,16 +225,16 @@ def main():
                 assert sha256((out / record["raw"]).read_bytes()).hexdigest() == record["sha256"], "Changed retained recording"
             if args.resume_refinement and find("말 전달하기", tree()) is not None:
                 click("취소")
-            root = wait("안내 중 · 차량 내비게이션을 확인해 주세요" if args.resume_driving else "확인하고 출발")
+            root = wait("안내 중 · 차량 내비게이션을 확인해 주세요" if args.resume_driving else DEPART)
             assert example(root)
             expected = "18:40 / 19:00" if args.resume_refinement else "18:53 / 19:00"
             assert find("한결세탁소", root, args.resume_refinement) is not None and find(expected, root) is not None
         else:
             if find("안내 연결", root) is not None:
                 click("안내 연결")
-            click("설정"); click("연결 · 위치 고급 설정")
-            settings = wait("서버 주소")
-            editors = [n for n in settings.iter("node") if n.get("class") == "android.widget.EditText"
+            settings(); click("연결 · 위치 고급 설정")
+            settings_root = wait("서버 주소")
+            editors = [n for n in settings_root.iter("node") if n.get("class") == "android.widget.EditText"
                        and n.get("package") == "ai.onmyway.car.demo"]
             assert editors, "Missing server editor in native settings"
             tap(editors[0]); adb("shell", "input", "keycombination", "113", "29")
@@ -235,8 +244,8 @@ def main():
             root = tree()
             if find("가는 길에, 무엇을 할까요?", root) is None:
                 assert example(root), "Refusing to reset a live journey"
-                click("설정"); click("새 일정 시작"); click("새로 시작")
-            click("설정")
+                settings(); click("새 일정 시작"); click("새로 시작")
+            settings()
             if find("샘플로 둘러보기", tree()) is not None:
                 click("샘플로 둘러보기")
             click("돌아가기")
@@ -252,9 +261,12 @@ def main():
                     settle_plan()
                 root = shot("baseline-plan" if args.voice_motion else "automatic-proposal", "AI 안내" if args.voice_motion else "이렇게 들르고 갈까요?")
                 assert find("18:40 / 19:00", root) is not None
-                assert find("확인하고 출발", root) is not None
+                assert find(DEPART, root) is not None
+                assert find("음성 요청", root) is not None
+                assert find("다시 듣기", root) is not None
+                assert all(find(label, root) is None for label in ("말로 조건 바꾸기", "말로 대답하기", "계획 듣기", "요청 · 일정 자세히"))
             with recording("venue"):
-                click("요청 · 일정 자세히")
+                click("더보기"); click("일정 상세")
                 shot("automatic-venues", "요청과 일정")
                 click("닫기")
             with recording("baseline"):
@@ -267,7 +279,7 @@ def main():
                 assert find("18:40 / 19:00", root) is not None
         if not (args.resume_driving or args.resume_decision):
             with recording("change"):
-                click("말로 조건 바꾸기")
+                click("음성 요청"); click("약국에 머무를 시간 변경")
                 response = "말 전달하기" if find("말 전달하기", tree()) is not None else "계획 준비하기"
                 shot("spoken-refinement", "이 요청으로 준비할게요" if args.voice_motion else response)
                 time.sleep(2)
@@ -288,8 +300,8 @@ def main():
                     assert scroll(root, False)
                 shot("decision-review" if args.voice_motion else "revised-summary", "이렇게 들르고 갈까요?")
                 time.sleep(3)
-                shot("laundry-approval", "확인하고 출발")
-                click("확인하고 출발")
+                shot("laundry-approval", DEPART)
+                click(DEPART)
                 shot("departure-accepted", "안내 중 · 차량 내비게이션을 확인해 주세요")
         with recording("driving"):
             if args.moving_overview:
@@ -307,7 +319,7 @@ def main():
                                n.get("clickable") == "true" and n.get("enabled") == "true"
                                for n in root.iter("node")), "Driving overview contains an active control"
             assert not any(n.get("class") == "android.widget.EditText" and n.get("enabled") == "true" for n in root.iter("node"))
-            assert not any(n.get("text") in {"확인하고 출발", "집으로 출발", "완료했어요", "말로 부탁하기"}
+            assert not any(n.get("text") in {DEPART, HOME, "완료했어요", "말로 부탁하기", "음성 요청", "더보기"}
                            and n.get("enabled") == "true" for n in root.iter("node"))
             request("/vehicle/controls?speed=0&accelerator=0&brake=0&steering=0", "PUT")
             request("/vehicle/gear?gear=Park", "PUT")
@@ -315,21 +327,22 @@ def main():
             if args.hold_seconds > 1.2:
                 shot("park-restored", "다음 장소로 이동해요")
         with recording("laundry"):
-            click("설정"); click("샘플 안내 · 도착 신호")
+            settings(); click("샘플 안내 · 도착 신호")
             shot("laundry-arrival", "할 일을 마쳤나요?")
             shot("laundry-completion", "완료했어요")
             click("완료했어요")
             root = shot("automatic-next", "다음은 이곳이에요")
             assert find("약 구매", root) is not None and find("18:53 / 19:00", root) is not None
         with recording("medicine"):
-            click("확인하고 출발")
-            click("설정"); click("샘플 안내 · 도착 신호")
+            click(DEPART)
+            settings(); click("샘플 안내 · 도착 신호")
             shot("medicine-arrival", "할 일을 마쳤나요?")
             click("완료했어요")
             shot("home-preview", "이제 집으로 가요")
         with recording("home"):
-            shot("home-approval", "집으로 출발")
-            click("집으로 출발"); click("설정"); click("샘플 안내 · 도착 신호")
+            root = shot("home-approval", HOME)
+            assert find("음성 요청", root) is None and find(DEPART, root) is None
+            click(HOME); settings(); click("샘플 안내 · 도착 신호")
             shot("home-arrival", "집에 도착했어요")
         state = request("/vehicle/state")
         assert state["gear"]["actual"]["value"] == "Park" and state["controls"]["speed_kph"] == 0

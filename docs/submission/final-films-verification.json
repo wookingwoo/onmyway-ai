@@ -4,8 +4,8 @@
     "platform": "Official Pleos Connect 2.1.0 API 34 AVD",
     "component": "ai.onmyway.car.demo/ai.onmyway.car.MainActivity and ai.onmyway.car.MovingOverviewActivity",
     "theme": "Existing daytime theme",
-    "installed_apk_sha256": "1fc5cb4e33d00c4dfef6b734cc12498dd219b3ec7bb6a482d76ab3c0d9ec7fb1",
-    "manifest_sha256": "0baf74be2790326738f88a7c7a35b118d447ec4f8212507878db3811b6e38604",
+    "installed_apk_sha256": "a2fc8a18f5fa1c3484fd69c5e44a66b90f0c51e4665a33221f967f7e38afea2a",
+    "manifest_sha256": "0fc7b95a3c78c3e95d4793712cdfea00c83656f5b693c7943e52dd89ba92bd35",
     "scope": "actual native UI; explicit synthetic example; simulated guidance/arrival; actual AVD driving restriction",
     "scenario": {
       "departure": "18:00",
@@ -24,14 +24,14 @@
     "restored_gear": "Park",
     "restored_speed_kph": 0,
     "avd": "OnMyWay_Pleos_Voice_Film",
-    "final_demo_build_sha256": "724315de043b915bb61cce107de7c2696e814a0ec97e6e802b67f359c8a69c5c",
-    "note": "Captured build predates snapshot invalidation on arrival, route failure or owner loss. Those paths are outside the successful summary footage.",
+    "final_demo_build_sha256": "a2fc8a18f5fa1c3484fd69c5e44a66b90f0c51e4665a33221f967f7e38afea2a",
+    "note": "Captured APK matches the final tested demo APK.",
     "voice_motion": "Explicit sample text replay; animated mic state and native on-device AI briefing. Editorial Eleven v4 audio.",
     "driving_overview": {
       "park_visible": true,
       "park_source_window": [
-        2.96,
-        4.73
+        5.6,
+        9.4
       ],
       "drive_state": "Drive / 30 km/h",
       "visible_in_drive": false,
@@ -39,16 +39,17 @@
       "enabled_app_controls": 0,
       "system_overlay": "Pleos blocked OnMyWay above the app activity; visible pixels took precedence over the accessibility tree.",
       "park_restored": true
-    }
+    },
+    "route_controls": "One primary approval or completion action per leg. Consolidated voice request; compact AI replay; route details and settings in More. Final home approval remains separate."
   },
   "tests": {
     "api": 67,
     "media": 40,
     "demo_and_live_debug_builds": "passed",
-    "android_demo": 118,
-    "android_live": 118
+    "android_demo": 119,
+    "android_live": 119
   },
-  "visual_review": "Decoded raw and final frames checked for sample transcription, planning progress, ordered stop cards, completion progress, Park summary, and visible built-in Navigation at Drive/30. OnMyWay is obscured by the Pleos system in Drive/30.",
+  "visual_review": "Official Pleos capture reviewed for one primary route action, AI replay placement, More menu, sample speech refinement, revised stops, parked summary, completion and separate home approval. Built-in Navigation at Drive/30 remains independently recorded; the Pleos system covers OnMyWay in Drive.",
   "media": {
     "main": {
       "width": 1920,
@@ -57,8 +58,8 @@
       "seconds": 104.2,
       "audio_streams": 1,
       "file": "OnMyWay_AI_Pleos_Product.mp4",
-      "sha256": "7e8bfc562331c189a1de11b99a9c985277e304c8c0265c4e7ea1049e57809cc2",
-      "bytes": 5234171,
+      "sha256": "b51ee21923c5aa6c4d750f29682e1951379c2c7da1ba92a7a3cca3bda7481fb7",
+      "bytes": 5244892,
       "video_codec": "h264",
       "pixel_format": "yuv420p",
       "audio_codec": "aac",
@@ -138,10 +139,10 @@
           "scene": "n01",
           "beat": "voice-home",
           "source": "clarify.mp4",
-          "sha256": "344d6d6c82c7173f053ad7f8cffb529cbdc37717dfd42e4d3cacf2e963ba11d1",
+          "sha256": "9d0873df9401fdd327a6c2a1b8f56a4888b3ded3afa60529f37c67daee47dd99",
           "source_window": [
-            7.135999999999999,
-            14.136
+            5.111000000000001,
+            12.111
           ],
           "at": 0,
           "duration": 7.0,
@@ -151,10 +152,10 @@
           "scene": "n02-motion",
           "beat": "voice-request",
           "source": "clarify.mp4",
-          "sha256": "344d6d6c82c7173f053ad7f8cffb529cbdc37717dfd42e4d3cacf2e963ba11d1",
+          "sha256": "9d0873df9401fdd327a6c2a1b8f56a4888b3ded3afa60529f37c67daee47dd99",
           "source_window": [
-            14.136,
-            26.286
+            12.111,
+            24.261000000000003
           ],
           "at": 7.0,
           "duration": 14.5,
@@ -164,10 +165,10 @@
           "scene": "n03-brief",
           "beat": "baseline-plan",
           "source": "clarify.mp4",
-          "sha256": "344d6d6c82c7173f053ad7f8cffb529cbdc37717dfd42e4d3cacf2e963ba11d1",
+          "sha256": "9d0873df9401fdd327a6c2a1b8f56a4888b3ded3afa60529f37c67daee47dd99",
           "source_window": [
-            39.393,
-            49.443
+            35.324,
+            45.373999999999995
           ],
           "at": 21.5,
           "duration": 10.5,
@@ -177,10 +178,10 @@
           "scene": "n04-motion",
           "beat": "spoken-refinement",
           "source": "change.mp4",
-          "sha256": "2852a72f8b781d8328166654a12ced803d162e154c1f169e078ee375ceca8e22",
+          "sha256": "c0525ff36ef3eaaaab467ee1cc6a1fdeefd350998c12f638c3a903d58a758cb9",
           "source_window": [
-            5.257,
-            12.056999999999999
+            4.854,
+            11.654
           ],
           "at": 32.0,
           "duration": 8.0,
@@ -190,10 +191,10 @@
           "scene": "n05-brief",
           "beat": "revised-summary",
           "source": "change.mp4",
-          "sha256": "2852a72f8b781d8328166654a12ced803d162e154c1f169e078ee375ceca8e22",
+          "sha256": "c0525ff36ef3eaaaab467ee1cc6a1fdeefd350998c12f638c3a903d58a758cb9",
           "source_window": [
-            29.339,
-            40.739
+            26.802,
+            38.202
           ],
           "at": 40.0,
           "duration": 12.5,
@@ -203,10 +204,10 @@
           "scene": "n06",
           "beat": "laundry-approval",
           "source": "decision.mp4",
-          "sha256": "0b3ca0182a36dfd3d5a258b664079cb57a3b7aa5e3c1acf1941468bc2c6f381e",
+          "sha256": "20fdf781b0f3b66847623a2292577e8602d2d3d29ef610b424e6553c3b68eb0c",
           "source_window": [
-            28.342,
-            32.342
+            24.334,
+            28.334
           ],
           "at": 52.5,
           "duration": 4,
@@ -216,10 +217,10 @@
           "scene": "n06-overview",
           "beat": "parked-overview",
           "source": "driving.mp4",
-          "sha256": "e35865175a6a06431e2f9d9b55803c4d5c033a0fd13f683daabddaef44cb74e0",
+          "sha256": "967dbf7dc8e89ab112c91d7e1b6277acad2017d5b90e2d509ec0b6924bb6c631",
           "source_window": [
-            2.96,
-            4.66
+            5.6,
+            7.3
           ],
           "at": 56.5,
           "duration": 1.7,
@@ -255,10 +256,10 @@
           "scene": "n08-ai",
           "beat": "laundry-arrival",
           "source": "laundry.mp4",
-          "sha256": "9eae574ee3c7795cafef746782c311272b749734c91d2495c939573fc3f866f7",
+          "sha256": "0b8e94695b4f332996b485d52408f4525b19dfee417430955de6491852689aa8",
           "source_window": [
-            5.074,
-            11.574
+            9.326,
+            15.826
           ],
           "at": 72.2,
           "duration": 6.5,
@@ -268,10 +269,10 @@
           "scene": "n09",
           "beat": "automatic-next",
           "source": "laundry.mp4",
-          "sha256": "9eae574ee3c7795cafef746782c311272b749734c91d2495c939573fc3f866f7",
+          "sha256": "0b8e94695b4f332996b485d52408f4525b19dfee417430955de6491852689aa8",
           "source_window": [
-            29.23,
-            36.730000000000004
+            29.515,
+            37.015
           ],
           "at": 78.7,
           "duration": 7.5,
@@ -281,10 +282,10 @@
           "scene": "n10-ai",
           "beat": "medicine-arrival",
           "source": "medicine.mp4",
-          "sha256": "3c592ab24bf55228dc8594396c19b89dfadf46d45ab8e5ca401e19d87e283d5d",
+          "sha256": "764a53c2e43241736c0da677de9a99329a0d368a3f5b4238f0c9164763cb0a2f",
           "source_window": [
-            7.238,
-            11.738
+            11.527000000000001,
+            16.027
           ],
           "at": 86.2,
           "duration": 4.5,
@@ -294,10 +295,10 @@
           "scene": "n11",
           "beat": "home-approval",
           "source": "home.mp4",
-          "sha256": "505df4bf60c3264b2fcbefa704230586e9b4756993e373723d3701474eb3b7cc",
+          "sha256": "db9c16990fd304dd6c40696a1a53c220fc993d41a19cac53913a13e7dee55102",
           "source_window": [
-            9.812000000000001,
-            15.312000000000001
+            7.765999999999999,
+            13.265999999999998
           ],
           "at": 90.7,
           "duration": 5.5,
@@ -307,10 +308,10 @@
           "scene": "n12",
           "beat": "home-arrival",
           "source": "home.mp4",
-          "sha256": "505df4bf60c3264b2fcbefa704230586e9b4756993e373723d3701474eb3b7cc",
+          "sha256": "db9c16990fd304dd6c40696a1a53c220fc993d41a19cac53913a13e7dee55102",
           "source_window": [
-            18.707,
-            26.707
+            21.07,
+            29.07
           ],
           "at": 96.2,
           "duration": 8.0,
@@ -325,8 +326,8 @@
       "seconds": 59.5,
       "audio_streams": 1,
       "file": "OnMyWay_AI_Pleos_Product_Shorts.mp4",
-      "sha256": "fd73afcad20fdd39b0fe1a35aad567f621cc4946a2257579a609f714ecabfc67",
-      "bytes": 2097957,
+      "sha256": "cfdbb1eaf79a9d4987acc5c26d2e6e84752ff7d2c238a5cdffade470eb80b0b3",
+      "bytes": 2083240,
       "video_codec": "h264",
       "pixel_format": "yuv420p",
       "audio_codec": "aac",
@@ -402,10 +403,10 @@
           "scene": "p01",
           "beat": "voice-home",
           "source": "clarify.mp4",
-          "sha256": "344d6d6c82c7173f053ad7f8cffb529cbdc37717dfd42e4d3cacf2e963ba11d1",
+          "sha256": "9d0873df9401fdd327a6c2a1b8f56a4888b3ded3afa60529f37c67daee47dd99",
           "source_window": [
-            10.136,
-            14.136
+            8.111,
+            12.111
           ],
           "at": 0,
           "duration": 4,
@@ -415,10 +416,10 @@
           "scene": "p02-motion",
           "beat": "voice-request",
           "source": "clarify.mp4",
-          "sha256": "344d6d6c82c7173f053ad7f8cffb529cbdc37717dfd42e4d3cacf2e963ba11d1",
+          "sha256": "9d0873df9401fdd327a6c2a1b8f56a4888b3ded3afa60529f37c67daee47dd99",
           "source_window": [
-            14.136,
-            26.286
+            12.111,
+            24.261000000000003
           ],
           "at": 4,
           "duration": 14.0,
@@ -428,10 +429,10 @@
           "scene": "p03-motion",
           "beat": "spoken-refinement",
           "source": "change.mp4",
-          "sha256": "2852a72f8b781d8328166654a12ced803d162e154c1f169e078ee375ceca8e22",
+          "sha256": "c0525ff36ef3eaaaab467ee1cc6a1fdeefd350998c12f638c3a903d58a758cb9",
           "source_window": [
-            5.257,
-            12.056999999999999
+            4.854,
+            11.654
           ],
           "at": 18.0,
           "duration": 7.5,
@@ -441,10 +442,10 @@
           "scene": "p04-brief",
           "beat": "revised-summary",
           "source": "change.mp4",
-          "sha256": "2852a72f8b781d8328166654a12ced803d162e154c1f169e078ee375ceca8e22",
+          "sha256": "c0525ff36ef3eaaaab467ee1cc6a1fdeefd350998c12f638c3a903d58a758cb9",
           "source_window": [
-            29.339,
-            40.138999999999996
+            26.802,
+            37.602000000000004
           ],
           "at": 25.5,
           "duration": 12.5,
@@ -454,10 +455,10 @@
           "scene": "p05",
           "beat": "laundry-approval",
           "source": "decision.mp4",
-          "sha256": "0b3ca0182a36dfd3d5a258b664079cb57a3b7aa5e3c1acf1941468bc2c6f381e",
+          "sha256": "20fdf781b0f3b66847623a2292577e8602d2d3d29ef610b424e6553c3b68eb0c",
           "source_window": [
-            28.722,
-            32.722
+            24.714,
+            28.714
           ],
           "at": 38.0,
           "duration": 4,
@@ -480,10 +481,10 @@
           "scene": "p07",
           "beat": "automatic-next",
           "source": "laundry.mp4",
-          "sha256": "9eae574ee3c7795cafef746782c311272b749734c91d2495c939573fc3f866f7",
+          "sha256": "0b8e94695b4f332996b485d52408f4525b19dfee417430955de6491852689aa8",
           "source_window": [
-            29.23,
-            34.730000000000004
+            29.515,
+            35.015
           ],
           "at": 46.0,
           "duration": 5.5,
@@ -493,10 +494,10 @@
           "scene": "p08",
           "beat": "home-approval",
           "source": "home.mp4",
-          "sha256": "505df4bf60c3264b2fcbefa704230586e9b4756993e373723d3701474eb3b7cc",
+          "sha256": "db9c16990fd304dd6c40696a1a53c220fc993d41a19cac53913a13e7dee55102",
           "source_window": [
-            11.312000000000001,
-            15.312000000000001
+            9.265999999999998,
+            13.265999999999998
           ],
           "at": 51.5,
           "duration": 4,
@@ -506,10 +507,10 @@
           "scene": "p09",
           "beat": "home-arrival",
           "source": "home.mp4",
-          "sha256": "505df4bf60c3264b2fcbefa704230586e9b4756993e373723d3701474eb3b7cc",
+          "sha256": "db9c16990fd304dd6c40696a1a53c220fc993d41a19cac53913a13e7dee55102",
           "source_window": [
-            18.707,
-            22.707
+            21.07,
+            25.07
           ],
           "at": 55.5,
           "duration": 4,

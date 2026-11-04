@@ -35,6 +35,10 @@ Pleos 기본 내비에서 공개 장소를 검색해 직접 안내를 시작했�
 짧은 최소 표시 시간을 적용합니다. 실사용 모드는 실제 요청이 진행되는 동안 카드를 표시합니다.
 이동 현황의 도착·귀가 시각은 승인 당시 계획을 기준으로 합니다.
 
+정차 중 계획 화면의 주 버튼은 `이 계획으로 출발`입니다. 음성 변경과 음성 승인은
+`음성 요청`에서 시작합니다. `다시 듣기`는 AI 안내 카드 안에, 일정 상세와 재계산은
+`더보기`에 있습니다. 마지막 목적지는 `집으로 안내 시작`으로 따로 승인합니다.
+
 음성은 [Eleven v4](https://elevenlabs.io/docs/eleven-api/choosing-the-right-model)의 한국어로
 생성했습니다. BIN은 내레이션, Taehyung은 운전자, 전용 합성 음성은 차량 AI를 맡습니다.
 차량 AI의 디지털 음색을 유지했습니다. 영상에는 앱 화면과 같은 문장을 Eleven v4
@@ -51,9 +55,9 @@ Pleos 기본 내비에서 공개 장소를 검색해 직접 안내를 시작했�
 `reviewed_parked_overview`로 시작과 끝을 기록합니다.
 
 ```powershell
-python -X utf8 scripts/record-story-demo.py --adb <local-adb-path> --serial <pleos-serial> --hold-seconds 9 --voice-motion --moving-overview --output artifacts/final-films/mainactivity/cockpit-capture
+python -X utf8 scripts/record-story-demo.py --adb <local-adb-path> --serial <pleos-serial> --hold-seconds 7 --voice-motion --moving-overview --output artifacts/final-films/mainactivity/cockpit-final-actions
 python -X utf8 services/api/tools/generate_film_audio.py --mainactivity --track all
-python -X utf8 scripts/build-native-films.py
+python -X utf8 scripts/build-native-films.py --capture artifacts/final-films/mainactivity/cockpit-final-actions
 python -m http.server 8767 --bind 127.0.0.1 --directory artifacts/final-films
 ```
 

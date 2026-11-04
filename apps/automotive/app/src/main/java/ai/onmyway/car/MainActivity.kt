@@ -155,6 +155,7 @@ class MainActivity : Activity() {
         val button = Button(this).apply {
             text = label; textSize = CockpitTheme.ACTION_SP; isAllCaps = false; minHeight = dp(CockpitTheme.TOUCH_DP); minimumHeight = dp(CockpitTheme.TOUCH_DP)
             setPadding(dp(24), dp(14), dp(24), dp(14)); setTextColor(if (primary) bg else ink)
+            if (primary) { textSize = 27f; setTypeface(typeface, Typeface.BOLD) }
             backgroundTintList = null; background = shape(if (primary) ink else soft, 40)
             elevation = 0f
             setOnClickListener { if (allowed() && !busy && enabled()) runCatching(action).onFailure { showError(it) } }
@@ -162,6 +163,13 @@ class MainActivity : Activity() {
         controls += button to enabled; parent.add(button, 12)
         return button
     }
+    private fun quietAction(parent: LinearLayout, label: String, enabled: () -> Boolean = { true }, action: () -> Unit) =
+        button(parent, label, enabled = enabled, action = action).apply {
+            textSize = 22f
+            setPadding(dp(14), dp(10), dp(14), dp(10))
+            background = android.graphics.drawable.RippleDrawable(
+                android.content.res.ColorStateList.valueOf(soft), shape(Color.TRANSPARENT, 20), shape(ink, 20))
+        }
     private fun showEditor(parent: LinearLayout, label: String, editor: EditText) {
         (editor.parent as? ViewGroup)?.removeView(editor)
         parent.add(text(label, 22f, muted), 8); parent.add(editor, 24)
@@ -224,8 +232,10 @@ class MainActivity : Activity() {
         header.addView(text(when(flow.screen) { JourneyScreen.INPUT -> "요청"; JourneyScreen.REVIEW -> "조건 확인"; JourneyScreen.ROUTE -> "계획 · 안내"; else -> "설정" }, 22f, muted))
         if (flow.screen != JourneyScreen.SETTINGS && flow.screen != JourneyScreen.LOCATIONS) {
             val settingsHost = column()
-            button(settingsHost, "설정") { stopSpoken(true); flow.settings(); render() }
-            header.addView(settingsHost, LinearLayout.LayoutParams(dp(130), -2).apply { leftMargin = dp(24) })
+            val route = plan?.takeIf { flow.screen == JourneyScreen.ROUTE && !navigationRecovery }
+            if (route != null) quietAction(settingsHost, "더보기") { showRouteMenu(route) }
+            else button(settingsHost, "설정") { stopSpoken(true); flow.settings(); render() }
+            header.addView(settingsHost, LinearLayout.LayoutParams(dp(144), -2).apply { leftMargin = dp(24) })
         }
         root.add(header, 4)
         lockLabel = text("", 20f, amber)
@@ -388,14 +398,16 @@ class MainActivity : Activity() {
             body.add(line, 16)
         }
         if (state.completed.isNotEmpty()) body.add(text("${state.completed.size}개 완료했어요", 22f, muted))
-        val dateLabel = runCatching { OffsetDateTime.parse(deadline.text.toString()).format(DateTimeFormatter.ofPattern("M월 d일")) }.getOrDefault("")
-        button(body, if (intentReview?.deadline == null && intentReview != null) "귀가 시간 정하기" else "$dateLabel ${clock(deadline.text.toString())}까지 집에 도착") { chooseHomeTime() }
+        val reviewAction = intentReview?.action ?: ReviewAction.PLAN
+        if (reviewAction != ReviewAction.HOME_TIME) {
+            val dateLabel = runCatching { OffsetDateTime.parse(deadline.text.toString()).format(DateTimeFormatter.ofPattern("M월 d일")) }.getOrDefault("")
+            quietAction(body, "귀가 시간 · $dateLabel ${clock(deadline.text.toString())}") { chooseHomeTime() }
+        }
         if (!fixture && (!LocationSetup.originReady(prefs.getString("live-origin", null), originLat.text.toString(), originLon.text.toString(), System.currentTimeMillis()) || homeLat.text.isBlank() || homeLon.text.isBlank())) {
             body.add(text("출발 위치를 새로 확인하거나 집을 설정해 주세요.", 22f, amber))
             button(body, "출발 · 귀가 설정", enabled = { locationAccess().canEdit }) { flow.locations(); render() }
         }
         if (!fixture && !reviewNotes.isNullOrBlank()) body.add(text(reviewNotes!!, 22f, amber))
-        val reviewAction = intentReview?.action ?: ReviewAction.PLAN
         val missingPlace = remaining.firstOrNull { VoiceJourney.needsVenue(it) }
         button(footer, when {
             requiresParse && pendingParse != null -> "추가 요청 다시 반영"
@@ -429,7 +441,7 @@ class MainActivity : Activity() {
         review.questions.firstOrNull()?.let { question ->
             panel.add(text("확인 ${review.questions.size}개 · $question", 23f, amber, true), 4)
         }
-        button(panel, "원문 · 내 답변 보기") {
+        quietAction(panel, "요청 원문 보기") {
                 val lines = "입력 원문\n${review.originalText}\n\n" + (0 until review.answers.length()).joinToString("\n\n") {
                     review.answers.getJSONObject(it).let { answer -> "${answer.optString("question")}\n→ ${answer.optString("answer")}" }
                 }
@@ -469,8 +481,7 @@ class MainActivity : Activity() {
         applyLock()
     }
 
-    private fun openContinuationVoice(review: IntentReview, question: String? = null) {
-        if (question == null && plan != null) { openPlanVoice(VoiceJourney.EXAMPLE_REFINEMENT); return }
+    private fun openContinuationVoice(review: IntentReview, question: String) {
         if (review !== intentReview || state.activeId != null || state.arrivedId != null) return
         val revision = state.revision
         val source = if (review.example) VoiceSource.EXAMPLE else VoiceSource.PLEOS
@@ -479,7 +490,7 @@ class MainActivity : Activity() {
         voiceConversation = true
         stopSpoken()
         val dialog = VoiceInputDialog(this, source, { vehicle }, VoiceJourney.EXAMPLE_REFINEMENT,
-            question ?: "바꿀 조건을 편하게 말해 주세요. 나머지 필수 일정과 마감은 유지해요.", onCancelled = { stopSpoken(true) }) { draft ->
+            question, onCancelled = { stopSpoken(true) }) { draft ->
             if (!allowed() || busy || review !== intentReview || !state.acceptsResponse(revision)) return@VoiceInputDialog
             applyVoiceAnswer(review, draft, question)
         }
@@ -529,10 +540,13 @@ class MainActivity : Activity() {
                 SpeechOutputEvent.Done -> {
                     spokenStatus = null
                     if (spokenExchange.done(token, state.revision, SpokenPlan.destinationId(result, state.completed), vehicle == VehicleState.PARKED)) {
-                        root.postDelayed({ if (spokenExchange.isCurrent(token) && foreground && vehicle == VehicleState.PARKED) openPlanVoice() }, 350)
+                        root.postDelayed({
+                            if (spokenExchange.isCurrent(token) && foreground && vehicle == VehicleState.PARKED &&
+                                openDialogs.none { it.isShowing }) openPlanVoice()
+                        }, 350)
                     }
                 }
-                SpeechOutputEvent.Stopped -> { spokenExchange.cancel(); spokenStatus = "음성 안내가 중단됐어요. 다시 듣거나 말로 대답해 주세요." }
+                SpeechOutputEvent.Stopped -> { spokenExchange.cancel(); spokenStatus = "음성 안내가 중단됐어요. AI 안내에서 다시 들을 수 있어요." }
                 is SpeechOutputEvent.Failure -> { spokenExchange.cancel(); spokenStatus = event.message }
             }
             if (event != SpeechOutputEvent.Preparing && event != SpeechOutputEvent.Started) {
@@ -559,7 +573,8 @@ class MainActivity : Activity() {
             val initialSample = state.completed.isEmpty() && (0 until errands.length()).any { errands.getJSONObject(it).let { e -> e.optString("id") == "medicine" && e.optInt("dwell_seconds") == 600 } }
             val source = if (fixture && sampleExperience) VoiceSource.EXAMPLE else VoiceSource.PLEOS
             val dialog = VoiceInputDialog(this, source, { vehicle }, exampleText ?: if (initialSample) VoiceJourney.EXAMPLE_REFINEMENT else VoiceJourney.EXAMPLE_APPROVAL,
-                "바꿀 조건이나, 이 계획으로 출발할 뜻을 말해 주세요.", "말 전달하기", { stopSpoken(true) }) { draft ->
+                if (intentReview != null) "바꿀 조건을 말하거나 ‘이 계획대로 출발해’라고 말해 주세요." else "계획을 확인한 뒤 ‘이 계획대로 출발해’라고 말해 주세요.",
+                "말 전달하기", { stopSpoken(true) }) { draft ->
                 if (!foreground || !allowed() || busy || plan !== result || draft.source == VoiceSource.EXAMPLE && !(fixture && BuildConfig.DEMO)) return@VoiceInputDialog
                 runCatching { when(turn.take(draft.text, state.revision, SpokenPlan.destinationId(result, state.completed), vehicle == VehicleState.PARKED,
                     navigationAllowed(), SpokenPlan.canApprove(result, errands, state.completed))) {
@@ -807,7 +822,10 @@ class MainActivity : Activity() {
             metrics.addView(home, LinearLayout.LayoutParams(0, -2, 1f)); nextCard.add(metrics, 0)
         }
         if (state.activeId == null && state.arrivedId == null) {
-            val assistant = card(body, "AI 안내")
+            val assistant = card(body, "")
+            val overview = row()
+            val briefing = column()
+            briefing.add(text("AI 안내", 28f, ink, true), 8)
             val header = row()
             briefingSignal = VoiceSignalView(this, mint).also {
                 header.addView(it, LinearLayout.LayoutParams(dp(112), dp(34)))
@@ -817,7 +835,12 @@ class MainActivity : Activity() {
                 ellipsize = android.text.TextUtils.TruncateAt.END
             }
             header.addView(briefingText, LinearLayout.LayoutParams(0, -2, 1f).apply { leftMargin = dp(18) })
-            assistant.add(header, 0)
+            briefing.add(header, 0)
+            overview.addView(briefing, LinearLayout.LayoutParams(0, -2, 1f))
+            val replay = column()
+            quietAction(replay, "다시 듣기", enabled = { vehicle == VehicleState.PARKED }) { announcePlan(false) }
+            overview.addView(replay, LinearLayout.LayoutParams(dp(158), -2).apply { leftMargin = dp(10) })
+            assistant.add(overview, 0)
         }
         if (outcome == "infeasible") body.add(text("필수 일정과 귀가 시간을 함께 지킬 수 없어요.", 24f, amber))
         else if (outcome != "feasible") body.add(text("영업·서비스 또는 이동 정보 확인이 필요해요. 가능 여부가 확정되지 않았습니다.", 24f, amber))
@@ -859,20 +882,6 @@ class MainActivity : Activity() {
             val omitted = result.optJSONArray("skipped_errands") ?: JSONArray()
             for (i in 0 until omitted.length()) summary.add(text("${errandLabel(omitted.getJSONObject(i).optString("id"))}는 다음에 · 필수 일정과 마감을 우선했어요", 22f, amber), 4)
         }
-        if (state.activeId == null && state.arrivedId == null) intentReview?.let { review ->
-            button(body, "말로 조건 바꾸기", enabled = { review.example || vehicle == VehicleState.PARKED }) { openContinuationVoice(review) }
-        }
-        if (state.activeId == null && state.arrivedId == null) button(body, "계획 듣기", enabled = { vehicle == VehicleState.PARKED }) { announcePlan(false) }
-        button(body, "요청 · 일정 자세히") { showPlanDetails(result) }
-        if (state.activeId == null && state.arrivedId == null) button(body, "최신 시간으로 다시 계산") { calculate() }
-        if (!fixture && !navigation.connected) button(body, "차량 내비 다시 연결") { navigation.connect(); status = "내비 연결을 다시 확인하고 있어요."; applyLock() }
-        if (state.activeId != null && state.arrivedId == null && !fixture) button(body, "안내 취소 · 동선 다시 확인") {
-            dialog(AlertDialog.Builder(this).setTitle("현재 안내를 취소할까요?")
-                .setMessage("차량 내비 안내를 취소하고 남은 동선을 다시 계산합니다. 완료하지 않은 볼일은 그대로 남습니다.")
-                .setNegativeButton("유지", null).setPositiveButton("취소하고 다시 계산") { _, _ -> if (allowed() && !busy) {
-                    runCatching { navigation.cancelPending(); state.routeFailed(); navigation.connect(); calculate() }.onFailure { showError(it) }
-                } })
-        }
         when {
             outcome == "infeasible" -> button(footer, if (result.has("relaxation") && !result.isNull("relaxation")) "시간 조정 제안 보기" else "할 일 다시 확인", true) {
                 val relaxation = result.optJSONObject("relaxation")
@@ -890,18 +899,15 @@ class MainActivity : Activity() {
             state.activeId == id -> {
                 footer.add(text(if (state.guidanceAccepted) "안내 중 · 차량 내비게이션을 확인해 주세요" else "차량 내비의 경로 수락을 기다리고 있어요", 24f, muted).apply { gravity = Gravity.CENTER }, 8)
                 if (state.guidanceAccepted) {
-                    button(footer, "이동 현황 보기", enabled = {
-                        CockpitPresentation.canOpenMovingOverview(state.activeId, state.arrivedId, state.guidanceAccepted, vehicle, busy)
-                    }) {
-                        if (state.activeId == id && state.acceptsResponse(displayedRevision) &&
-                            CockpitPresentation.canOpenMovingOverview(state.activeId, state.arrivedId, state.guidanceAccepted, vehicle, busy)) {
-                            startActivity(MovingOverviewActivity.intent(this,
-                                next?.optJSONObject("place")?.optString("name").orEmpty().ifBlank { "집으로 돌아가기" },
-                                clock(if (homeLeg) result.optString("home_arrival_time") else next?.optString("arrival_time").orEmpty()),
-                                clock(result.optString("home_arrival_time")), fixture))
-                        }
-                    }
-                    button(footer, "차량 내비 보기", true, { NavigationHandoff.canShow(navigationConnected, fixture || simulate, state.guidanceAccepted, false, vehicle, busy) }) { showVehicleNavigation() }
+                    if (fixture || simulate) {
+                        button(footer, "이동 현황 보기", true, {
+                            CockpitPresentation.canOpenMovingOverview(state.activeId, state.arrivedId, state.guidanceAccepted, vehicle, busy)
+                        }) { showMovingOverview(result, displayedRevision) }
+                    } else if (navigationConnected) {
+                        button(footer, "차량 내비 열기", true, {
+                            NavigationHandoff.canShow(navigationConnected, false, state.guidanceAccepted, false, vehicle, busy)
+                        }) { showVehicleNavigation() }
+                    } else button(footer, "차량 내비 다시 연결", true) { reconnectNavigation() }
                     if (fixture) footer.add(text("샘플 안내는 실제 차량 내비를 실행하지 않아요.", 20f, muted), 0)
                     else mapMessage?.let { footer.add(text(it, 20f, amber), 0) }
                 }
@@ -909,22 +915,110 @@ class MainActivity : Activity() {
             fixture && !simulate -> button(footer, "안내 연결", true) { simulate = true; state.routeFailed(); state.edited(); render() }
             homeLeg && (0 until errands.length()).any { errands.getJSONObject(it).let { item -> item.optBoolean("mandatory", true) && item.optString("id") !in state.completed } } -> button(footer, "남은 필수 할 일 확인", true) { flow.parsed(); render() }
             homeLeg && result.isNull("home_arrival_time") -> button(footer, "동선 다시 확인", true) { calculate() }
-            !fixture && !navigationAllowed() -> button(footer, "시간이 흘렀어요 · 다시 계산", true) { calculate() }
+            !fixture && !navigationAllowed() -> button(footer, "지금 기준으로 다시 계산", true) { calculate() }
             else -> {
-                footer.add(text("확인한 다음 목적지로 안내합니다.", 20f, muted), 4)
-                val approvals = row()
-                val voice = column()
-                button(voice, "말로 대답하기", true, { vehicle == VehicleState.PARKED }) { openPlanVoice(VoiceJourney.EXAMPLE_APPROVAL) }
-                approvals.addView(voice, LinearLayout.LayoutParams(0, -2, 1f).apply { rightMargin = dp(16) })
-                val touch = column()
-                button(touch, if (homeLeg) "집으로 출발" else "확인하고 출발") {
-                val destination = next ?: JSONObject().put("errand_id", "__home").put("label", "귀가").put("place", requireNotNull(request).getJSONObject("home"))
-                approveNavigation(destination, displayedRevision)
+                val actions = if (homeLeg) footer else column()
+                button(actions, if (homeLeg) "집으로 안내 시작" else "이 계획으로 출발", true) {
+                    val destination = next ?: JSONObject().put("errand_id", "__home").put("label", "귀가").put("place", requireNotNull(request).getJSONObject("home"))
+                    approveNavigation(destination, displayedRevision)
                 }
-                approvals.addView(touch, LinearLayout.LayoutParams(0, -2, 1f))
-                footer.add(approvals, 0)
+                if (!homeLeg) {
+                    val actionRow = row()
+                    val voice = column()
+                    button(voice, "음성 요청", enabled = { vehicle == VehicleState.PARKED }) { showRouteVoice(result) }.apply {
+                        textSize = 23f
+                        val mic = getDrawable(R.drawable.ic_microphone)?.mutate()?.apply { setTint(ink) }
+                        compoundDrawablePadding = dp(10)
+                        setCompoundDrawablesRelativeWithIntrinsicBounds(mic, null, null, null)
+                    }
+                    actionRow.addView(voice, LinearLayout.LayoutParams(dp(210), -2).apply { rightMargin = dp(20) })
+                    actionRow.addView(actions, LinearLayout.LayoutParams(0, -2, 1f))
+                    footer.add(actionRow, 0)
+                }
             }
         }
+    }
+
+    private fun showMovingOverview(result: JSONObject, revision: Long) {
+        if (plan !== result || !state.acceptsResponse(revision) ||
+            !CockpitPresentation.canOpenMovingOverview(state.activeId, state.arrivedId, state.guidanceAccepted, vehicle, busy)) return
+        val next = firstRemainingStop(result)
+        if (state.activeId != (next?.optString("errand_id") ?: "__home")) return
+        startActivity(MovingOverviewActivity.intent(this,
+            next?.optJSONObject("place")?.optString("name").orEmpty().ifBlank { "집으로 돌아가기" },
+            clock(next?.optString("arrival_time") ?: result.optString("home_arrival_time")),
+            clock(result.optString("home_arrival_time")), fixture))
+    }
+
+    private fun showRouteMenu(result: JSONObject) {
+        if (plan !== result || flow.screen != JourneyScreen.ROUTE) return
+        val revision = state.revision
+        val voiceInMenu = vehicle == VehicleState.PARKED &&
+            (firstRemainingStop(result) == null || result.optString("status") == "infeasible" || !navigationAllowed())
+        val actions = CockpitPresentation.routeMenu(state.activeId, state.arrivedId, fixture || simulate,
+            state.guidanceAccepted, navigationConnected, voiceInMenu).map { action ->
+            val item = when (action) {
+                RouteMenuAction.DETAILS -> "일정 상세" to { showPlanDetails(result) }
+                RouteMenuAction.EDIT -> "조건 직접 수정" to { flow.parsed(); render() }
+                RouteMenuAction.RECALCULATE -> "지금 기준으로 다시 계산" to { calculate() }
+                RouteMenuAction.VOICE -> "음성 요청" to { showRouteVoice(result) }
+                RouteMenuAction.OVERVIEW -> "이동 현황 보기" to { showMovingOverview(result, revision) }
+                RouteMenuAction.CANCEL -> "현재 안내 취소" to {
+                    dialog(AlertDialog.Builder(this).setTitle("현재 안내를 취소할까요?")
+                        .setMessage("차량 내비 안내를 취소하고 남은 동선을 다시 계산합니다. 완료하지 않은 볼일은 그대로 남습니다.")
+                        .setNegativeButton("유지", null).setPositiveButton("취소하고 다시 계산") { _, _ ->
+                            if (allowed() && !busy && state.acceptsResponse(revision) && state.activeId != null && state.arrivedId == null) {
+                                runCatching {
+                                    cancelOwnedNavigation(); state.routeFailed(); navigation.connect(); calculate()
+                                }.onFailure { showError(it) }
+                            }
+                        })
+                    Unit
+                }
+                RouteMenuAction.RECONNECT -> "차량 내비 다시 연결" to { reconnectNavigation() }
+                RouteMenuAction.SETTINGS -> "설정" to { flow.settings(); render() }
+            }
+            item.first to {
+                if (action != RouteMenuAction.VOICE && action != RouteMenuAction.DETAILS) stopSpoken(true)
+                item.second()
+            }
+        }
+        showRouteChoices("일정 옵션", result, actions)
+    }
+
+    private fun showRouteVoice(result: JSONObject) {
+        if (plan !== result || vehicle != VehicleState.PARKED || state.activeId != null || state.arrivedId != null) return
+        if (!fixture || !sampleExperience || intentReview == null || firstRemainingStop(result) == null) {
+            openPlanVoice()
+            return
+        }
+        val choices = buildList<Pair<String, () -> Unit>> {
+            add("약국에 머무를 시간 변경" to { openPlanVoice(VoiceJourney.EXAMPLE_REFINEMENT) })
+            if (SpokenPlan.canApprove(result, errands, state.completed) && navigationAllowed()) {
+                add("이 계획으로 출발 요청" to { openPlanVoice(VoiceJourney.EXAMPLE_APPROVAL) })
+            }
+        }
+        showRouteChoices("예시 음성 요청", result, choices)
+    }
+
+    private fun showRouteChoices(title: String, result: JSONObject, actions: List<Pair<String, () -> Unit>>) {
+        val revision = state.revision
+        val adapter = object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, actions.map { it.first }) {
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View =
+                (super.getView(position, convertView, parent) as TextView).apply {
+                    textSize = 24f; minHeight = dp(CockpitTheme.TOUCH_DP); setTextColor(ink)
+                }
+        }
+        dialog(AlertDialog.Builder(this).setTitle(title).setAdapter(adapter) { _, index ->
+            if (foreground && allowed() && !busy && flow.screen == JourneyScreen.ROUTE &&
+                state.acceptsResponse(revision) && plan === result) runCatching(actions[index].second).onFailure { showError(it) }
+        }.setNegativeButton("닫기", null))
+    }
+
+    private fun reconnectNavigation() {
+        navigation.connect()
+        status = "내비 연결을 다시 확인하고 있어요."
+        applyLock()
     }
     private fun chooseHomeTime() {
         chooseDeadline(deadline.text.toString(), "집 도착 시간") { selected -> applyHomeDeadline(selected); render() }
@@ -1118,9 +1212,7 @@ class MainActivity : Activity() {
         val skipped = result.optJSONArray("skipped_errands") ?: JSONArray()
         for (i in 0 until skipped.length()) skipped.getJSONObject(i).let { lines += "제외: ${errandLabel(it.optString("id"))} · ${humanMessage(it.optString("reason"))}" }
         val content = text(lines.joinToString("\n\n"), 24f).apply { setPadding(dp(28), dp(12), dp(28), dp(12)) }
-        val builder = AlertDialog.Builder(this).setTitle("요청과 일정").setView(ScrollView(this).apply { addView(content) }).setPositiveButton("닫기", null)
-        if (state.activeId == null && state.arrivedId == null) builder.setNeutralButton("조건 직접 수정") { _, _ -> if (allowed() && !busy) { flow.parsed(); render() } }
-        dialog(builder)
+        dialog(AlertDialog.Builder(this).setTitle("요청과 일정").setView(ScrollView(this).apply { addView(content) }).setPositiveButton("닫기", null))
     }
     private fun resetJourney() {
         dialog(AlertDialog.Builder(this).setTitle("새 일정을 시작할까요?").setMessage("현재 일정과 완료 기록을 초기화합니다.").setNegativeButton("유지", null).setPositiveButton("새로 시작") { _, _ -> if (allowed() && !busy) {
@@ -1408,7 +1500,7 @@ class MainActivity : Activity() {
         System.currentTimeMillis(), runCatching { OffsetDateTime.parse(request?.optString("deadline")).toInstant().toEpochMilli() }.getOrNull(),
         SystemClock.elapsedRealtime(), computedElapsedMillis) && (fixture || PlanTiming.canApprove(request, plan,
         System.currentTimeMillis(), SystemClock.elapsedRealtime(), computationStartedWallMillis, computedElapsedMillis))
-    private fun navigationBlockMessage() = if (fixture) "예시 목적지는 실제 내비로 보낼 수 없습니다. 데모 조작 시뮬레이션을 켜 주세요." else "계산·검토 중 시간이 흘렀거나 마감 여유가 부족해졌어요. ‘최신 시간으로 다시 계산’을 눌러 주세요."
+    private fun navigationBlockMessage() = if (fixture) "예시 목적지는 실제 내비로 보낼 수 없습니다. 데모 조작 시뮬레이션을 켜 주세요." else "계산·검토 중 시간이 흘렀거나 마감 여유가 부족해졌어요. ‘지금 기준으로 다시 계산’을 눌러 주세요."
     private fun ensureNavigationAllowed() { check(navigationAllowed()) { navigationBlockMessage() } }
     private fun evidenceLabel(value: String) = when(value) { "verified" -> "확인됨"; "closed" -> "영업 종료"; "unavailable" -> "제공 안 함"; else -> "미확인" }
     private fun providerName(value: String?) = when(value) { "synthetic-demo" -> "시연용 예시"; "kakao-local" -> "카카오 장소 검색"; null, "" -> "미확인"; else -> value }

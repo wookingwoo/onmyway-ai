@@ -20,7 +20,8 @@ spec = importlib.util.spec_from_file_location('film_builder', ROOT / 'scripts/bu
 builder = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(builder)
 
-APPROVALS = {'laundry-approval': '확인하고 출발', 'home-approval': '집으로 출발'}
+APPROVALS = {'laundry-approval': {'이 계획으로 출발', '확인하고 출발'},
+             'home-approval': {'집으로 안내 시작', '집으로 출발'}}
 FULL_SHORT_SHOTS = {'voice-home', 'native-navigation-driving', 'home-arrival'}
 ASSISTANT_FILTER = 'highpass=f=210,lowpass=f=6100,equalizer=f=1900:t=q:w=1.2:g=3,tremolo=f=46:d=0.26'
 
@@ -39,14 +40,14 @@ def navigation_example(duration, driving):
     return path, start, end, digest
 
 
-def find_source(scene, manifest):
+def find_source(scene, manifest, capture):
     name = scene['beat']
     if name in {'native-navigation-example', 'native-navigation-driving'}:
         return navigation_example(scene['seconds'], driving=name == 'native-navigation-driving')
     chapters = manifest['chapters']
     if name == 'parked-overview':
         chapter = next(item for item in chapters if item['id'] == 'driving')
-        path = CAPTURE / chapter['raw']
+        path = capture / chapter['raw']
         start, limit = manifest['reviewed_parked_overview']
         end = start + scene['seconds']
         if not 0 <= start < end <= min(limit, float(builder.probe(path)['format']['duration'])):
@@ -56,22 +57,22 @@ def find_source(scene, manifest):
     if len(matches) != 1:
         raise ValueError(f'Expected exactly one verified native shot for {name}')
     chapter, beat = matches[0]
-    path = CAPTURE / chapter['raw']
+    path = capture / chapter['raw']
     available = float(builder.probe(path)['format']['duration'])
     duration = scene.get('native_seconds', scene['seconds'])
     start = beat['at'] + .12
     if name in {'voice-request', 'spoken-refinement'}:
         # Show the real dialog opening and the sample words arriving, including the waveform.
-        opening = '말로 부탁하기' if name == 'voice-request' else '말로 조건 바꾸기'
+        opening = {'말로 부탁하기'} if name == 'voice-request' else {'약국에 머무를 시간 변경', '말로 조건 바꾸기'}
         start = max(0, next(item['at'] for item in chapter['beats'] if item['name'] == 'tap'
-                            and item.get('label') == opening) - .08)
+                            and item.get('label') in opening) - .08)
     if name in {'baseline-plan', 'revised-summary'}:
         submit = '계획 준비하기' if name == 'baseline-plan' else '말 전달하기'
         tap = next(item['at'] for item in chapter['beats'] if item['name'] == 'tap' and item.get('label') == submit)
         start = min(beat['at'], tap + .15)
     if name in APPROVALS:
         tap = next(item['at'] for item in chapter['beats'] if item['name'] == 'tap' and
-                   item['at'] > beat['at'] and item.get('label') == APPROVALS[name])
+                   item['at'] > beat['at'] and item.get('label') in APPROVALS[name])
         # End the line on the actual tap. Leave time to see the accepted state.
         start = tap - min(duration - 1.05, scene['offset'] + scene['audio_seconds'])
     elif name == 'voice-home':
@@ -150,13 +151,13 @@ def encode_shot(folder, scene, source, start, end, short, stem):
         raise ValueError(f'Insufficient source frames for {scene["id"]}')
 
 
-def build(track, story, manifest):
+def build(track, story, manifest, capture):
     scenes, cues, seconds = builder.load_track(story, track, OUT / 'audio')
     folder = OUT / track
     folder.mkdir(exist_ok=True)
     cuts = []
     for index, scene in enumerate(scenes):
-        source, start, end, digest = find_source(scene, manifest)
+        source, start, end, digest = find_source(scene, manifest, capture)
         stem = f'{index:02d}'
         print(f'{track} {scene["id"]} {scene["beat"]}: {start:.2f}–{end:.2f}', flush=True)
         encode_shot(folder, scene, source, start, end, track == 'short', stem)
@@ -200,17 +201,18 @@ def build(track, story, manifest):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--track', choices=['main', 'short', 'all'], default='all')
+    parser.add_argument('--capture', type=Path, default=CAPTURE)
     args = parser.parse_args()
     story = json.loads((ROOT/'scripts/mainactivity_film_story.json').read_text(encoding='utf-8'))
-    manifest = json.loads((CAPTURE/'capture-manifest.json').read_text(encoding='utf-8'))
+    manifest = json.loads((args.capture/'capture-manifest.json').read_text(encoding='utf-8'))
     validate_utterances(story)
-    validate_native_capture(manifest, CAPTURE)
+    validate_native_capture(manifest, args.capture)
     if not manifest.get('voice_motion'):
         raise ValueError('Native voice-motion capture is required')
     if not manifest.get('moving_overview'):
         raise ValueError('Native moving overview capture is required')
     for track in ['main', 'short'] if args.track == 'all' else [args.track]:
-        build(track, story, manifest)
+        build(track, story, manifest, args.capture.resolve())
     (OUT/'player.html').write_text('''<!doctype html><meta charset="utf-8"><title>OnMyWay AI · Pleos 녹화본</title>
 <style>body{background:#f5f6f7;color:#202124;font:18px sans-serif;margin:32px}main{display:grid;grid-template-columns:2.4fr 1fr;gap:32px}video{width:100%;max-height:80vh;background:#11161a}</style>
 <h1>OnMyWay AI · 기존 앱 Pleos 녹화본</h1><main>

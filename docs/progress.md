@@ -1,5 +1,31 @@
 # Delivery ledger
 
+## 2026-11-04 — simplify the parked cockpit controls
+
+The plan screen now has one visually primary action for the current leg. A
+secondary microphone control handles changes and voice approval. Replay is
+in the AI briefing card. The More menu contains the available detail, edit,
+recalculation and navigation recovery actions. Home approval has one footer
+button; its voice option is still accessible through More. Menu selections
+recheck the displayed plan, revision, foreground, vehicle and busy state.
+Choosing a voice option waits for native speech output to stop before opening
+the microphone. Opening a menu suppresses automatic microphone activation
+while the dialog is visible.
+
+Recorded the final demo APK on the official Pleos AVD. The revised plan
+showed both mandatory stops, the deferred optional item, the 18:53 home
+estimate, and both route controls in one frame. Opened the More menu and its
+details, chose an explicit example voice refinement, approved each leg,
+completed both errands after simulated arrival and separately approved home.
+The device restored Park/0 after Drive/30. The system overlay still covers
+OnMyWay in Drive. The films retain the independently recorded built-in
+navigation insert and the existing Eleven v4 dialogue.
+
+119 Android unit tests per demo/live variant, both debug APK builds, 67 API
+tests and 40 media tests passed. The demo APK installed for capture matches
+the final tested build. See [verification](submission/final-films-verification.json).
+Capture, APK and exported media remain local.
+
 ## 2026-11-04 — show route work in progress and recut actual Pleos guidance
 
 Planning and completion now keep a native progress card visible while the
