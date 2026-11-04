@@ -10,6 +10,26 @@ object SpokenPlan {
         (0 until a.length()).map { a.getJSONObject(it) }.filter { it.optString("errand_id") !in completed }
     }.orEmpty()
     fun destinationId(plan: JSONObject, completed: Set<String>) = stops(plan, completed).firstOrNull()?.optString("errand_id") ?: "__home"
+    fun briefing(plan: JSONObject, errands: JSONArray, completed: Set<String>): String {
+        when (plan.optString("status")) {
+            "infeasible" -> return "현재 조건으로는 필수 일정과 귀가 마감을 함께 지키기 어려워요."
+            "feasible" -> Unit
+            else -> return "영업, 서비스 또는 이동 정보를 더 확인해야 해요. 시간에 맞출 수 있을지는 아직 확정할 수 없어요."
+        }
+        val labels = stops(plan, completed).map { it.optString("label") }.filter { it.isNotBlank() }
+        val omitted = plan.optJSONArray("skipped_errands") ?: JSONArray()
+        val skippedIds = (0 until omitted.length()).map { omitted.getJSONObject(it).optString("id") }.toSet()
+        val skipped = (0 until errands.length()).map { errands.getJSONObject(it) }
+            .filter { it.optString("id") in skippedIds && !it.optBoolean("mandatory", true) }
+            .map { it.optString("label") }.filter { it.isNotBlank() }
+        return buildList {
+            add(if (labels.isEmpty()) "이제 집으로 가요." else "${labels.joinToString(", ")} 순서로 들러요.")
+            if (skipped.isNotEmpty()) add("${skipped.joinToString(", ")}는 다음으로 미뤘어요.")
+            val eta = plan.optString("home_arrival_time")
+            if (runCatching { OffsetDateTime.parse(eta) }.isSuccess) add("집에는 ${time(eta)}쯤 도착할 예정이에요.")
+            else add("귀가 시각을 확인해 주세요.")
+        }.joinToString(" ")
+    }
     fun canApprove(plan: JSONObject?, errands: JSONArray, completed: Set<String>): Boolean {
         if (plan == null || plan.optString("status") !in setOf("feasible", "needs_verification")) return false
         if (runCatching { OffsetDateTime.parse(plan.optString("home_arrival_time")) }.isFailure) return false

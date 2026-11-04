@@ -1,5 +1,38 @@
 # Delivery ledger
 
+## 2026-11-04 — show voice interaction in the native app and recapture on Pleos
+
+Recorded the updated OnMyWay MainActivity on a separate official Pleos Connect
+2.1.0 API 34 AVD. Every journey chapter uses Android screenrecord footage of
+native controls. The full vehicle panel, status bar and controls are visible
+in the main cut. The separate 63 Building insert is retained from the earlier
+native Navigation capture.
+
+The live SDK feeds its own partial results and microphone level into the voice
+dialog. An independently selected sample replays the saved words over time
+and keeps confirmation disabled until the last word. The plan adds an AI
+briefing card with the exact spoken sample summary and a signal animated by
+actual speech start/end callbacks. Confirmed both sample input and AI reply
+animations from decoded raw frames. Departure remains independently approved;
+recorded native Drive/30 locking, Park/0 restoration and explicit completion
+after simulated arrival. The recorded sample leaves follow-up input to the
+driver. Live planning retains the existing detailed speech and follow-up.
+
+The previous Eleven v4 speaker choices are reused. Four changed lines match
+the native sample text, with a small speed adjustment to recorded speech shots
+to align visible activity. Retired per-line chirps for these cuts. The main mix
+uses restrained cues on input opening, replan response, first arrival and
+completion. No background track. Main 101 seconds, Short 57.5 seconds. Full
+decode and representative input, briefing and safety frame review passed.
+
+Media 40, API 67 and Android 117 tests per demo/live variant passed, plus both
+debug APK builds. The independent review found that concise automatic speech
+would affect live mode and that an interrupted speech stop could leave the
+indicator running. Both were fixed and Android checks rerun. The captured
+build predates those follow-up fixes, which do not change the successful
+sample path shown. See [verification](submission/final-films-verification.json).
+All APKs, captures, dialogue and exports remain local.
+
 ## 2026-11-04 — record a native Pleos route and distinguish the vehicle voice
 
 The remote feature branch starts at the PR #11 merge commit

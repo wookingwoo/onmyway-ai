@@ -6,8 +6,8 @@
 
 | 결과 | 로컬 파일 | 길이 · 화면 |
 | --- | --- | --- |
-| 본편 | `artifacts/final-films/mainactivity/OnMyWay_AI_Pleos_Product.mp4` | 1분 37.5초 · 1920×1080 |
-| 쇼츠 | `artifacts/final-films/mainactivity/OnMyWay_AI_Pleos_Product_Shorts.mp4` | 42.5초 · 1080×1920 |
+| 본편 | `artifacts/final-films/mainactivity/OnMyWay_AI_Pleos_Product.mp4` | 1분 41초 · 1920×1080 |
+| 쇼츠 | `artifacts/final-films/mainactivity/OnMyWay_AI_Pleos_Product_Shorts.mp4` | 57.5초 · 1080×1920 |
 | 함께 재생 | `artifacts/final-films/mainactivity/player.html` | 로컬 플레이어 |
 
 두 영상의 SRT는 각 MP4 옆에 있습니다. [검증 요약](final-films-verification.json)에
@@ -26,25 +26,26 @@ Pleos 기본 내비에서 공개 장소를 검색해 직접 안내를 시작했�
 경로선과 다음 회전 안내가 표시됐고 배경 지도 타일은 비어 있었습니다.
 세탁소 승인은 앱에서 고른 예시 흐름이고, 63빌딩은 기본 내비에서 별도로 요청한 경로입니다.
 
-촬영에는 기존 설치본 `ai.onmyway.car.demo`와 그 주간 테마를 사용했습니다. 장소와 일정은
-앱의 명시적 예시이고, 도착은 모의 신호입니다. 기존 설치본의 해시는 개발 기록에 있는
-10월 26일 서명 데모 APK와 일치합니다. 이번 재촬영은 해당 설치본의 예시 흐름에 대한 증거입니다.
+촬영에는 이번에 빌드한 `ai.onmyway.car.demo`와 기존 주간 테마를 사용했습니다.
+앱에서 고른 샘플 입력은 단어별로 나타납니다. 계획이 계산되면 `AI 안내` 카드에 실제
+요약 문장이 표시되고, 앱이 안내를 읽는 동안 파형이 움직입니다. 장소와 일정은
+앱의 명시적 예시이고, 도착은 모의 신호입니다.
 
 음성은 [Eleven v4](https://elevenlabs.io/docs/eleven-api/choosing-the-right-model)의 한국어로
 생성했습니다. BIN은 내레이션, Taehyung은 운전자, 전용 합성 음성은 차량 AI를 맡습니다.
-차량 AI에만 짧은 시작 신호음과 디지털 음색을 더했고 첫 자막에 화자를 표시했습니다.
-앱 조작 타이밍에 맞춘 편집 대사이며 자막은 제공자의 문자 타이밍을 사용합니다.
-배경 음악 없이 대사를 중심에 두고 승인·변경·완료 장면에 짧은 전환음을 사용했습니다.
+차량 AI의 디지털 음색을 유지했습니다. 영상에는 앱 화면과 같은 문장을 Eleven v4
+편집 음성으로 얹었고, 자막은 제공자의 문자 타이밍을 사용합니다. 입력을 열 때,
+재계획 응답, 첫 도착, 직접 완료를 확인할 때에만 짧은 효과음을 배치했습니다.
 
 ## 재촬영
 
-공식 Pleos AVD, 기존 데모 APK, 공급자 키를 읽지 않는 로컬 API, adb, FFmpeg가 필요합니다.
+공식 Pleos AVD, 최신 데모 APK, 공급자 키를 읽지 않는 로컬 API, adb, FFmpeg가 필요합니다.
 로컬 Virtual Console을 `adb forward tcp:8088 tcp:8088`로 연결합니다.
 본편의 내비 컷은 `navigation-check/public-route.mp4`와 같은 폴더의
 `manifest.json`에 기록한 원본 해시·검수 구간을 사용합니다.
 
 ```powershell
-python -X utf8 scripts/record-story-demo.py --adb <local-adb-path> --hold-seconds 9 --output artifacts/final-films/mainactivity/capture
+python -X utf8 scripts/record-story-demo.py --adb <local-adb-path> --serial <pleos-serial> --hold-seconds 9 --voice-motion --output artifacts/final-films/mainactivity/voice-capture
 python -X utf8 services/api/tools/generate_film_audio.py --mainactivity --track all
 python -X utf8 scripts/build-native-films.py
 python -m http.server 8767 --bind 127.0.0.1 --directory artifacts/final-films

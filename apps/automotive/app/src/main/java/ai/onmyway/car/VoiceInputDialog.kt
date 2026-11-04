@@ -8,6 +8,8 @@ import android.graphics.Paint
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.Gravity
 import android.view.View
 import android.widget.Button
@@ -26,6 +28,7 @@ class VoiceInputDialog(
     private val applied: (VoiceDraft) -> Unit
 ) : AlertDialog(owner) {
     private val session = VoiceInputSession()
+    private val examplePlayback = Handler(Looper.getMainLooper())
     private var token: Long? = null
     private var delivered = false
     private val sdk = PleosSpeechInput(owner) { event ->
@@ -35,6 +38,7 @@ class VoiceInputDialog(
             when (event) {
                 SpeechInputEvent.Connected -> connection = "마이크를 준비하고 있어요"
                 SpeechInputEvent.Listening -> session.listening(id)
+                is SpeechInputEvent.Level -> { signal.updateLevel(event.rms); return@PleosSpeechInput }
                 is SpeechInputEvent.Transcript -> session.update(id, event.text, event.completed)
                 is SpeechInputEvent.Failure -> session.fail(id, event.message)
             }
@@ -54,7 +58,7 @@ class VoiceInputDialog(
     private lateinit var detail: TextView
     private lateinit var confirm: Button
     private lateinit var retry: Button
-    private lateinit var orb: View
+    private lateinit var signal: VoiceSignalView
     private fun dp(value: Int) = (value * owner.resources.displayMetrics.density).toInt()
     private fun shape(color: Int, radius: Int = 28) = GradientDrawable().apply { setColor(color); cornerRadius = dp(radius).toFloat() }
     private fun label(value: String, size: Float, color: Int = ink, bold: Boolean = false) = TextView(owner).apply {
@@ -80,7 +84,7 @@ class VoiceInputDialog(
         }
         body.add(label(if (source == VoiceSource.EXAMPLE) "샘플 요청 · 저장된 문장" else "음성으로 요청", 19f, muted), 24)
         val heading = LinearLayout(owner).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-        orb = object : View(owner) {
+        val orb = object : View(owner) {
             private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
             override fun onDraw(canvas: Canvas) {
                 super.onDraw(canvas)
@@ -99,8 +103,10 @@ class VoiceInputDialog(
         val headings = LinearLayout(owner).apply { orientation = LinearLayout.VERTICAL }
         title = label("", 34f, ink, true).apply { accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_POLITE }
         headings.add(title, 10)
-        headings.add(label(prompt, 22f, muted), 0)
+        headings.add(label(prompt, 22f, muted), 4)
         heading.addView(headings, LinearLayout.LayoutParams(0, -2, 1f)); body.add(heading, 28)
+        signal = VoiceSignalView(owner, mint)
+        heading.addView(signal, LinearLayout.LayoutParams(dp(144), dp(50)).apply { leftMargin = dp(16) })
         transcript = label("", 28f).apply {
             setPadding(dp(26), dp(24), dp(26), dp(24)); background = shape(soft, 20)
             minHeight = dp(136); maxLines = 4; gravity = Gravity.CENTER_VERTICAL
@@ -126,10 +132,24 @@ class VoiceInputDialog(
     private fun begin() {
         delivered = false
         sdk.close()
-        token = session.start(source, vehicle(), BuildConfig.DEMO)
-        if (token == null) { dismiss(); return }
+        examplePlayback.removeCallbacksAndMessages(null)
+        val id = session.start(source, vehicle(), BuildConfig.DEMO)
+        token = id
+        if (id == null) { dismiss(); return }
         connection = "차량 음성 서비스에 연결하고 있어요"
-        if (source == VoiceSource.EXAMPLE) session.update(token!!, exampleText, true)
+        if (source == VoiceSource.EXAMPLE) {
+            session.listening(id)
+            // Replay only the explicitly selected sample. Real text always comes from the SDK.
+            val wordEnds = Regex("\\S+").findAll(exampleText).map { it.range.last + 1 }.toList()
+            wordEnds.forEachIndexed { index, end ->
+                examplePlayback.postDelayed({
+                    if (token != id || !isShowing) return@postDelayed
+                    if (vehicle() == VehicleState.RESTRICTED) { dismiss(); return@postDelayed }
+                    session.update(id, exampleText.substring(0, end), index == wordEnds.lastIndex)
+                    refresh()
+                }, 380L + 111L * end)
+            }
+        }
         refresh()
         if (source == VoiceSource.PLEOS) sdk.start()
     }
@@ -138,13 +158,14 @@ class VoiceInputDialog(
         title.text = when (phase) {
             VoicePhase.REVIEW -> "이 요청으로 준비할게요"
             VoicePhase.ERROR -> "음성 입력을 마치지 못했어요"
-            VoicePhase.LISTENING -> "듣고 있어요"
+            VoicePhase.LISTENING -> if (source == VoiceSource.EXAMPLE) "샘플 음성 재생 중" else "듣고 있어요"
             else -> connection
         }
         transcript.text = session.transcript.ifBlank {
             if (phase == VoicePhase.ERROR) "직접 입력으로도 계속할 수 있어요."
-            else "“약국 들르고, 저녁 7시까지 집에 가야 해.”"
+            else "문장이 여기에 나타나요"
         }
+        signal.showActivity(phase == VoicePhase.LISTENING, source == VoiceSource.PLEOS)
         transcript.setTextColor(if (session.transcript.isBlank()) muted else ink)
         detail.text = when {
             source == VoiceSource.EXAMPLE -> "장소와 순서를 정리할게요. 준비된 계획을 보고 출발을 확인해 주세요."
@@ -169,6 +190,8 @@ class VoiceInputDialog(
     override fun dismiss() {
         val cancelled = token != null && !delivered
         token = null
+        examplePlayback.removeCallbacksAndMessages(null)
+        if (::signal.isInitialized) signal.showActivity(false)
         session.cancel()
         sdk.close()
         super.dismiss()

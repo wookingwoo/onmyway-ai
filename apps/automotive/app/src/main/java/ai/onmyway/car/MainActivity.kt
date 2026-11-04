@@ -59,6 +59,8 @@ class MainActivity : Activity() {
     private var voiceConversation = false
     private var foreground = false
     private var spokenStatus: String? = null
+    private var briefingText: TextView? = null
+    private var briefingSignal: VoiceSignalView? = null
     private var status = "정차 상태를 확인한 뒤 계획을 시작하세요."
     private var navStatus = "Pleos 내비 연결 확인 중"
     private val navigationHandoff = NavigationHandoff()
@@ -199,7 +201,7 @@ class MainActivity : Activity() {
     private fun render() {
         cancelLocationWork()
         voiceDialog?.dismiss()
-        controls.clear(); demoRescue = null
+        controls.clear(); demoRescue = null; briefingText = null; briefingSignal = null
         root = column().apply { setBackgroundColor(bg); setPadding(dp(40), dp(20), dp(40), dp(20)) }
         root.setOnApplyWindowInsetsListener { view, insets ->
             @Suppress("DEPRECATION")
@@ -477,22 +479,29 @@ class MainActivity : Activity() {
 
     private fun stopSpoken(clearConversation: Boolean = false) {
         spokenExchange.cancel(); speechOutput.close(); spokenStatus = null
+        briefingSignal?.showActivity(false)
+        plan?.let { briefingText?.text = SpokenPlan.briefing(it, errands, state.completed) }
         if (clearConversation) voiceConversation = false
     }
 
-    private fun announcePlan(listenAfter: Boolean = voiceConversation, prompt: String? = null) {
+    private fun announcePlan(listenAfter: Boolean = voiceConversation, prompt: String? = null, concise: Boolean = false) {
         val result = plan ?: return
         if (!foreground || flow.screen != JourneyScreen.ROUTE || vehicle != VehicleState.PARKED || busy || state.activeId != null || state.arrivedId != null) return
         voiceDialog?.dismiss()
         val revision = state.revision
         val target = SpokenPlan.destinationId(result, state.completed)
         val token = spokenExchange.read(revision, target, listenAfter)
-        val narration = prompt ?: SpokenPlan.summary(request, result, errands, state.completed)
+        val brief = SpokenPlan.briefing(result, errands, state.completed)
+        val narration = prompt ?: if (concise) brief else SpokenPlan.summary(request, result, errands, state.completed)
         speechOutput.speak(narration) { event ->
             if (!spokenExchange.isCurrent(token) || !foreground || flow.screen != JourneyScreen.ROUTE || !state.acceptsResponse(revision) || plan !== result) return@speak
             when(event) {
                 SpeechOutputEvent.Preparing -> spokenStatus = "음성 안내를 준비하고 있어요"
-                SpeechOutputEvent.Started -> spokenStatus = "계획을 설명하고 있어요"
+                SpeechOutputEvent.Started -> {
+                    spokenStatus = "AI가 안내하고 있어요"
+                    briefingSignal?.showActivity(true)
+                    briefingText?.text = narration
+                }
                 SpeechOutputEvent.Done -> {
                     spokenStatus = null
                     if (spokenExchange.done(token, state.revision, SpokenPlan.destinationId(result, state.completed), vehicle == VehicleState.PARKED)) {
@@ -501,6 +510,10 @@ class MainActivity : Activity() {
                 }
                 SpeechOutputEvent.Stopped -> { spokenExchange.cancel(); spokenStatus = "음성 안내가 중단됐어요. 다시 듣거나 말로 대답해 주세요." }
                 is SpeechOutputEvent.Failure -> { spokenExchange.cancel(); spokenStatus = event.message }
+            }
+            if (event != SpeechOutputEvent.Preparing && event != SpeechOutputEvent.Started) {
+                briefingSignal?.showActivity(false)
+                briefingText?.text = brief
             }
             applyLock()
         }
@@ -514,6 +527,8 @@ class MainActivity : Activity() {
         val revision = state.revision
         val destination = SpokenPlan.destinationId(result, state.completed)
         val turn = SpokenTurn(revision, destination)
+        briefingSignal?.showActivity(false)
+        briefingText?.text = SpokenPlan.briefing(result, errands, state.completed)
         speechOutput.stopThen { clean ->
             if (!spokenExchange.isCurrent(epoch) || !foreground || flow.screen != JourneyScreen.ROUTE || vehicle != VehicleState.PARKED || plan !== result || !state.acceptsResponse(revision)) return@stopThen
             if (!clean) { spokenStatus = "음성 안내 종료를 확인하지 못했어요. 잠시 뒤 다시 말해 주세요."; applyLock(); return@stopThen }
@@ -766,6 +781,20 @@ class MainActivity : Activity() {
             val home = column(); home.add(text("집 도착 / 마감", 22f, muted), 4)
             home.add(text("${clock(result.optString("home_arrival_time"))} / ${clock(request?.optString("deadline").orEmpty())}", 32f, ink, true), 0)
             metrics.addView(home, LinearLayout.LayoutParams(0, -2, 1f)); nextCard.add(metrics, 0)
+        }
+        if (state.activeId == null && state.arrivedId == null) {
+            val assistant = card(body, "AI 안내")
+            val header = row()
+            val accent = if (dark) Color.rgb(155, 228, 202) else Color.rgb(33, 106, 83)
+            briefingSignal = VoiceSignalView(this, accent).also {
+                header.addView(it, LinearLayout.LayoutParams(dp(112), dp(34)))
+            }
+            briefingText = text(SpokenPlan.briefing(result, errands, state.completed), 24f, ink).apply {
+                maxLines = 4
+                ellipsize = android.text.TextUtils.TruncateAt.END
+            }
+            header.addView(briefingText, LinearLayout.LayoutParams(0, -2, 1f).apply { leftMargin = dp(18) })
+            assistant.add(header, 0)
         }
         if (outcome == "infeasible") body.add(text("필수 일정과 귀가 시간을 함께 지킬 수 없어요.", 24f, amber))
         else if (outcome != "feasible") body.add(text("영업·서비스 또는 이동 정보 확인이 필요해요. 가능 여부가 확정되지 않았습니다.", 24f, amber))
@@ -1230,7 +1259,8 @@ class MainActivity : Activity() {
             computationStartedWallMillis = startedWall
             status = "계획을 계산했습니다. 데이터 경고와 마감을 확인한 뒤 다음 목적지를 승인하세요."
             flow.planned(); persist(); render()
-            announcePlan()
+            val playingExample = BuildConfig.DEMO && fixture && sampleExperience
+            announcePlan(listenAfter = voiceConversation && !playingExample, concise = playingExample)
         }
     }
 

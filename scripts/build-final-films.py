@@ -36,7 +36,7 @@ def probe(path):
 def load_track(story,track,audio_dir=None):
     result=[]; cursor=0; allcues=[]
     for c in story[track]:
-        path=(audio_dir if audio_dir is not None else OUT/'audio')/(c['id']+'.mp3')
+        path=(audio_dir if audio_dir is not None else OUT/'audio')/(c.get('audio_id', c['id'])+'.mp3')
         record=json.loads(path.with_suffix('.json').read_text(encoding='utf-8'))
         voice=story['voices'][c['role']]
         payload={k:v for k,v in voice.items() if k not in {'name','voice_id'}}
@@ -88,7 +88,7 @@ def stills(scenes,track):
     poster.save(folder/'poster.jpg',quality=95)
 
 
-def mix_audio(scenes,seconds,path,background_music=True,assistant_filter=None):
+def mix_audio(scenes,seconds,path,background_music=True,assistant_filter=None,interaction_cues=False):
     n=round(seconds*RATE); t=np.arange(n,dtype=np.float64)/RATE
     music=np.zeros(n,dtype=np.float64)
     # Original restrained pulse/chord composition, not a downloaded backing track.
@@ -119,12 +119,26 @@ def mix_audio(scenes,seconds,path,background_music=True,assistant_filter=None):
         if b>n: raise ValueError('Speech exceeds final mix')
         voice[a:b]+=speech
         da=max(0,a-round(.15*RATE)); db=min(n,b+round(.25*RATE)); duck[da:db]=.34
-        if is_filtered_assistant:
+        if interaction_cues and c.get('cue'):
+            # A quiet earcon for the interaction itself, separated from the dialogue.
+            cue_at, notes = {
+                'listen': (.12, [(0, .12, 590, .024), (.07, .12, 790, .019)]),
+                'reply': (.08, [(0, .18, 510, .022)]),
+                'arrive': (.10, [(0, .17, 690, .024), (.10, .19, 870, .020)]),
+                'complete': (.72, [(0, .18, 780, .025)]),
+            }[c['cue']]
+            for delay, length, frequency, level in notes:
+                start = round((c['at'] + cue_at + delay) * RATE)
+                count = min(n - start, round(length * RATE))
+                cue = t[:count]
+                envelope = np.sin(np.pi * cue / length)**2
+                music[start:start+count] += level * np.sin(2*np.pi*frequency*cue) * envelope
+        if is_filtered_assistant and not interaction_cues:
             cue = t[:round(.14*RATE)]
             start = a-round(.18*RATE)
             music[start:start+len(cue)] += .028*np.sin(2*np.pi*(840*cue+1550*cue**2))*np.sin(np.pi*cue/.14)**2
         # Soft confirmation tone for state-changing shots only.
-        if c['kind'] in {'approve','complete','homeapprove','revised'}:
+        if not interaction_cues and c['kind'] in {'approve','complete','homeapprove','revised'}:
             aa=round((c['at']+.12)*RATE); bb=min(n,aa+round(.24*RATE)); tt=np.arange(bb-aa)/RATE
             music[aa:bb]+=.022*np.sin(2*np.pi*880*tt)*np.sin(np.pi*np.minimum(tt/.24,1))**2
     fadein=np.minimum(1,t/1.0); fadeout=np.minimum(1,(seconds-t)/1.8)

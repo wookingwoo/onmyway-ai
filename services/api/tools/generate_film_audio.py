@@ -39,7 +39,7 @@ def main():
             payload.update(text=c["text"],apply_text_normalization="on")
             inputs={**payload,"voice_id":voice["voice_id"],"output_format":"mp3_44100_128"}
             fingerprint=audio_fingerprint(inputs)
-            audio=out/(c["id"]+".mp3")
+            audio=out/(c.get("audio_id", c["id"])+".mp3")
             record=audio.with_suffix(".json")
             pending=audio.with_suffix('.pending.json')
             saved=cached_record(audio,record,fingerprint,pending)

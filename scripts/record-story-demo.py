@@ -23,10 +23,13 @@ def main():
     parser.add_argument("--port", type=int, default=8001)
     parser.add_argument("--output", default="artifacts/evidence/pleos-service-demo")
     parser.add_argument("--hold-seconds", type=float, default=1.2, help="Hold checked native states for editing")
+    parser.add_argument("--voice-motion", action="store_true", help="Capture sample transcript playback and native AI briefing transitions")
     parser.add_argument("--resume-driving", action="store_true", help="Keep verified first five chapters; require the same pending synthetic laundry journey")
     parser.add_argument("--resume-decision", action="store_true", help="Keep four hash-verified chapters; require the same revised synthetic preview before approval")
     parser.add_argument("--resume-refinement", action="store_true", help="Keep three verified chapters and resume from the initial plan")
     args = parser.parse_args()
+    if args.voice_motion and args.hold_seconds < 7:
+        parser.error("--voice-motion requires --hold-seconds of at least 7")
     out = Path(args.output).resolve()
     out.mkdir(parents=True, exist_ok=True)
     shots = out / "captures"
@@ -130,7 +133,7 @@ def main():
         root = wait(expected, contains)
         (shots / (name + ".xml")).write_text(ET.tostring(root, encoding="unicode"), encoding="utf-8")
         (shots / (name + ".png")).write_bytes(adb("exec-out", "screencap", "-p", binary=True))
-        hold = max(args.hold_seconds, 14) if name == "voice-request" and args.hold_seconds > 1.2 else args.hold_seconds
+        hold = max(args.hold_seconds, 14) if name == "voice-request" and args.hold_seconds > 1.2 and not args.voice_motion else args.hold_seconds
         if active is not None:
             at = round(time.monotonic()-active["started"], 3)
             active["beats"].append({"name": name, "at": at, "expected": expected})
@@ -214,8 +217,10 @@ def main():
             if find("안내 연결", root) is not None:
                 click("안내 연결")
             click("설정"); click("연결 · 위치 고급 설정")
-            editors = [n for n in tree().iter("node") if n.get("class") == "android.widget.EditText"]
-            assert len(editors) == 6
+            settings = wait("서버 주소")
+            editors = [n for n in settings.iter("node") if n.get("class") == "android.widget.EditText"
+                       and n.get("package") == "ai.onmyway.car.demo"]
+            assert editors, "Missing server editor in native settings"
             tap(editors[0]); adb("shell", "input", "keycombination", "113", "29")
             adb("shell", "input", "text", f"http://10.0.2.2:{args.port}")
             adb("shell", "input", "keyevent", "4")
@@ -232,11 +237,13 @@ def main():
             with recording("clarify"):
                 shot("voice-home", "가는 길에, 무엇을 할까요?")
                 click("말로 부탁하기")
-                shot("voice-request", "계획 준비하기")
-                time.sleep(3)
+                shot("voice-request", "이 요청으로 준비할게요" if args.voice_motion else "계획 준비하기")
+                if not args.voice_motion:
+                    time.sleep(3)
                 click("계획 준비하기")
-                settle_plan()
-                root = shot("automatic-proposal", "이렇게 들르고 갈까요?")
+                if not args.voice_motion:
+                    settle_plan()
+                root = shot("baseline-plan" if args.voice_motion else "automatic-proposal", "AI 안내" if args.voice_motion else "이렇게 들르고 갈까요?")
                 assert find("18:40 / 19:00", root) is not None
                 assert find("확인하고 출발", root) is not None
             with recording("venue"):
@@ -249,17 +256,18 @@ def main():
                     if find("이렇게 들르고 갈까요?", root) is not None:
                         break
                     assert scroll(root, False), "Cannot return to proposal summary"
-                root = shot("baseline-plan", "이렇게 들르고 갈까요?")
+                root = shot("baseline-review" if args.voice_motion else "baseline-plan", "이렇게 들르고 갈까요?")
                 assert find("18:40 / 19:00", root) is not None
         if not (args.resume_driving or args.resume_decision):
             with recording("change"):
                 click("말로 조건 바꾸기")
                 response = "말 전달하기" if find("말 전달하기", tree()) is not None else "계획 준비하기"
-                shot("spoken-refinement", response)
+                shot("spoken-refinement", "이 요청으로 준비할게요" if args.voice_motion else response)
                 time.sleep(2)
                 click(response)
-                settle_plan()
-                root = shot("revised-plan", "이렇게 들르고 갈까요?")
+                if not args.voice_motion:
+                    settle_plan()
+                root = shot("revised-summary" if args.voice_motion else "revised-plan", "AI 안내" if args.voice_motion else "이렇게 들르고 갈까요?")
                 assert find("세탁물 찾기", root) is not None
                 assert find("한결세탁소", root) is not None
                 assert find("18:53 / 19:00", root) is not None
@@ -271,7 +279,7 @@ def main():
                     if find("이렇게 들르고 갈까요?", root) is not None:
                         break
                     assert scroll(root, False)
-                shot("revised-summary", "이렇게 들르고 갈까요?")
+                shot("decision-review" if args.voice_motion else "revised-summary", "이렇게 들르고 갈까요?")
                 time.sleep(3)
                 shot("laundry-approval", "확인하고 출발")
                 click("확인하고 출발")
@@ -310,7 +318,7 @@ def main():
             shot("home-arrival", "집에 도착했어요")
         state = request("/vehicle/state")
         assert state["gear"]["actual"]["value"] == "Park" and state["controls"]["speed_kph"] == 0
-        manifest = {"result": "pass", "scope": "actual native UI; explicit synthetic example; simulated guidance/arrival; actual AVD driving restriction",
+        manifest = {"result": "pass", "voice_motion": args.voice_motion, "scope": "actual native UI; explicit synthetic example; simulated guidance/arrival; actual AVD driving restriction",
                     "scenario": {"departure": "18:00", "deadline": "19:00", "pickup_deadline": "18:30", "baseline_home": "18:40",
                                  "pharmacy_minutes": 30, "revised_order": ["laundry", "medicine"], "optional_omission": "groceries", "revised_home": "18:53"},
                     "restored_gear": "Park", "restored_speed_kph": 0, "chapters": records}

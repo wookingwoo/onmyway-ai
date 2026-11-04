@@ -17,8 +17,8 @@ Current contest positioning and honest differentiation:
 organizer guidance to current evidence, technical Q&A and remaining priorities.
 The latest [Pleos film and Short](docs/submission/final-films-ko.md) show the
 existing OnMyWay `MainActivity` and daytime theme on the official Pleos AVD.
-The 97.5-second main film and 42.5-second Short use Korean Eleven v4 dialogue
-over the app's explicitly selected example flow and the observed Drive lock.
+The 101-second main film and 57.5-second Short use Korean Eleven v4 dialogue
+over newly recorded native sample transcript playback, AI briefing and Drive lock.
 The main film includes a separate native Pleos route to Seoul's 63 Building.
 Open `artifacts/final-films/mainactivity/player.html` locally.
 See [media verification](docs/submission/final-films-verification.json).

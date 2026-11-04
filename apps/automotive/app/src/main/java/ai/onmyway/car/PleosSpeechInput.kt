@@ -13,6 +13,7 @@ import java.util.Locale
 sealed class SpeechInputEvent {
     object Connected : SpeechInputEvent()
     object Listening : SpeechInputEvent()
+    data class Level(val rms: Double) : SpeechInputEvent()
     data class Transcript(val text: String, val completed: Boolean) : SpeechInputEvent()
     data class Failure(val message: String) : SpeechInputEvent()
 }
@@ -66,7 +67,7 @@ class PleosSpeechInput(private val context: Context, private val event: (SpeechI
                         }
                         override fun onError(errorType: ErrorType) = dispatch(attempt) { fail(attempt, errorMessage(errorType)) }
                         override fun onUpdatedEpdData(on: Long, off: Long) = Unit
-                        override fun onUpdatedRms(rms: Double) = Unit
+                        override fun onUpdatedRms(rms: Double) = dispatch(attempt) { event(SpeechInputEvent.Level(rms)) }
                     }
                     attempt.listener = listener
                     attempt.sdk.addListener(listener)
