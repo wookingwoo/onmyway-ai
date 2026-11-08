@@ -1,48 +1,29 @@
 # OnMyWay AI
 
-**Your errands, one smart drive.**
+**Voice-first errand planning for Pleos Connect**
 
-A native **Pleos Connect** app that turns an errand list into a reviewed driving
-plan, accounting for road travel, opening waits, time at each stop and the
-deadline for getting home.
+Tell OnMyWay what you need to do and when you need to be home. It proposes a stop
+order around pickup deadlines, opening waits, travel time and time at each stop.
+When a stop takes longer, review the updated plan before approving where to go next.
 
-[Try the demo](#try-the-demo) · [Run locally](#run-locally) ·
-[Architecture](#architecture) · [Verification](#verification) ·
-[Submission readiness](docs/readiness.md)
+[Watch the demo](https://youtu.be/-e3DBmSvgQM) · [Watch the Short](https://www.youtube.com/shorts/s-mTWmpmE74) · [Run locally](#run-locally) · [Architecture](#architecture) · [Verification](#verification)
 
-Current contest positioning and honest differentiation:
-[Korean strategy](docs/contest-strategy-ko.md). Presenter/recovery instructions:
-[demo guide](docs/demo-guide-ko.md), [five-minute pitch and Q&A](docs/submission/pitch-and-demo-ko.md).
-[2026-10-28 briefing review](docs/submission/briefing-review-ko.md) maps timestamped
-organizer guidance to current evidence, technical Q&A and remaining priorities.
-The latest [Pleos film and Short](docs/submission/final-films-ko.md) show the
-existing OnMyWay `MainActivity` and daytime theme on the official Pleos AVD.
-The 104.2-second main film and 59.5-second Short use Korean Eleven v4 dialogue
-over native transcript playback and visible planning progress. The main film
-includes OnMyWay's parked trip summary. Both cuts show a separate native Pleos
-route to Seoul's 63 Building, with guidance recorded at Drive / 30 km/h.
-The tested Pleos image covers OnMyWay's own activity in Drive.
-Open `artifacts/final-films/mainactivity/player.html` locally.
-See [media verification](docs/submission/final-films-verification.json).
+[![OnMyWay AI on Pleos Connect with the laundry pickup first and an estimated arrival home at 18:53](docs/screenshots/pleos-cockpit/release-replan.png)](https://youtu.be/-e3DBmSvgQM)
 
-The earlier recorded story film follows one natural-language request, automatic route
-preparation and a spoken 30-minute pharmacy refinement, preserving mandatory
-pickup, optional milk omission and separately approved home. Every native chapter
-shows the **full Pleos surface including the left vehicle panel**. See the [Korean scenario](docs/submission/story-demo-ko.md)
-and [local production instructions](scripts/STORY_DEMO.md). Video/audio stay local;
-selected [actual service-cockpit frames](docs/screenshots/pleos-cockpit/README.md) provide review evidence.
-The previous silent film and HTML pitch are historical; readiness records their scope.
-A historical [silent vertical motion Short](docs/submission/shortform-ko.md) remains available;
-it uses earlier footage and has its own verification scope.
+*Signed demo APK running on Pleos Connect 2.1.0. The screen shows a labelled
+example itinerary and simulated guidance. Select the image to watch the walkthrough.*
 
-> **Current status:** The native app, deterministic planner and explicitly
-> labelled demo flow have been verified on the official Pleos emulator.
-> Live OpenAI/Kakao calls and actual navigation acceptance/arrival still require
-> separate verification. Screens below use **example data and simulated guidance**.
+## Watch OnMyWay in action
 
-![Actual Pleos native interpretation review with explicitly prepared example text](docs/screenshots/contest-core/review-pinned.png)
+| Video | What you'll see |
+| --- | --- |
+| [**Pleos Connect walkthrough** · 1:44](https://youtu.be/-e3DBmSvgQM) | The pharmacy visit grows from 10 to 30 minutes. OnMyWay moves laundry pickup first, defers an optional stop and estimates arrival home at 18:53. |
+| [**“여보, 퇴근했어?”** · 0:42](https://www.youtube.com/shorts/s-mTWmpmE74) | One phone call, two errands and a deadline. A short skit with the app running on the Pleos emulator. |
 
-*Actual signed-demo capture on Pleos Connect 2.1.0, API 34. Errands, selected venues, opening windows and road times are explicit synthetic fixtures; guidance is simulated.*
+The walkthrough uses prepared requests, example locations and travel times, and
+simulated arrivals. It also includes a separate route shown in the built-in Pleos
+navigation app. See [recording provenance](docs/submission/final-films-ko.md) and
+[verification scope](#verification).
 
 ## The problem
 
@@ -54,7 +35,7 @@ OnMyWay lets the user review those constraints before approving a destination.
 AI produces an editable draft. A deterministic planner evaluates the supplied
 times and evidence, and the native app guides one step at a time.
 
-Example request:
+Example request
 
 > “약국 들르고, 세탁물 찾고, 우유도 사서 7시 전에 집에 가야 해.”
 
@@ -213,57 +194,39 @@ updates. APKs are generated locally and are absent from a fresh clone.
 
 ### Try the demo
 
-With the API running and the demo app open while parked:
+Start the local API and open the demo APK while parked. Leave external provider
+keys empty to run this example.
 
-1. Tap **예시로 체험 · 모의 안내** to request the labelled sample.
-2. Review the three errands. Change the pharmacy dwell from 10 to 15 minutes
-   using **수정 → + 5분 → 저장**.
-3. Tap **동선 확인하기**. The sample predicts home arrival at **18:45** against
-   its **19:00** deadline.
-4. Tap **이곳으로 안내 → 목적지 승인**, then send **도착 체험 · 모의 이벤트**.
-   Arrival leaves the errand unfinished.
-5. Use **할 일 완료 → 완료했어요**. The remaining preview refreshes automatically;
-   approve its next destination separately.
-6. Finish the remaining stops and approve **집으로 안내** separately.
+1. Choose **설정 → 샘플로 둘러보기**, then **돌아가기**. Tap **말로 부탁하기** and
+   **계획 준비하기**. The initial plan estimates arrival home at **18:40**.
+2. Choose **음성 요청 → 약국에 머무를 시간 변경 → 말 전달하기**. The revised plan
+   puts laundry pickup before the pharmacy and estimates arrival home at **18:53**.
+3. Tap **이 계획으로 출발**. Open **이동 현황 보기** to check the destination and
+   the planned times.
+4. For the simulated arrival, use **더보기 → 설정 → 샘플 안내 · 도착 신호**.
+   Tap **완료했어요** after the errand is complete. The app prepares the next stop.
+5. Complete the remaining errand, then approve **집으로 안내 시작** separately.
 
-The repeatable fixture uses **2026-10-23**. Its dates, places and timings are
-demonstration inputs, not a current driving recommendation.
-
-**마감·미확인 정보 체험 · 예시** independently requests an uncertain, synthetic
-deadline-conflict case. Its 18:31/+11-minute proposal remains conditional, and the
-updated route shows unknown availability, zero margin and the omitted optional
-purchase. No failed live request selects this example.
-
-Reproducible synthetic comparisons and the unperformed user-observation protocol:
-[evaluation guide](docs/evaluation-guide.md) ·
-[Korean study cards](docs/submission/user-study-ko.md).
+The [evaluation guide](docs/evaluation-guide.md) describes the repeatable examples
+and the [Korean study cards](docs/submission/user-study-ko.md) describe the
+proposed user-observation protocol.
 
 ### Voice input
-
-For the current key-free native demo, run `scripts/start-demo.ps1`, then choose
-**질문과 답변 체험 · 예시 해석**. One primary action guides clarification, explicit
-home-time selection and planning. Original text and answers remain reviewable;
-plan explanations use the solver's actual times and uncertainty.
-
-[Korean presenter and recovery guide](docs/demo-guide-ko.md).
-Prepared interpretation and simulated navigation are labelled; no live model
-result is claimed by this example.
 
 While actually parked, **말로 부탁하기** starts Pleos on-device Korean speech
 recognition. A final transcript automatically starts interpretation and route
 preparation. Missing conditions can be answered by speech; generic flexible shops
 are proposed automatically, while exact pickup venues require confirmation.
-The compact summary shows ordered venues, dwell/completion deadlines and home ETA. Original text, answers and detailed evidence stay under **요청 · 일정 자세히**. Live and sample use the same main labels/layout; only a small source badge distinguishes synthetic data. Simulation event utilities live in settings.
-Explicit spoken departure or **확인하고 출발** approves only the current fresh
-next destination; interpretation alone never starts navigation. Cancel, background and driving restrictions stop the
-speech session and release the microphone.
+The compact summary shows stop order, dwell times, completion deadlines and the
+home ETA. Open **더보기 → 일정 상세** to review the original request and plan details.
+A spoken approval or **이 계획으로 출발** approves the current next destination.
+Cancelling, backgrounding the app or entering a driving restriction stops the
+speech session and releases the microphone.
 
-For a key-free presentation, explicitly choose **설정 → 샘플로 둘러보기**, then use the same **말로 부탁하기** action.
-The real native orchestration and solver prepare the labelled fixture journey.
-**말로 조건 바꾸기** applies a clearly identified saved refinement in sample mode
-and recalculates automatically. These are prepared texts with simulated navigation,
-not live STT or LLM interpretation. Successful final Korean transcription remains
-unverified. Exact location setup is still required before a live journey.
+The [key-free demo](#try-the-demo) uses explicitly selected prepared utterances
+and simulated guidance. Live mode requires the provider settings below and
+confirmed departure and home locations. See the
+[Korean presenter and recovery guide](docs/demo-guide-ko.md).
 
 ![Actual native prepared conversation before automatic route preparation](docs/screenshots/pleos-cockpit/voice-request.png)
 
@@ -290,19 +253,16 @@ The development API has no user authentication and binds only to localhost.
 
 ## Verification
 
-The following are **recorded results from 2026-10-25**, not claims of live service
-validation. Exact commands, revisions and caveats are in the
-[delivery ledger](docs/progress.md).
+The signed demo built from `main` at `57303e7` was installed and run on Pleos
+Connect 2.1.0 (API 34). The [delivery ledger](docs/progress.md) records earlier
+checks, including actual Drive / 30 km/h restrictions.
 
 | Check | Recorded evidence |
 | --- | --- |
-| Backend | 67 Python tests passed; provider HTTP mocked, including venue identity, availability evidence and conditional proposals |
-| Android | 106 unit tests per variant passed, including venue review, elapsed deadline slack, request ownership/timeout and approval/completion boundaries |
-| Builds | Demo/live debug and signed release builds passed; release v3 signatures verified |
-| Actual Pleos demo | Pinned example pickup → HTTP plan → arrival stays incomplete → three explicit completions with automatic previews → separately approved simulated home |
-| Actual vehicle restrictions | Drive / 30 km/h locked actions and dismissed an open editor; Park / 0 restored |
-| UI | Actual day/night captures and native date/reset checks |
-| CI | The current PR reports its remote checks separately; local final commands include both variants and lint. [Workflow](.github/workflows/verify.yml) |
+| Backend | 67 tests passed, including provider responses exercised through mocks |
+| Android | 119 demo-variant unit tests passed |
+| APK | `demoRelease` built and APK Signature Scheme v3 verified |
+| Pleos emulator | Initial plan, dwell-time replan, moving overview, separate arrival and completion, next-stop refresh and separately approved simulated home arrival |
 
 Reproduce application checks after toolchain setup:
 
@@ -335,23 +295,16 @@ No measured time savings, current users or retention results are claimed.
 
 ## Evidence and contest materials
 
-The current local film is **164.36 seconds, FHD, constant30fps**, with actual
-Pleos ON_DEVICE plan speech and offline prepared user dialogue. It shows spoken
-refinement, guarded spoken departure and separately approved home navigation.
-Every native scene includes the full Pleos vehicle/app surface. Captions are
-authored summaries and prepared-dialogue sentence cues. See [current evidence](docs/screenshots/spoken-plan/README.md)
-and [local production](scripts/SPOKEN_DEMO.md). Earlier editorial-narration and silent
-captures are historical. Videos, raw captures, APKs, office documents and
-archives stay local; authorized screenshots and the historical small
-[Korean SRT](artifacts/evidence/OnMyWay_AI_Pleos_new_ui_demo.srt) are versioned.
-[Recording provenance and local file names](artifacts/evidence/README.md).
-
 | Material | Location |
 | --- | --- |
+| Video production and emulator capture | [Pleos film notes](docs/submission/final-films-ko.md) · [media verification](docs/submission/final-films-verification.json) |
+| Earlier native voice-flow capture | [Screenshots and scope](docs/screenshots/spoken-plan/README.md) · [production notes](scripts/SPOKEN_DEMO.md) |
 | Product and engineering specification | [docs/spec.md](docs/spec.md) |
 | Korean application draft | [docs/submission/application-ko.md](docs/submission/application-ko.md) |
 | Pitch and demo script | [docs/submission/pitch-and-demo-ko.md](docs/submission/pitch-and-demo-ko.md) |
-| Submission checklist | [docs/submission/checklist-ko.md](docs/submission/checklist-ko.md) |
+| Contest preparation | [Korean strategy](docs/contest-strategy-ko.md) · [briefing review](docs/submission/briefing-review-ko.md) · [submission checklist](docs/submission/checklist-ko.md) |
+
+[Recording provenance and local file names](artifacts/evidence/README.md).
 
 Contest materials remain working drafts. The older office/pitch files and local
 review ZIP predate the new UI and need regeneration before sharing. Keep project
