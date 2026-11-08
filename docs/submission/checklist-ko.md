@@ -19,10 +19,14 @@
 ## 개발 증거
 
 **최신 홍보 편집본:** [본편·쇼츠 제작 및 검수 안내](final-films-ko.md).
-87.5초 본편과 42.5초 세로 쇼츠는 공식 Pleos AVD에서 기존 앱의 `MainActivity`와
+104.2초 본편과 59.5초 세로 쇼츠는 공식 Pleos AVD에서 기존 앱의 `MainActivity`와
 주간 테마를 직접 조작·녹화한 버전입니다. 앱에서 명시적으로 선택한 예시와 모의
-도착을 사용했고, 주행 잠금은 AVD의 Drive/30 전환으로 확인했습니다. 음성은
-Eleven v4로 합성했습니다. 영상·음성은 `artifacts/final-films/mainactivity/`에 보관합니다.
+도착을 사용했습니다. 샘플 문장과 마이크 파형이 실제 앱 화면에서 바뀌고, 계획 화면에는
+AI가 설명하는 내용이 표시됩니다. 본편에는 Park에서 OnMyWay의 이동 요약이 나옵니다.
+Drive/30에서는 이 AVD의 Pleos 시스템이 OnMyWay를 가립니다. 두 영상은 별도 63빌딩
+경로에서 실제 Drive/30 상태의 Pleos 기본 내비를 보여 줍니다. 경로선과 회전 안내가
+표시됐고 배경 지도 타일은 비어 있었습니다. 음성은 Eleven v4를 사용했습니다.
+영상·음성은 `artifacts/final-films/mainactivity/`에 보관합니다.
 
 **현재 영상 기록:** artifacts/evidence/spoken-plan/OnMyWay_AI_spoken_demo.mp4(164.355542초). 실제 Pleos ON_DEVICE 한국어 계획 음성·오프라인 준비 사용자 대사·전체 Pleos 화면·예시/모의 고지를 포함합니다. 대본은 [spoken-demo-ko.md](spoken-demo-ko.md)입니다. 영상은 후속 내비 변경 전 녹화이므로 최종 APK와 다시 대조해야 합니다. 183.3초 story-demo·107.667초 intent-demo 및 HTML 발표·DOCX·PPTX·ZIP은 이전 자료입니다.
 

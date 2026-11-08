@@ -6,6 +6,14 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class SpokenPlanTest {
+    @Test fun compactBriefingFollowsTheComputedOrderAndKeepsUncertainty() {
+        val actual = SpokenPlan.briefing(plan(), errands, emptySet())
+        assertTrue(actual.contains("세탁물"))
+        assertTrue(actual.contains("우유 구매는 다음으로 미뤘어요."))
+        assertTrue(actual.contains("집에는 오후 6시 53분쯤"))
+        assertFalse(SpokenPlan.briefing(plan(), errands, setOf("laundry")).contains("세탁물"))
+        assertFalse(SpokenPlan.briefing(plan("needs_verification"), errands, emptySet()).contains("도착할 예정"))
+    }
     private val errands = JSONArray("""[{"id":"laundry","label":"세탁물 찾기","mandatory":true,"dwell_seconds":300,"latest_finish":"2026-10-25T18:30:00+09:00"},{"id":"milk","label":"우유 구매","mandatory":false}]""")
     private val request = JSONObject("""{"deadline":"2026-10-25T19:00:00+09:00"}""")
     private fun plan(status: String = "feasible") = JSONObject("""{"status":"$status","is_fixture":false,"home_arrival_time":"2026-10-25T18:53:00+09:00","stops":[{"errand_id":"laundry","label":"세탁물 찾기","place":{"name":"한결세탁소"},"end_time":"2026-10-25T18:11:00+09:00"}],"skipped_errands":[{"id":"milk"}]}""")

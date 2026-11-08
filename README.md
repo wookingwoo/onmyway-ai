@@ -17,8 +17,11 @@ Current contest positioning and honest differentiation:
 organizer guidance to current evidence, technical Q&A and remaining priorities.
 The latest [Pleos film and Short](docs/submission/final-films-ko.md) show the
 existing OnMyWay `MainActivity` and daytime theme on the official Pleos AVD.
-The 87.5-second main film and 42.5-second Short use Korean Eleven v4 dialogue
-over the app's explicitly selected example flow and the observed Drive lock.
+The 104.2-second main film and 59.5-second Short use Korean Eleven v4 dialogue
+over native transcript playback and visible planning progress. The main film
+includes OnMyWay's parked trip summary. Both cuts show a separate native Pleos
+route to Seoul's 63 Building, with guidance recorded at Drive / 30 km/h.
+The tested Pleos image covers OnMyWay's own activity in Drive.
 Open `artifacts/final-films/mainactivity/player.html` locally.
 See [media verification](docs/submission/final-films-verification.json).
 

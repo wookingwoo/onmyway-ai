@@ -87,9 +87,19 @@ def validate_utterances(story):
     ids = [c["id"] for track in ("main","short","auditions") for c in story[track]]
     if len(ids) != len(set(ids)) or any(not re.fullmatch(r"[a-z0-9-]+",i) for i in ids):
         raise ValueError("Unsafe or duplicate utterance ID")
+    by_id = {c["id"]: c for track in ("main","short","auditions") for c in story[track]}
     for track in ("main","short","auditions"):
         for c in story[track]:
+            if c.get("visual_only"):
+                if track == "auditions" or c.get("min_seconds", 0) <= 0 or any(
+                        key in c for key in ("text", "role", "audio_id", "cue")):
+                    raise ValueError("Visual-only cuts require a positive duration and no speech or cues")
+                continue
             if c["role"] not in story["voices"] or not c["text"].strip(): raise ValueError("Invalid voice role or empty text")
+            if "audio_id" in c:
+                original = by_id.get(c["audio_id"])
+                if not original or original.get("visual_only") or original.get("audio_id") or any(original[key] != c[key] for key in ("role","text")):
+                    raise ValueError("Reused audio must match the original utterance")
 
 
 def srt(cues):

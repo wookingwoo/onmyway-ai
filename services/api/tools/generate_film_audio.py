@@ -33,13 +33,13 @@ def main():
     out.mkdir(parents=True,exist_ok=True)
     tracks=["main","short"] if args.track=="all" else [args.track]
     with httpx.Client(base_url="https://api.elevenlabs.io",headers={"xi-api-key":key},timeout=120) as client:
-        for c in [c for t in tracks for c in data[t]]:
+        for c in [c for t in tracks for c in data[t] if not c.get("visual_only")]:
             voice=data["voices"][c["role"]]
             payload={k:v for k,v in voice.items() if k not in {"name","voice_id"}}
             payload.update(text=c["text"],apply_text_normalization="on")
             inputs={**payload,"voice_id":voice["voice_id"],"output_format":"mp3_44100_128"}
             fingerprint=audio_fingerprint(inputs)
-            audio=out/(c["id"]+".mp3")
+            audio=out/(c.get("audio_id", c["id"])+".mp3")
             record=audio.with_suffix(".json")
             pending=audio.with_suffix('.pending.json')
             saved=cached_record(audio,record,fingerprint,pending)

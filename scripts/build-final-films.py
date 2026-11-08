@@ -36,7 +36,12 @@ def probe(path):
 def load_track(story,track,audio_dir=None):
     result=[]; cursor=0; allcues=[]
     for c in story[track]:
-        path=(audio_dir if audio_dir is not None else OUT/'audio')/(c['id']+'.mp3')
+        if c.get('visual_only'):
+            duration=c['min_seconds']
+            result.append({**c,'audio':None,'audio_seconds':0,'seconds':duration,'offset':0,'cues':[],'at':cursor})
+            cursor+=duration
+            continue
+        path=(audio_dir if audio_dir is not None else OUT/'audio')/(c.get('audio_id', c['id'])+'.mp3')
         record=json.loads(path.with_suffix('.json').read_text(encoding='utf-8'))
         voice=story['voices'][c['role']]
         payload={k:v for k,v in voice.items() if k not in {'name','voice_id'}}
@@ -46,7 +51,9 @@ def load_track(story,track,audio_dir=None):
         seconds=float(probe(path)['format']['duration'])
         cues=alignment_cues(record['alignment'],c['text'],seconds)
         duration=scene_seconds(c['min_seconds'],seconds) if track=='main' else max(c['min_seconds'],math.ceil((seconds+.65)*2)/2)
-        offset=.55 if track=='main' else .25
+        offset=c.get('audio_offset', .55 if track=='main' else .25)
+        if 'audio_offset' in c:
+            duration=max(duration, math.ceil((offset+seconds+.55)*2)/2)
         scene={**c,'audio':path,'audio_seconds':seconds,'seconds':duration,'offset':offset,'cues':cues,'at':cursor}
         if offset+seconds>duration: raise ValueError('Speech crosses cut')
         allcues.extend([[cursor+offset+a,cursor+offset+b,t] for a,b,t in cues])
@@ -88,7 +95,7 @@ def stills(scenes,track):
     poster.save(folder/'poster.jpg',quality=95)
 
 
-def mix_audio(scenes,seconds,path,background_music=True):
+def mix_audio(scenes,seconds,path,background_music=True,assistant_filter=None,interaction_cues=False):
     n=round(seconds*RATE); t=np.arange(n,dtype=np.float64)/RATE
     music=np.zeros(n,dtype=np.float64)
     # Original restrained pulse/chord composition, not a downloaded backing track.
@@ -105,7 +112,11 @@ def mix_audio(scenes,seconds,path,background_music=True):
         music[a:b]+=.020*np.sin(2*np.pi*(57*tt+1.4*(1-np.exp(-tt*20))))*np.exp(-tt*22)
     voice=np.zeros(n); duck=np.ones(n)
     for c in scenes:
-        raw=run('ffmpeg','-v','error','-i',c['audio'],'-f','f32le','-ac','1','-ar',RATE,'-').stdout
+        if c['audio'] is None:
+            continue
+        is_filtered_assistant = assistant_filter and c['role'] == 'assistant'
+        filters = ('-af', assistant_filter) if is_filtered_assistant else ()
+        raw=run('ffmpeg','-v','error','-i',c['audio'],*filters,'-f','f32le','-ac','1','-ar',RATE,'-').stdout
         speech=np.frombuffer(raw,dtype='<f4').astype(np.float64)
         rms=float(np.sqrt(np.mean(speech**2)))
         if rms<.002: raise ValueError('Unexpected silent utterance: '+c['id'])
@@ -117,8 +128,27 @@ def mix_audio(scenes,seconds,path,background_music=True):
         if b>n: raise ValueError('Speech exceeds final mix')
         voice[a:b]+=speech
         da=max(0,a-round(.15*RATE)); db=min(n,b+round(.25*RATE)); duck[da:db]=.34
+        if interaction_cues and c.get('cue'):
+            # A quiet earcon for the interaction itself, separated from the dialogue.
+            cue_at, notes = {
+                'listen': (.12, [(0, .12, 590, .024), (.07, .12, 790, .019)]),
+                'reply': (max(.08, c['offset']-.24), [(0, .18, 510, .022)]),
+                'arrive': (.10, [(0, .17, 690, .024), (.10, .19, 870, .020)]),
+                'complete': (.72, [(0, .18, 780, .025)]),
+            }[c['cue']]
+            cue_at = c.get('cue_offset', cue_at)
+            for delay, length, frequency, level in notes:
+                start = round((c['at'] + cue_at + delay) * RATE)
+                count = min(n - start, round(length * RATE))
+                cue = t[:count]
+                envelope = np.sin(np.pi * cue / length)**2
+                music[start:start+count] += level * np.sin(2*np.pi*frequency*cue) * envelope
+        if is_filtered_assistant and not interaction_cues:
+            cue = t[:round(.14*RATE)]
+            start = a-round(.18*RATE)
+            music[start:start+len(cue)] += .028*np.sin(2*np.pi*(840*cue+1550*cue**2))*np.sin(np.pi*cue/.14)**2
         # Soft confirmation tone for state-changing shots only.
-        if c['kind'] in {'approve','complete','homeapprove','revised'}:
+        if not interaction_cues and c['kind'] in {'approve','complete','homeapprove','revised'}:
             aa=round((c['at']+.12)*RATE); bb=min(n,aa+round(.24*RATE)); tt=np.arange(bb-aa)/RATE
             music[aa:bb]+=.022*np.sin(2*np.pi*880*tt)*np.sin(np.pi*np.minimum(tt/.24,1))**2
     fadein=np.minimum(1,t/1.0); fadeout=np.minimum(1,(seconds-t)/1.8)

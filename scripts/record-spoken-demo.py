@@ -199,7 +199,11 @@ def main():
     def voice_approve():
         root = tree()
         if find("말 전달하기", root) is None:
-            click("말로 대답하기")
+            if find("음성 요청", root) is None:
+                click("더보기")
+            click("음성 요청")
+            if find("예시 음성 요청", tree()) is not None:
+                click("이 계획으로 출발 요청")
         shot("spoken-approval", "말 전달하기")
         prepared("approval")
         before = adb("logcat", "-d", "-v", "brief", "-s", "OnMyWayVoice:I")
@@ -207,6 +211,11 @@ def main():
         shot("accepted", "안내 중 · 차량 내비게이션을 확인해 주세요")
         after = adb("logcat", "-d", "-v", "brief", "-s", "OnMyWayVoice:I")
         assert "voice-approved revision=" in after[len(before):], "Speech must enter the real guarded approval handler"
+
+    def settings():
+        if find("더보기", tree()) is not None:
+            click("더보기")
+        click("설정")
 
     request(session, "POST")
     thread = threading.Thread(target=heartbeat, daemon=True); thread.start()
@@ -217,9 +226,12 @@ def main():
         root = tree()
         if find("취소", root) is not None: click("취소")
         root = tree()
-        click("설정")
+        settings()
         if find("새 일정 시작", tree()) is not None:
-            assert find("샘플 데이터", root, True) is not None, "Refusing to reset a live journey"
+            assert any(n.get("package") == "ai.onmyway.car.demo" and n.get("text") in {
+                "샘플 데이터 · 모의 안내", "예시 일정 · 모의 안내",
+                "샘플 데이터 · 실제 내비 요청 없음", "예시 일정 · 실제 내비 요청 없음",
+            } for n in root.iter("node")), "Refusing to reset a live journey"
             click("새 일정 시작"); click("새로 시작"); click("설정")
         click("연결 · 위치 고급 설정")
         editors = [n for n in tree().iter("node") if n.get("class") == "android.widget.EditText"]
@@ -229,7 +241,7 @@ def main():
         click("닫기")
         if find("샘플로 둘러보기", tree()) is not None: click("샘플로 둘러보기")
         click("돌아가기")
-        assert find("샘플 데이터", tree(), True) is not None
+        assert find("예시 일정", tree(), True) is not None or find("샘플 데이터", tree(), True) is not None
         with recording("request"):
             shot("voice-home", "가는 길에, 무엇을 할까요?")
             click("말로 부탁하기"); shot("voice-request", "계획 준비하기")
@@ -252,22 +264,22 @@ def main():
             request("/vehicle/gear?gear=Drive","PUT")
             request("/vehicle/controls?speed=30&accelerator=0&brake=0&steering=0","PUT"); time.sleep(2)
             root=shot("driving-lock", "정차 후 이용해 주세요")
-            assert not any(n.get("text") in {"말로 대답하기","확인하고 출발","완료했어요"} and n.get("enabled")=="true" for n in root.iter("node"))
+            assert not any(n.get("text") in {"음성 요청","이 계획으로 출발","완료했어요","더보기"} and n.get("enabled")=="true" for n in root.iter("node"))
             request("/vehicle/controls?speed=0&accelerator=0&brake=0&steering=0","PUT")
             request("/vehicle/gear?gear=Park","PUT");time.sleep(2)
         with recording("remaining"):
-            click("설정");click("샘플 안내 · 도착 신호");shot("laundry-arrival","완료했어요")
+            settings();click("샘플 안내 · 도착 신호");shot("laundry-arrival","완료했어요")
             before=adb("logcat","-d","-v","brief","-s","OnMyWayVoice:I")
             mark("laundry-completed");click("완료했어요");shot("remaining-plan","다음은 이곳이에요")
             speech_done(before)
             assert find("말 전달하기",tree()) is None, "Touch completion cannot silently restart the microphone"
             voice_approve()
         with recording("home"):
-            click("설정");click("샘플 안내 · 도착 신호");shot("medicine-arrival","완료했어요")
+            settings();click("샘플 안내 · 도착 신호");shot("medicine-arrival","완료했어요")
             before=adb("logcat","-d","-v","brief","-s","OnMyWayVoice:I")
             mark("medicine-completed");click("완료했어요");shot("home-plan","이제 집으로 가요")
             speech_done(before);voice_approve()
-            click("설정");click("샘플 안내 · 도착 신호");shot("home-arrival","집에 도착했어요")
+            settings();click("샘플 안내 · 도착 신호");shot("home-arrival","집에 도착했어요")
         state=request("/vehicle/state")
         assert state["gear"]["actual"]["value"]=="Park" and state["controls"]["speed_kph"]==0
         manifest={"result":"pass","scope":"Actual native Pleos ON_DEVICE speech and app UI; independently selected saved sample inputs; simulated navigation/arrival; actual AVD Drive restriction",

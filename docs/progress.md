@@ -1,5 +1,123 @@
 # Delivery ledger
 
+## 2026-11-04 — simplify the parked cockpit controls
+
+The plan screen now has one visually primary action for the current leg. A
+secondary microphone control handles changes and voice approval. Replay is
+in the AI briefing card. The More menu contains the available detail, edit,
+recalculation and navigation recovery actions. Home approval has one footer
+button; its voice option is still accessible through More. Menu selections
+recheck the displayed plan, revision, foreground, vehicle and busy state.
+Choosing a voice option waits for native speech output to stop before opening
+the microphone. Opening a menu suppresses automatic microphone activation
+while the dialog is visible.
+
+Recorded the final demo APK on the official Pleos AVD. The revised plan
+showed both mandatory stops, the deferred optional item, the 18:53 home
+estimate, and both route controls in one frame. Opened the More menu and its
+details, chose an explicit example voice refinement, approved each leg,
+completed both errands after simulated arrival and separately approved home.
+The device restored Park/0 after Drive/30. The system overlay still covers
+OnMyWay in Drive. The films retain the independently recorded built-in
+navigation insert and the existing Eleven v4 dialogue.
+
+119 Android unit tests per demo/live variant, both debug APK builds, 67 API
+tests and 40 media tests passed. The demo APK installed for capture matches
+the final tested build. See [verification](submission/final-films-verification.json).
+Capture, APK and exported media remain local.
+
+## 2026-11-04 — show route work in progress and recut actual Pleos guidance
+
+Planning and completion now keep a native progress card visible while the
+request runs. Only the explicit sample uses a 1.15-second presentation minimum.
+The order cards separate place, stop priority, dwell, estimated completion and
+deadline. The listening copy describes the current action and retains the
+sample's small provenance label.
+
+The trip summary opens only from an accepted, current destination while Parked.
+It has no touch actions and clears the destination when the platform state or
+route snapshot becomes invalid. The isolated activity declares distraction
+optimization. In the official Pleos Connect 2.1.0 API 34 AVD at Drive/30, the app
+accessibility tree contained the read-only summary with zero active app controls,
+but decoded frames showed the Pleos system covering it. Read-only car-service
+diagnostics listed the built-in Navigation on the system allowlist. Park/0
+restored OnMyWay. The final edit shows the OnMyWay summary in Park and separately
+recorded native 63 Building guidance in Drive/30. The native basemap remains
+blank. After capture, restored Park/0 and ended the native route in its own UI.
+
+The app journey was recorded from actual Android screenrecord frames on the
+official AVD using the explicit sample and simulated arrival. The captured APK
+predates review follow-ups that invalidate the summary on arrival, route failure
+or owner loss. The final sample and live debug APKs built with 118 passing unit
+tests each. API 67 and media 40 checks passed. The final cuts reuse the chosen
+Eleven v4 voices, with no backing track and a completion cue timed to the next
+stop appearing. See [verification](submission/final-films-verification.json) for
+verified windows, file hashes and playback. Raw footage, voice files, APKs and
+exports remain local.
+
+## 2026-11-04 — show voice interaction in the native app and recapture on Pleos
+
+Recorded the updated OnMyWay MainActivity on a separate official Pleos Connect
+2.1.0 API 34 AVD. Every journey chapter uses Android screenrecord footage of
+native controls. The full vehicle panel, status bar and controls are visible
+in the main cut. The separate 63 Building insert is retained from the earlier
+native Navigation capture.
+
+The live SDK feeds its own partial results and microphone level into the voice
+dialog. An independently selected sample replays the saved words over time
+and keeps confirmation disabled until the last word. The plan adds an AI
+briefing card with the exact spoken sample summary and a signal animated by
+actual speech start/end callbacks. Confirmed both sample input and AI reply
+animations from decoded raw frames. Departure remains independently approved;
+recorded native Drive/30 locking, Park/0 restoration and explicit completion
+after simulated arrival. The recorded sample leaves follow-up input to the
+driver. Live planning retains the existing detailed speech and follow-up.
+
+The previous Eleven v4 speaker choices are reused. Four changed lines match
+the native sample text, with a small speed adjustment to recorded speech shots
+to align visible activity. Retired per-line chirps for these cuts. The main mix
+uses restrained cues on input opening, replan response, first arrival and
+completion. No background track. Main 101 seconds, Short 57.5 seconds. Full
+decode and representative input, briefing and safety frame review passed.
+
+Media 40, API 67 and Android 117 tests per demo/live variant passed, plus both
+debug APK builds. The independent review found that concise automatic speech
+would affect live mode and that an interrupted speech stop could leave the
+indicator running. Both were fixed and Android checks rerun. The captured
+build predates those follow-up fixes, which do not change the successful
+sample path shown. See [verification](submission/final-films-verification.json).
+All APKs, captures, dialogue and exports remain local.
+
+## 2026-11-04 — record a native Pleos route and distinguish the vehicle voice
+
+The remote feature branch starts at the PR #11 merge commit
+`e7c3a2e1ede06938b2a9634c091b50285558cce7`. GitHub reported no file changes
+between that merge and `ff3742b`, the verified local base tree used when direct
+Git fetch returned 403.
+
+Re-ran the installed SDK screen smoke on the official Pleos Connect 2.1.0
+AVD. Native Navigation became foreground. Searched for Seoul's 63 Building in
+the native app and initiated its route while parked. It displayed three route
+options, a 26-minute/25-km selected route, and actual next-turn guidance.
+Background tiles remained blank, and the native-process diagnostic count
+included HTTP 401 responses. Ended guidance and returned to OnMyWay with the
+vehicle at Park/0. The 8-second insert is marked as a separate route example.
+The app's errand approval and the native 63 Building request are separate
+captures, so the insert establishes neither automatic errand handoff nor arrival.
+
+Created a private synthetic Korean voice design and generated five vehicle AI
+lines with Eleven v4. The mix applies a short chime and digital coloration only
+to that role. First cues carry a visible speaker label. The driver and narrator
+dialogue caches were reused, with one new narrator line for the insert. The main
+film is 97.5 seconds and the Short is 42.5 seconds. Both full decodes and the
+selected native and caption frame reviews passed. See the
+[verification record](submission/final-films-verification.json).
+
+Media tests passed (40), and API tests passed (67). Android demo/live debug
+unit/build tasks passed with all 86 tasks up to date. The initial Gradle daemon
+attempt could not bind loopback, and the no-daemon invocation succeeded. Raw
+recordings, audio and final video remain local.
+
 ## 2026-11-04 — recapture the existing OnMyWay app on Pleos
 
 The owner asked to keep the existing app theme. Retired the dedicated filming
