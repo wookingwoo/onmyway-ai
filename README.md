@@ -1,12 +1,16 @@
 # OnMyWay AI
 
-**Voice-first errand planning for Pleos Connect**
+**An in-car AI assistant for Pleos Connect**
 
-Tell OnMyWay what you need to do and when you need to be home. It proposes a stop
-order around pickup deadlines, opening waits, travel time and time at each stop.
-When a stop takes longer, review the updated plan before approving where to go next.
+Tell OnMyWay what you need to get done and when you need to arrive. It plans which
+stops to make, hands the approved destination to Pleos navigation, and updates
+the remaining trip as you complete each task. If a stop takes longer than
+expected, you can review the revised plan before approving the next destination.
 
-[Watch the demo](https://youtu.be/-e3DBmSvgQM) · [Watch the Short](https://www.youtube.com/shorts/s-mTWmpmE74) · [Run locally](#run-locally) · [Architecture](#architecture) · [Verification](#verification)
+[Download the signed APK](https://github.com/wookingwoo/onmyway-ai/raw/refs/heads/main/apk/OnMyWay_OnMyWayAI_release.apk) |
+[Run on Windows or macOS](#run-locally) |
+[Architecture](#architecture) |
+[Verification](#verification)
 
 [![OnMyWay AI on Pleos Connect with the laundry pickup first and an estimated arrival home at 18:53](docs/screenshots/pleos-cockpit/release-replan.png)](https://youtu.be/-e3DBmSvgQM)
 
@@ -17,30 +21,40 @@ example itinerary and simulated guidance. Select the image to watch the walkthro
 
 | Video | What you'll see |
 | --- | --- |
-| [**Pleos Connect walkthrough** · 1:44](https://youtu.be/-e3DBmSvgQM) | The pharmacy visit grows from 10 to 30 minutes. OnMyWay moves laundry pickup first, defers an optional stop and estimates arrival home at 18:53. |
-| [**“여보, 퇴근했어?”** · 0:42](https://www.youtube.com/shorts/s-mTWmpmE74) | One phone call, two errands and a deadline. A short skit with the app running on the Pleos emulator. |
+| [**Pleos Connect walkthrough (1:44)**](https://youtu.be/-e3DBmSvgQM) | The pharmacy visit grows from 10 to 30 minutes. OnMyWay moves laundry pickup first, defers an optional stop and estimates arrival home at 18:53. |
+| [**“여보, 퇴근했어?” (0:42)**](https://www.youtube.com/shorts/s-mTWmpmE74) | One phone call, two errands and a deadline. A short skit with the app running on the Pleos emulator. |
 
 The walkthrough uses prepared requests, example locations and travel times, and
 simulated arrivals. It also includes a separate route shown in the built-in Pleos
 navigation app. See [recording provenance](docs/submission/final-films-ko.md) and
 [verification scope](#verification).
 
-## The problem
+## Why it belongs in the car
 
-An errand route has more constraints than a list of destinations. A pharmacy may
-close before a laundry pickup; each stop takes time; getting to the shop is only
-part of finishing the task. The final drive home must fit too.
-
-OnMyWay lets the user review those constraints before approving a destination.
-AI produces an editable draft. A deterministic planner evaluates the supplied
-times and evidence, and the native app guides one step at a time.
-
-Example request
+With several stops and a deadline, drivers have to piece together a plan from
+maps, opening hours and reservations. A delay at one stop can change what is
+still possible. OnMyWay carries the driver's intent through the whole trip, from
+planning a feasible order to checking what is left after each stop.
 
 > “약국 들르고, 세탁물 찾고, 우유도 사서 7시 전에 집에 가야 해.”
 
-Natural-language parsing uses the configured server-side provider. The key-free
-demo is requested separately and does not claim to parse this example live.
+While parked, the driver can speak a request and review the plan on one screen.
+The app checks that the car is parked before allowing edits or destination
+approval. Once the driver confirms completion, OnMyWay recalculates the
+remaining stops.
+[Pleos Connect design principles](https://www.hyundaimotorgroup.com/en/news/hyundai-motor-group-redefines-in-vehicle-experience-with-pleos-connect-next-generation-infotainment-system)
+
+## Roadmap
+
+The first release focuses on planning and the handoff to vehicle navigation.
+Next, the car could prepare a trip before the driver asks. With permission, it
+could read an appointment location from the calendar, pick up a collection
+deadline from a booking email, and propose a route from the current location
+while the car is parked.
+
+MCP is a planned way to connect services, starting with pickup information and
+later covering returns or charging stops. The driver would approve schedule and
+booking changes before the app sends them.
 
 ## The vehicle experience
 
@@ -138,59 +152,82 @@ behavior still need live verification.
 
 ## Run locally
 
-Commands below run from the repository root in **Windows PowerShell**.
+### Test environment and required settings
 
-Prerequisites: Python 3.11+; JDK 17; Android SDK Platform 35 and Build Tools
-35.0.0. Gradle 8.9 is included through the wrapper. Pleos runtime checks require
-the official Pleos Connect 2.1.0 x86_64 API 34 emulator, with a cold boot.
-Install the SDKs under their respective licenses before building.
+| Item | Configuration |
+| --- | --- |
+| Verified host | Windows x86_64 with Android Studio and SDK Platform-Tools |
+| Pleos emulator | Pleos Connect **2.1.0**, Android 14 (API 34), x86_64 system image, cold boot |
+| Emulator display | **2560 × 1440 px** in landscape, **160 dpi** (mdpi) |
+| Vehicle state | Park and 0 km/h to enter requests and approve destinations |
+| FastAPI server | Python 3.11+, listening on host `127.0.0.1:8000`. The app uses `http://10.0.2.2:8000` from the emulator. |
+| Demo mode | Choose **샘플로 둘러보기**. Leave provider keys empty. The example uses prepared input and simulated arrivals. |
+
+Use the host-specific image from the
+[Pleos emulator setup guide](https://document.pleos.ai/en/docs/pleos-only/getting-started).
+Use arm64 on Apple Silicon. The macOS instructions are provided for setup.
+The signed APK was installed and tested on Windows x86_64.
+
+Clone the submission repository, then run the instructions from its root.
+
+```sh
+git clone https://github.com/wookingwoo/onmyway-ai.git
+cd onmyway-ai
+```
 
 ### Start the API
+
+**Windows PowerShell**
 
 ```powershell
 ./scripts/setup-api.ps1
 ./scripts/start-api.ps1
 ```
 
-The launcher creates an ignored root `.env` from `.env.example` if absent,
-preserves existing configuration, and binds to `127.0.0.1:8000`.
-Open [API documentation](http://127.0.0.1:8000/docs) or check
-[health](http://127.0.0.1:8000/health). The demo and planner work without provider
-keys. Health reports configuration booleans, never secret values.
+**macOS Terminal**
 
-### Build and launch Android
-
-Set the paths to your installed tools:
-
-```powershell
-$env:JAVA_HOME = 'C:/path/to/jdk17'
-$env:ANDROID_HOME = 'C:/path/to/android-sdk'
-./apps/automotive/gradlew.bat -p apps/automotive testDemoDebugUnitTest assembleDemoDebug assembleLiveDebug
+```sh
+python3 -m venv .venv
+.venv/bin/python -m pip install -r services/api/requirements.lock
+.venv/bin/python -m pip install --no-deps -e './services/api[test]'
+[ -f .env ] || cp .env.example .env
+.venv/bin/python -m uvicorn onmyway.main:app --app-dir services/api --env-file .env --host 127.0.0.1 --port 8000
 ```
 
-Install the demo on an isolated Pleos emulator. Replace the device serial below
-with yours, as listed by `adb devices`:
+Leave provider keys empty for the demo. Keep the server running and verify
+[localhost health](http://127.0.0.1:8000/health) before launching the app.
+
+### Install the signed APK
+
+Start the Pleos emulator in Android Studio and leave the API running. In another
+terminal, install the signed APK from
+[`apk/OnMyWay_OnMyWayAI_release.apk`](apk/OnMyWay_OnMyWayAI_release.apk).
+The same binary is available on the
+[GitHub Release page](https://github.com/wookingwoo/onmyway-ai/releases/tag/v0.1.0-rc.1).
+If you have multiple ADB devices, add `-s <serial>` to each install and launch
+command after checking `adb devices`.
+
+**Windows PowerShell**
 
 ```powershell
-$device = 'emulator-5556'
-$adb = Join-Path $env:ANDROID_HOME 'platform-tools/adb.exe'
-& $adb -s $device install -r apps/automotive/app/build/outputs/apk/demo/debug/app-demo-debug.apk
-& $adb -s $device shell am start --user current -n ai.onmyway.car.demo/ai.onmyway.car.MainActivity
+$adb = "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe"
+& $adb devices
+& $adb install -r ".\apk\OnMyWay_OnMyWayAI_release.apk"
+& $adb shell am start --user current -n ai.onmyway.car.demo/ai.onmyway.car.MainActivity
 ```
 
-The default app server is `http://10.0.2.2:8000`, the emulator's host address.
-Alternatively, run `adb -s <serial> reverse tcp:8000 tcp:8000` and set the app
-server to `http://127.0.0.1:8000` through **설정 → 연결 · 위치 고급 설정**.
+**macOS Terminal**
 
-The demo package is `ai.onmyway.car.demo`; the live package is `ai.onmyway.car`.
-Only demo exposes fixture requests and simulated guidance. A live provider
-failure produces an explicit error and never silently switches to examples.
+```sh
+adb="$HOME/Library/Android/sdk/platform-tools/adb"
+"$adb" devices
+"$adb" install -r "./apk/OnMyWay_OnMyWayAI_release.apk"
+"$adb" shell am start --user current -n ai.onmyway.car.demo/ai.onmyway.car.MainActivity
+```
 
-See the [Android guide](apps/automotive/README.md) for additional checks.
-The optional [release build script](scripts/build-android.ps1) expects the local
-SDK under `.tools/android-sdk` and can create an ignored development signing key
-with `-Release -GenerateSigningKey`. Preserve that private key for compatible
-updates. APKs are generated locally and are absent from a fresh clone.
+Use the SDK path shown in Android Studio if yours differs. The app reaches the
+host API from the emulator at `http://10.0.2.2:8000`. Check that address in the
+app's advanced connection settings if it cannot connect.
 
 ### Try the demo
 
@@ -211,6 +248,31 @@ The [evaluation guide](docs/evaluation-guide.md) describes the repeatable exampl
 and the [Korean study cards](docs/submission/user-study-ko.md) describe the
 proposed user-observation protocol.
 
+### Build from source
+
+Use JDK 17, Android SDK Platform 35 and Build Tools 35.0.0. Set `JAVA_HOME` and
+`ANDROID_HOME` to their installed paths. Gradle 8.9 is included via the wrapper.
+
+**Windows PowerShell**
+
+```powershell
+./apps/automotive/gradlew.bat -p apps/automotive testDemoDebugUnitTest assembleDemoDebug assembleLiveDebug
+```
+
+**macOS Terminal**
+
+```sh
+export JAVA_HOME="$(/usr/libexec/java_home -v 17)"
+export ANDROID_HOME="$HOME/Library/Android/sdk"
+sh apps/automotive/gradlew -p apps/automotive testDemoDebugUnitTest assembleDemoDebug assembleLiveDebug
+```
+
+The demo build produces
+`apps/automotive/app/build/outputs/apk/demo/debug/app-demo-debug.apk`.
+The demo package is `ai.onmyway.car.demo` and the live package is `ai.onmyway.car`.
+See the [Android guide](apps/automotive/README.md) for variant configuration and
+the [Windows release build script](scripts/build-android.ps1) for local signing.
+
 ### Voice input
 
 While actually parked, **말로 부탁하기** starts Pleos on-device Korean speech
@@ -230,8 +292,8 @@ confirmed departure and home locations. See the
 
 ![Actual native prepared conversation before automatic route preparation](docs/screenshots/pleos-cockpit/voice-request.png)
 
-[Voice verification and reproduction](apps/automotive/README.md#voice-input-demo)
-· [Actual day/night and driving-lock captures](docs/screenshots/voice-input/README.md)
+See the [voice input guide](apps/automotive/README.md#voice-input-demo) and
+[emulator screenshots](docs/screenshots/voice-input/README.md).
 
 ### Configure live providers later
 
@@ -248,14 +310,20 @@ Keys never belong in Android source, APKs, screenshots or checked-in files.
 Empty configuration produces explicit errors on the relevant live endpoint.
 The development API has no user authentication and binds only to localhost.
 
-[API behavior, endpoints and provider limits](services/api/README.md) ·
-[Environment template](.env.example)
+See the [API guide](services/api/README.md) and [environment template](.env.example).
 
 ## Verification
 
 The signed demo built from `main` at `57303e7` was installed and run on Pleos
-Connect 2.1.0 (API 34). The [delivery ledger](docs/progress.md) records earlier
-checks, including actual Drive / 30 km/h restrictions.
+Connect 2.1.0 (API 34). The APK in `apk/` has the same SHA-256 as the tested
+build and the GitHub Release asset:
+
+```text
+ca479c8ffcdb810f8069d277cffb962970ed881c086db1ffcd99bc493627cc7d
+```
+
+The [delivery ledger](docs/progress.md) records earlier checks, including
+the observed interaction restrictions in Drive at 30 km/h.
 
 | Check | Recorded evidence |
 | --- | --- |
@@ -264,11 +332,15 @@ checks, including actual Drive / 30 km/h restrictions.
 | APK | `demoRelease` built and APK Signature Scheme v3 verified |
 | Pleos emulator | Initial plan, dwell-time replan, moving overview, separate arrival and completion, next-stop refresh and separately approved simulated home arrival |
 
-Reproduce application checks after toolchain setup:
+Run the API tests after completing [API setup](#start-the-api). The
+[Android build commands](#build-from-source) run the demo unit tests.
 
 ```powershell
 ./.venv/Scripts/python.exe -m pytest services/api/tests -q
-./apps/automotive/gradlew.bat -p apps/automotive testDemoDebugUnitTest assembleDemoDebug assembleLiveDebug
+```
+
+```sh
+.venv/bin/python -m pytest services/api/tests -q
 ```
 
 ### Remaining validation
@@ -287,8 +359,8 @@ approval use the same guarded native flow. Successful real Korean recognition
 and live provider/navigation results still require validation. Native setup now
 uses fresh Pleos vehicle location with explicit departure/home confirmation and
 optional keyword-place selection; manual entry remains an explicit fallback.
-[Location behavior and actual AVD evidence](docs/location-setup.md) ·
-[spoken conversation](docs/spoken-conversation.md).
+See the [location setup](docs/location-setup.md) and
+[spoken conversation](docs/spoken-conversation.md) verification notes.
 
 No measured time savings, current users or retention results are claimed.
 [Current readiness and next verification steps](docs/readiness.md).
@@ -297,12 +369,12 @@ No measured time savings, current users or retention results are claimed.
 
 | Material | Location |
 | --- | --- |
-| Video production and emulator capture | [Pleos film notes](docs/submission/final-films-ko.md) · [media verification](docs/submission/final-films-verification.json) |
-| Earlier native voice-flow capture | [Screenshots and scope](docs/screenshots/spoken-plan/README.md) · [production notes](scripts/SPOKEN_DEMO.md) |
+| Video production and emulator capture | [Pleos film notes](docs/submission/final-films-ko.md), [media verification](docs/submission/final-films-verification.json) |
+| Earlier native voice-flow capture | [Screenshots and scope](docs/screenshots/spoken-plan/README.md), [production notes](scripts/SPOKEN_DEMO.md) |
 | Product and engineering specification | [docs/spec.md](docs/spec.md) |
 | Korean application draft | [docs/submission/application-ko.md](docs/submission/application-ko.md) |
 | Pitch and demo script | [docs/submission/pitch-and-demo-ko.md](docs/submission/pitch-and-demo-ko.md) |
-| Contest preparation | [Korean strategy](docs/contest-strategy-ko.md) · [briefing review](docs/submission/briefing-review-ko.md) · [submission checklist](docs/submission/checklist-ko.md) |
+| Contest preparation | [Korean strategy](docs/contest-strategy-ko.md), [briefing review](docs/submission/briefing-review-ko.md), [submission checklist](docs/submission/checklist-ko.md) |
 
 [Recording provenance and local file names](artifacts/evidence/README.md).
 
